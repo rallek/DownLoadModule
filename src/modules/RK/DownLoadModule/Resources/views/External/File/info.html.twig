@@ -1,0 +1,15 @@
+{# Purpose of this template: Display item information for previewing from other modules #}
+<dl id="file{{ file.id }}">
+<dt>{{ file.getTitleFromDisplayPattern()|notifyFilters('download.filter_hooks.files.filter') }}</dt>
+{% if file.myDescription is not empty %}<dd>{{ file.myDescription }}</dd>{% endif %}
+{% if featureActivationHelper.isEnabled(constant('RK\\DownLoadModule\\Helper\\FeatureActivationHelper::CATEGORIES'), 'file') %}
+    <dd>
+        <dl class="category-list">
+        {% for propName, catMapping in file.categories %}
+            <dt>{{ propName }}</dt>
+            <dd>{{ catMapping.category.display_name[app.request.locale]|default(catMapping.category.name) }}</dd>
+        {% endfor %}
+        </dl>
+    </dd>
+{% endif %}
+</dl>

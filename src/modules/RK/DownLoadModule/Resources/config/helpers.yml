@@ -1,0 +1,108 @@
+services:
+    # Helper classes
+    rk_download_module.archive_helper:
+        class: RK\DownLoadModule\Helper\ArchiveHelper
+        arguments:
+            - "@translator.default"
+            - "@session"
+            - "@logger"
+            - "@zikula_permissions_module.api.permission"
+            - "@rk_download_module.entity_factory"
+            - "@rk_download_module.workflow_helper"
+            - "@rk_download_module.hook_helper"
+    
+    rk_download_module.category_helper:
+        class: RK\DownLoadModule\Helper\CategoryHelper
+        arguments:
+            - "@translator.default"
+            - "@session"
+            - "@request_stack"
+            - "@logger"
+            - "@zikula_users_module.current_user"
+            - "@zikula_categories_module.api.category_registry"
+            - "@zikula_categories_module.api.category_permission"
+    
+    rk_download_module.controller_helper:
+        class: RK\DownLoadModule\Helper\ControllerHelper
+        arguments:
+            - "@translator.default"
+            - "@request_stack"
+            - "@session"
+            - "@logger"
+            - "@form.factory"
+            - "@zikula_extensions_module.api.variable"
+            - "@rk_download_module.entity_factory"
+            - "@rk_download_module.model_helper"
+            - "@rk_download_module.selection_helper"
+            - "@rk_download_module.image_helper"
+            - "@rk_download_module.feature_activation_helper"
+    
+    rk_download_module.feature_activation_helper:
+        class: RK\DownLoadModule\Helper\FeatureActivationHelper
+    
+    rk_download_module.hook_helper:
+        class: RK\DownLoadModule\Helper\HookHelper
+        arguments:
+            - "@hook_dispatcher"
+    
+    rk_download_module.image_helper:
+        class: RK\DownLoadModule\Helper\ImageHelper
+        arguments:
+            - "@translator.default"
+            - "@session"
+            - "@zikula_extensions_module.api.variable"
+    
+    rk_download_module.listentries_helper:
+        class: RK\DownLoadModule\Helper\ListEntriesHelper
+        arguments:
+            - "@translator.default"
+    
+    rk_download_module.model_helper:
+        class: RK\DownLoadModule\Helper\ModelHelper
+        arguments:
+            - "@rk_download_module.entity_factory"
+    
+    rk_download_module.search_helper:
+        class: RK\DownLoadModule\Helper\SearchHelper
+        arguments:
+            - "@zikula_permissions_module.api.permission"
+            - "@templating.engine.twig"
+            - "@session"
+            - "@request_stack"
+            - "@rk_download_module.entity_factory"
+            - "@rk_download_module.controller_helper"
+            - "@rk_download_module.feature_activation_helper"
+            - "@rk_download_module.category_helper"
+        tags:
+            - { name: zikula.searchable_module, bundleName: RKDownLoadModule }
+    
+    rk_download_module.selection_helper:
+        class: RK\DownLoadModule\Helper\SelectionHelper
+        arguments:
+            - "@translator.default"
+            - "@rk_download_module.entity_factory"
+    
+    rk_download_module.upload_helper:
+        class: RK\DownLoadModule\Helper\UploadHelper
+        arguments:
+            - "@translator.default"
+            - "@session"
+            - "@logger"
+            - "@zikula_users_module.current_user"
+            - "@zikula_extensions_module.api.variable"
+            - "%datadir%"
+    
+    rk_download_module.view_helper:
+        class: RK\DownLoadModule\Helper\ViewHelper
+        arguments:
+            - "@templating"
+            - "@request_stack"
+            - "@zikula_permissions_module.api.permission"
+            - "@zikula_extensions_module.api.variable"
+            - "@rk_download_module.controller_helper"
+    
+    rk_download_module.workflow_helper:
+        class: RK\DownLoadModule\Helper\WorkflowHelper
+        arguments:
+            - "@translator.default"
+            - "@rk_download_module.listentries_helper"

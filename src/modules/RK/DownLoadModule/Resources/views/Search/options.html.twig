@@ -1,0 +1,6 @@
+{# Purpose of this template: Display search options #}
+<input type="hidden" id="rKDownLoadModuleActive" name="active[RKDownLoadModule]" value="1" />
+<div>
+    <input type="checkbox" id="active_rKDownLoadModuleFiles" name="rKDownLoadModuleSearchTypes[]" value="file"{% if active_file %} checked="checked"{% endif %} />
+    <label for="active_rKDownLoadModuleFiles">{{ __('Files', 'rkdownloadmodule') }}</label>
+</div>

@@ -1,0 +1,36 @@
+body {
+    background-color: #ddd;
+    margin: 10px;
+    text-align: left;
+}
+
+#rkdownloadmoduleItemContainer {
+    background-color: #eee;
+    height: 300px;
+    overflow: auto;
+    padding: 5px;
+}
+
+#rkdownloadmoduleItemContainer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#rkdownloadmoduleItemContainer a {
+    color: #000;
+    margin: 0.1em 0.2em;
+    text-decoration: underline;
+}
+#rkdownloadmoduleItemContainer a:hover,
+#rkdownloadmoduleItemContainer a:focus,
+#rkdownloadmoduleItemContainer a:active {
+    color: #900;
+    text-decoration: none;
+}
+
+.rkdownloadmodule-finderform fieldset,
+.rkdownloadmodule-finderform fieldset legend {
+    background-color: #fff;
+    border: none;
+}

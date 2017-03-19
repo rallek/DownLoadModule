@@ -1,0 +1,5 @@
+rkdownloadmodule:
+    # define routing support for these controllers
+    resource: "@RKDownLoadModule/Controller"
+    # enable support for defining routes by annotations
+    type: annotation

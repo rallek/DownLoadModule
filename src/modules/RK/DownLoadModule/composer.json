@@ -1,0 +1,47 @@
+{
+    "name": "rk/download-module",
+    "version": "0.4.0",
+    "description": "A simple way to share some downloads. Categories are available",
+    "type": "zikula-module",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "Ralf Koester",
+            "email": "ralf@familie-koester.de",
+            "homepage": "http://oldtimer-ig-osnabrueck.de",
+            "role": "owner"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "RK\\DownLoadModule\\": "" }
+    },
+    "require": {
+        "php": ">=5.4.1"
+    },
+    "suggest": {
+    },
+    "extra": {
+        "zikula": {
+            "core-compatibility": ">=1.4.6 <3.0",
+            "class": "RK\\DownLoadModule\\RKDownLoadModule",
+            "displayname": "Down load",
+            "url": "download",
+            "capabilities": {
+                "user": {"route": "rkdownloadmodule_file_index"},
+                "admin": {"route": "rkdownloadmodule_file_adminindex"},
+                "categorizable": {
+                    "entities": [
+                        "RK\\DownLoadModule\\Entity\\FileEntity"
+                    ]
+                },
+                "hook_subscriber": {"class": "RK\\DownLoadModule\\Container\\HookContainer"}
+            },
+            "securityschema": {
+                "RKDownLoadModule::": "::",
+                "RKDownLoadModule:ItemListBlock:": "Block title::",
+                "RKDownLoadModule:File:": "File ID::",
+                "RKDownLoadModule::Ajax": "::"
+            }
+        }
+    }
+}

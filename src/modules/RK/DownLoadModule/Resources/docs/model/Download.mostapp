@@ -1,0 +1,68 @@
+application "DownLoad" {
+    documentation "A simple way to share some downloads. Categories are available"
+    vendor "RK"
+    author "Ralf Koester"
+    email "ralf@familie-koester.de"
+    url "http://oldtimer-ig-osnabrueck.de"
+    version "0.4.0"
+    prefix "downlo"
+    generatorSettings {
+        settingsContainer "Settings"
+        generateAccountApi true
+        generateMailzApi false
+        generateModerationBlock false
+        generateNewsletterPlugin false
+        generateModerationPanel false
+        generatePendingContentSupport false
+        generateTagSupport false
+        generateMultiHookNeedles false
+        generateRssTemplates false
+        generateAtomTemplates false
+        generateCsvTemplates false
+        generateXmlTemplates false
+        generateJsonTemplates false
+        generateKmlTemplates false
+        generateIcsTemplates false
+        versionAllGeneratedFiles false
+        generateTests false
+        writeModelToDocs true
+    }
+    entities {
+        entity "file" leading categorisable {
+            nameMultiple "files"
+            displayPattern "#fileName#"
+            hasArchive true
+            ownerPermission true
+            fields {
+                
+                string "fileName",
+                upload "myFile" {
+                    displayType VIEW_DISPLAY
+                    allowedExtensions "pdf, doc, docx, xls, xlsx, ppt, pptx"
+                    mimeTypes "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                },
+                text "myDescription" nullable {
+                    documentation "the quantity of characters are limited to {{length}}"
+                    mandatory false
+                    displayType VIEW_DISPLAY
+                },
+                date "startDate" startDate {
+                    mandatory false
+                    displayType VIEW_DISPLAY
+                },
+                date "endDate" endDate {
+                    defaultValue "2099-12-31"
+                    displayType VIEW_DISPLAY
+                }
+            }
+            actions {
+                mainAction "Index",
+                viewAction "View",
+                displayAction "Display",
+                editAction "Edit"
+            ,
+                deleteAction "Delete"
+            }
+        }
+    }
+    }

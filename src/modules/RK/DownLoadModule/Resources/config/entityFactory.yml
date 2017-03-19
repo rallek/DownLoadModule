@@ -1,0 +1,6 @@
+services:
+    # Entity factory class
+    rk_download_module.entity_factory:
+        class: RK\DownLoadModule\Entity\Factory\DownLoadFactory
+        arguments:
+            - "@doctrine.orm.default_entity_manager"

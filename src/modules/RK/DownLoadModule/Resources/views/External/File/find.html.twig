@@ -1,0 +1,82 @@
+{# Purpose of this template: Display a popup selector of files for scribite integration #}
+{% set useFinder = true %}
+{% extends 'RKDownLoadModule::raw.html.twig' %}
+{% block title __('Search and select file') %}
+{% block content %}
+    <div class="container">
+        <ul class="nav nav-tabs">
+        <li{{ objectType == 'file' ? ' class="active"' : '' }}><a href="{{ path('rkdownloadmodule_external_finder', {'objectType': 'file', 'editor': editorName}) }}" title="{{ __('Search and select file') }}">{{ __('Files') }}</a></li>
+        </ul>
+        {% form_theme finderForm with [
+            '@RKDownLoadModule/Form/bootstrap_3.html.twig',
+            'ZikulaFormExtensionBundle:Form:form_div_layout.html.twig'
+        ] %}
+        {{ form_start(finderForm, {attr: { id: 'rKDownLoadModuleSelectorForm' }}) }}
+        {{ form_errors(finderForm) }}
+        <fieldset>
+            <legend>{{ __('Search and select file') }}</legend>
+            {% if featureActivationHelper.isEnabled(constant('RK\\DownLoadModule\\Helper\\FeatureActivationHelper::CATEGORIES'), 'file') %}
+                {{ form_row(finderForm.categories) }}
+            {% endif %}
+            {{ form_row(finderForm.pasteAs) }}
+            <br />
+            <div class="form-group">
+                <label class="col-sm-3 control-label">{{ __('File') }}:</label>
+                <div class="col-sm-9">
+                    <div id="rkdownloadmoduleItemContainer">
+                        <ul>
+                            {% for file in items %}
+                                <li>
+                                    {% set itemId = file.createCompositeIdentifier() %}
+                                    <a href="#" data-itemid="{{ itemId }}">
+                                        {{ file.getTitleFromDisplayPattern() }}
+                                    </a>
+                                    <input type="hidden" id="path{{ itemId }}" value="{{ path('rkdownloadmodule_file_display', { 'id': file.id }) }}" />
+                                    <input type="hidden" id="url{{ itemId }}" value="{{ url('rkdownloadmodule_file_display', { 'id': file.id }) }}" />
+                                    <input type="hidden" id="title{{ itemId }}" value="{{ file.getTitleFromDisplayPattern()|e('html_attr') }}" />
+                                    <input type="hidden" id="desc{{ itemId }}" value="{% set description %}{% if file.myDescription is not empty %}{{ file.myDescription }}{% endif %}
+                                    {% endset %}{{ description|striptags|e('html_attr') }}" />
+                                </li>
+                            {% else %}
+                                <li>{{ __('No files found.') }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            {{ form_row(finderForm.sort) }}
+            {{ form_row(finderForm.sortdir) }}
+            {{ form_row(finderForm.num) }}
+            {{ form_row(finderForm.q) }}
+            <div>
+                {{ pager({ display: 'page', rowcount: pager.numitems, limit: pager.itemsperpage, posvar: 'pos', maxpages: 10, route: 'rkdownloadmodule_external_finder'}) }}
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                    {{ form_widget(finderForm.update) }}
+                    {{ form_widget(finderForm.cancel) }}
+                </div>
+            </div>
+        </fieldset>
+        {{ form_end(finderForm) }}
+    </div>
+
+    {#
+    <div class="rkdownloadmodule-finderform">
+        <fieldset>
+            {{ render(controller('RKDownLoadModule:File:edit')) }}
+        </fieldset>
+    </div>
+    #}
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+        ( function($) {
+            $(document).ready(function() {
+                rKDownLoadModule.finder.onLoad();
+            });
+        })(jQuery);
+    /* ]]> */
+    </script>
+{% endblock %}

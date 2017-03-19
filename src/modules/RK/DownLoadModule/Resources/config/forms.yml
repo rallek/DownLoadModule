@@ -1,0 +1,74 @@
+services:
+    # Form types
+    
+    rk_download_module.form.type.filequicknav:
+        class: RK\DownLoadModule\Form\Type\QuickNavigation\FileQuickNavType
+        arguments:
+            - "@translator.default"
+            - "@rk_download_module.listentries_helper"
+            - "@rk_download_module.feature_activation_helper"
+        tags:
+            - { name: form.type }
+    
+    rk_download_module.form.handler.file:
+        class: RK\DownLoadModule\Form\Handler\File\EditHandler
+        arguments:
+            - "@kernel"
+            - "@translator.default"
+            - "@form.factory"
+            - "@request_stack"
+            - "@router"
+            - "@logger"
+            - "@zikula_permissions_module.api.permission"
+            - "@zikula_users_module.current_user"
+            - "@rk_download_module.entity_factory"
+            - "@rk_download_module.controller_helper"
+            - "@rk_download_module.model_helper"
+            - "@rk_download_module.selection_helper"
+            - "@rk_download_module.workflow_helper"
+            - "@rk_download_module.hook_helper"
+            - "@rk_download_module.feature_activation_helper"
+        calls:
+            - [setLockingApi, ["@?zikula_pagelock_module.api.locking"]]
+        tags:
+            - { name: form.type }
+    
+    rk_download_module.form.type.file:
+        class: RK\DownLoadModule\Form\Type\FileType
+        arguments:
+            - "@translator.default"
+            - "@rk_download_module.entity_factory"
+            - "@rk_download_module.listentries_helper"
+            - "@rk_download_module.feature_activation_helper"
+        tags:
+            - { name: form.type }
+    
+    rk_download_module.form.type.deleteentity:
+        class: RK\DownLoadModule\Form\DeleteEntityType
+        arguments:
+            - "@translator.default"
+        tags:
+            - { name: form.type }
+    
+    rk_download_module.form.type.block.itemlist:
+        class: RK\DownLoadModule\Block\Form\Type\ItemListBlockType
+        arguments:
+            - "@translator.default"
+        tags:
+            - { name: form.type }
+    
+    rk_download_module.form.type.filefinder:
+        class: RK\DownLoadModule\Form\Type\Finder\FileFinderType
+        arguments:
+            - "@translator.default"
+            - "@rk_download_module.feature_activation_helper"
+        tags:
+            - { name: form.type }
+    
+    rk_download_module.form.type.appsettings:
+        class: RK\DownLoadModule\Form\AppSettingsType
+        arguments:
+            - "@translator.default"
+            - "@zikula_extensions_module.api.variable"
+        tags:
+            - { name: form.type }

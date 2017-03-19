@@ -1,0 +1,12 @@
+services:
+    # Twig extension
+    rk_download_module.twig_extension:
+        class: RK\DownLoadModule\Twig\TwigExtension
+        arguments:
+            - "@translator.default"
+            - "@zikula_extensions_module.api.variable"
+            - "@rk_download_module.workflow_helper"
+            - "@rk_download_module.listentries_helper"
+        public: false
+        tags:
+            - { name: twig.extension }
