@@ -24,20 +24,8 @@
  */
 function RKDownLoadModule_workflow_none_permissioncheck($obj, $permLevel, $currentUser, $actionId)
 {
-    // every user is allowed to perform automatic archiving 
-    if (true === \SessionUtil::getVar('RKDownLoadModuleAutomaticArchiving', false)) {
-        return true;
-    }
-
-    // calculate the permission component
-    $objectType = $obj['_objectType'];
-    $component = 'RKDownLoadModule:' . ucfirst($objectType) . ':';
-
-    // calculate the permission instance
-    $instance = $obj->createCompositeIdentifier() . '::';
-
-    // now perform the permission check
-    $result = SecurityUtil::checkPermission($component, $instance, $permLevel, $currentUser);
+    // perform the permission check
+    $result = SecurityUtil::checkPermission('RKDownLoadModule:' . ucfirst($obj->get_objectType()) . ':', $obj->getKey() . '::', $permLevel, $currentUser);
 
     // check whether the current user is the owner
     if (!$result && isset($obj['createdBy']) && $obj['createdBy']->getUid() == $currentUser) {

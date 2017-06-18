@@ -44,12 +44,13 @@ trait EntityWorkflowTrait
      */
     public function set__WORKFLOW__($__WORKFLOW__ = [])
     {
-        $this->__WORKFLOW__ = $__WORKFLOW__;
+        if ($this->__WORKFLOW__ != $__WORKFLOW__) {
+            $this->__WORKFLOW__ = $__WORKFLOW__;
+        }
     }
     
     /**
      * Returns the name of the primary identifier field.
-     * For entities with composite keys the first identifier field is used.
      *
      * @return string Identifier field name
      */

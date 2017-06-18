@@ -27,10 +27,6 @@ function RKDownLoadModule_operation_update(&$entity, $params)
     if (isset($params['nextstate']) && !empty($params['nextstate'])) {
         // assign value to the data object
         $entity['workflowState'] = $params['nextstate'];
-        if ($params['nextstate'] == 'archived') {
-            // bypass validator (for example an end date could have lost it's "value in future")
-            $entity['_bypassValidation'] = true;
-        }
     }
     
     // get entity manager

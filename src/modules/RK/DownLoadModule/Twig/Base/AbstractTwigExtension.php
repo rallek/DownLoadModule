@@ -16,7 +16,9 @@ use Twig_Extension;
 use Zikula\Common\Translator\TranslatorInterface;
 use Zikula\Common\Translator\TranslatorTrait;
 use Zikula\ExtensionsModule\Api\VariableApi;
+use Zikula\UsersModule\Entity\RepositoryInterface\UserRepositoryInterface;
 use RK\DownLoadModule\Helper\ListEntriesHelper;
+use RK\DownLoadModule\Helper\EntityDisplayHelper;
 use RK\DownLoadModule\Helper\WorkflowHelper;
 
 /**
@@ -30,6 +32,16 @@ abstract class AbstractTwigExtension extends Twig_Extension
      * @var VariableApi
      */
     protected $variableApi;
+    
+    /**
+     * @var UserRepositoryInterface
+     */
+    protected $userRepository;
+    
+    /**
+     * @var EntityDisplayHelper
+     */
+    protected $entityDisplayHelper;
     
     /**
      * @var WorkflowHelper
@@ -46,13 +58,23 @@ abstract class AbstractTwigExtension extends Twig_Extension
      *
      * @param TranslatorInterface $translator     Translator service instance
      * @param VariableApi         $variableApi    VariableApi service instance
+     * @param UserRepositoryInterface $userRepository UserRepository service instance
+     * @param EntityDisplayHelper $entityDisplayHelper EntityDisplayHelper service instance
      * @param WorkflowHelper      $workflowHelper WorkflowHelper service instance
      * @param ListEntriesHelper   $listHelper     ListEntriesHelper service instance
      */
-    public function __construct(TranslatorInterface $translator, VariableApi $variableApi, WorkflowHelper $workflowHelper, ListEntriesHelper $listHelper)
+    public function __construct(
+        TranslatorInterface $translator,
+        VariableApi $variableApi,
+        UserRepositoryInterface $userRepository,
+        EntityDisplayHelper $entityDisplayHelper,
+        WorkflowHelper $workflowHelper,
+        ListEntriesHelper $listHelper)
     {
         $this->setTranslator($translator);
         $this->variableApi = $variableApi;
+        $this->userRepository = $userRepository;
+        $this->entityDisplayHelper = $entityDisplayHelper;
         $this->workflowHelper = $workflowHelper;
         $this->listHelper = $listHelper;
     }
@@ -91,6 +113,7 @@ abstract class AbstractTwigExtension extends Twig_Extension
         return [
             new \Twig_SimpleFilter('rkdownloadmodule_fileSize', [$this, 'getFileSize'], ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('rkdownloadmodule_listEntry', [$this, 'getListEntry']),
+            new \Twig_SimpleFilter('rkdownloadmodule_formattedTitle', [$this, 'getFormattedEntityTitle']),
             new \Twig_SimpleFilter('rkdownloadmodule_objectState', [$this, 'getObjectState'], ['is_safe' => ['html']])
         ];
     }
@@ -190,9 +213,7 @@ abstract class AbstractTwigExtension extends Twig_Extension
         }
     
         // return either only the description or the complete string
-        $result = ($onlydesc) ? $sizeDesc : $size;
-    
-        return $result;
+        return $onlydesc ? $sizeDesc : $size;
     }
     
     
@@ -228,7 +249,10 @@ abstract class AbstractTwigExtension extends Twig_Extension
     {
         $result = [];
     
-        $result[] = ['text' => $this->__('Files'), 'value' => 'file'];
+        $result[] = [
+            'text' => $this->__('Files'),
+            'value' => 'file'
+        ];
     
         return $result;
     }
@@ -243,15 +267,38 @@ abstract class AbstractTwigExtension extends Twig_Extension
     {
         $result = [];
     
-        $result[] = ['text' => $this->__('Only item titles'), 'value' => 'itemlist_display.html.twig'];
-        $result[] = ['text' => $this->__('With description'), 'value' => 'itemlist_display_description.html.twig'];
-        $result[] = ['text' => $this->__('Custom template'), 'value' => 'custom'];
+        $result[] = [
+            'text' => $this->__('Only item titles'),
+            'value' => 'itemlist_display.html.twig'
+        ];
+        $result[] = [
+            'text' => $this->__('With description'),
+            'value' => 'itemlist_display_description.html.twig'
+        ];
+        $result[] = [
+            'text' => $this->__('Custom template'),
+            'value' => 'custom'
+        ];
     
         return $result;
     }
     
     /**
-     * Display the avatar of a user.
+     * The rkdownloadmodule_formattedTitle filter outputs a formatted title for a given entity.
+     * Example:
+     *     {{ myPost|rkdownloadmodule_formattedTitle }}
+     *
+     * @param object $entity The given entity instance
+     *
+     * @return string The formatted title
+     */
+    public function getFormattedEntityTitle($entity)
+    {
+        return $this->entityDisplayHelper->getFormattedTitle($entity);
+    }
+    
+    /**
+     * Displays the avatar of a given user.
      *
      * @param int|string $uid    The user's id or name
      * @param int        $width  Image width (optional)
@@ -264,7 +311,16 @@ abstract class AbstractTwigExtension extends Twig_Extension
     public function getUserAvatar($uid = 0, $width = 0, $height = 0, $size = 0, $rating = '')
     {
         if (!is_numeric($uid)) {
-            $uid = \UserUtil::getIdFromName($uid);
+            $limit = 1;
+            $filter = [
+                'uname' => ['operator' => '=', 'operand' => $uid]
+            ];
+            $results = $this->userRepository->query($filter, [], $limit);
+            if (!count($results)) {
+                return '';
+            }
+    
+            $uid = $results->getIterator()->getArrayCopy()[0]->getUname();
         }
         $params = ['uid' => $uid];
         if ($width > 0) {
