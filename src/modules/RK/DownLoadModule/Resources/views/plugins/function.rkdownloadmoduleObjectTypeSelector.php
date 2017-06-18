@@ -26,7 +26,10 @@ function smarty_function_rkdownloadmoduleObjectTypeSelector($params, $view)
     $dom = ZLanguage::getModuleDomain('RKDownLoadModule');
     $result = [];
 
-    $result[] = ['text' => __('Files', $dom), 'value' => 'file'];
+    $result[] = [
+        'text' => __('Files', $dom),
+        'value' => 'file'
+    ];
 
     if (array_key_exists('assign', $params)) {
         $view->assign($params['assign'], $result);
