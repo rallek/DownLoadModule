@@ -1,0 +1,76 @@
+{# purpose of this template: linkers display view #}
+{% set baseTemplate = app.request.query.getBoolean('raw', false) ? 'raw' : (routeArea == 'admin' ? 'adminBase' : 'base') %}
+{% extends 'RKHelperModule::' ~ baseTemplate ~ '.html.twig' %}
+{% block pageTitle %}{{ linker|rkhelpermodule_formattedTitle|default(__('Linker')) }}{% endblock %}
+{% block title %}
+    {% set templateTitle = linker|rkhelpermodule_formattedTitle|default(__('Linker')) %}
+    {{ templateTitle|notifyFilters('rkhelpermodule.filter_hooks.linkers.filter')|safeHtml }}
+    {% set itemActions = knp_menu_get('RKHelperModule:ItemActionsMenu:menu', [], { entity: linker, area: routeArea, context: 'display' }) %}
+    <div class="dropdown">
+        <a id="itemActions{{ linker.getKey() }}DropDownToggle" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> {{ __('Actions') }} <span class="caret"></span></a>
+        {{ knp_menu_render(itemActions, { template: 'ZikulaMenuModule:Override:actions.html.twig' }) }}
+    </div>
+{% endblock %}
+{% block admin_page_icon 'eye' %}
+{% block content %}
+    {% set isQuickView = app.request.query.getBoolean('raw', false) %}
+    <div class="rkhelpermodule-linker rkhelpermodule-display">
+
+    <dl>
+        {% if linker.linkerImage is not empty %}
+            <dt>{{ __('Linker image') }}</dt>
+            <dd>{% if linker.linkerImageMeta|default %}
+            <a href="{{ linker.linkerImageUrl }}" title="{{ linker|rkhelpermodule_formattedTitle|e('html_attr') }}"{% if linker.linkerImageMeta.isImage %} class="image-link"{% endif %}>
+            {% if linker.linkerImageMeta.isImage %}
+                {% set thumbOptions = attribute(thumbRuntimeOptions, 'linkerLinkerImage') %}
+                <img src="{{ linker.linkerImage.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ linker|rkhelpermodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
+            {% else %}
+                {{ __('Download') }} ({{ linker.linkerImageMeta.size|rkhelpermodule_fileSize(linker.linkerImage.getPathname(), false, false) }})
+            {% endif %}
+            </a>
+            {% endif %}
+            </dd>
+        {% endif %}
+        {% if linker.linkerHeadline is not empty %}
+            <dt>{{ __('Linker headline') }}</dt>
+            <dd>{{ linker.linkerHeadline }}</dd>
+        {% endif %}
+        {% if linker.linkerText is not empty %}
+            <dt>{{ __('Linker text') }}</dt>
+            <dd>{{ linker.linkerText|safeHtml }}</dd>
+        {% endif %}
+        {% if linker.theLink is not empty %}
+            <dt>{{ __('The link') }}</dt>
+            <dd>{{ linker.theLink }}</dd>
+        {% endif %}
+        {% if linker.boostrapSetting is not empty %}
+            <dt>{{ __('Boostrap setting') }}</dt>
+            <dd>{{ linker.boostrapSetting }}</dd>
+        {% endif %}
+        {% if linker.linkerLocale is not empty %}
+            <dt>{{ __('Linker locale') }}</dt>
+            <dd>{{ linker.linkerLocale|languageName }}</dd>
+        {% endif %}
+        {% if linker.sorting is not empty %}
+            <dt>{{ __('Sorting') }}</dt>
+            <dd>{{ linker.sorting }}</dd>
+        {% endif %}
+        {% if linker.linkerGroup is not empty %}
+            <dt>{{ __('Linker group') }}</dt>
+            <dd>{{ linker.linkerGroup }}</dd>
+        {% endif %}
+        
+    </dl>
+
+    {{ include('@RKHelperModule/Helper/includeStandardFieldsDisplay.html.twig', { obj: linker }) }}
+
+    {{ block('display_hooks') }}
+</div>
+{% endblock %}
+{% block display_hooks %}
+    {% set hooks = notifyDisplayHooks(eventName='rkhelpermodule.ui_hooks.linkers.display_view', id=linker.getKey(), urlObject=currentUrlObject) %}
+    {% for providerArea, hook in hooks if providerArea != 'provider.scribite.ui_hooks.editor' %}
+        <h4>{{ providerArea }}</h4>
+        {{ hook }}
+    {% endfor %}
+{% endblock %}

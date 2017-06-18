@@ -1,0 +1,29 @@
+services:
+    # Form field types
+    
+    rk_helper_module.form.type.field.colour:
+        class: RK\HelperModule\Form\Type\Field\ColourType
+        tags:
+            - { name: form.type }
+    
+    rk_helper_module.form.type.field.translation:
+        class: RK\HelperModule\Form\Type\Field\TranslationType
+        tags:
+            - { name: form.type }
+    
+    rk_helper_module.form.type.field.upload:
+        class: RK\HelperModule\Form\Type\Field\UploadType
+        arguments:
+            - "@translator.default"
+            - "@request_stack"
+            - "@rk_helper_module.image_helper"
+            - "@rk_helper_module.upload_helper"
+        tags:
+            - { name: form.type }
+    
+    rk_helper_module.form.type.field.user:
+        class: RK\HelperModule\Form\Type\Field\UserType
+        arguments:
+            - "@zikula_users_module.user_repository"
+        tags:
+            - { name: form.type }

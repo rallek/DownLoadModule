@@ -1,0 +1,51 @@
+{# Purpose of this template: Display one certain image within an external context #}
+{{ pageAddAsset('javascript', asset('magnific-popup/jquery.magnific-popup.min.js')) }}
+{{ pageAddAsset('stylesheet', asset('magnific-popup/magnific-popup.css')) }}
+{{ pageAddAsset('javascript', zasset('@RKHelperModule:js/RKHelperModule.js')) }}
+<div id="image{$image->getKey()}" class="rkhelpermodule-external-image">
+{% if displayMode == 'link' %}
+    <p class="rkhelpermodule-external-link">
+    <a href="{{ path('rkhelpermodule_image_display', { 'id': image.getId() }) }}" title="{{ image|rkhelpermodule_formattedTitle|e('html_attr') }}">
+    {{ image|rkhelpermodule_formattedTitle|notifyFilters('helper.filter_hooks.images.filter')|safeHtml }}
+    </a>
+    </p>
+{% endif %}
+{% if hasPermission('RKHelperModule::', '::', 'ACCESS_EDIT') %}
+    {# for normal users without edit permission show only the actual file per default #}
+    {% if displayMode == 'embed' %}
+        <p class="rkhelpermodule-external-title">
+            <strong>{{ image|rkhelpermodule_formattedTitle|notifyFilters('helper.filter_hooks.images.filter')|safeHtml }}</strong>
+        </p>
+    {% endif %}
+{% endif %}
+
+{% if displayMode == 'link' %}
+{% elseif displayMode == 'embed' %}
+    <div class="rkhelpermodule-external-snippet">
+        {% if image.myImageMeta|default %}
+        <a href="{{ image.myImageUrl }}" title="{{ image|rkhelpermodule_formattedTitle|e('html_attr') }}"{% if image.myImageMeta.isImage %} class="image-link"{% endif %}>
+        {% if image.myImageMeta.isImage %}
+            {% set thumbOptions = attribute(thumbRuntimeOptions, 'imageMyImage') %}
+            <img src="{{ image.myImage.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ image|rkhelpermodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
+        {% else %}
+            {{ __('Download') }} ({{ image.myImageMeta.size|rkhelpermodule_fileSize(image.myImage.getPathname(), false, false) }})
+        {% endif %}
+        </a>
+        {% endif %}
+    </div>
+
+    {# you can distinguish the context like this: #}
+    {# % if source == 'contentType' %}
+        ...
+    {% elseif source == 'scribite' %}
+        ...
+    {% endif % #}
+
+    {# you can enable more details about the item: #}
+    {#
+        <p class="rkhelpermodule-external-description">
+            {% if image.myDescription is not empty %}{{ image.myDescription }}<br />{% endif %}
+        </p>
+    #}
+{% endif %}
+</div>

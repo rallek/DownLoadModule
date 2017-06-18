@@ -1,0 +1,16 @@
+{# Purpose of this template: Display item information for previewing from other modules #}
+<dl id="image{{ image.getKey() }}">
+<dt>{{ image|rkhelpermodule_formattedTitle|notifyFilters('helper.filter_hooks.images.filter')|safeHtml }}</dt>
+<dd>{% if image.myImageMeta|default %}
+<a href="{{ image.myImageUrl }}" title="{{ image|rkhelpermodule_formattedTitle|e('html_attr') }}"{% if image.myImageMeta.isImage %} class="image-link"{% endif %}>
+{% if image.myImageMeta.isImage %}
+    {% set thumbOptions = attribute(thumbRuntimeOptions, 'imageMyImage') %}
+    <img src="{{ image.myImage.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ image|rkhelpermodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
+{% else %}
+    {{ __('Download') }} ({{ image.myImageMeta.size|rkhelpermodule_fileSize(image.myImage.getPathname(), false, false) }})
+{% endif %}
+</a>
+{% endif %}
+</dd>
+{% if image.myDescription is not empty %}<dd>{{ image.myDescription }}</dd>{% endif %}
+</dl>

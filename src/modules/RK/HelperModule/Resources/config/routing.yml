@@ -1,0 +1,5 @@
+rkhelpermodule:
+    # define routing support for these controllers
+    resource: "@RKHelperModule/Controller"
+    # enable support for defining routes by annotations
+    type: annotation

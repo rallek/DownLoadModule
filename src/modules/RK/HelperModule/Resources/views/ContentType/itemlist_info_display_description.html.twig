@@ -1,0 +1,13 @@
+{# Purpose of this template: Display infos within an external context #}
+<dl>
+    {% for info in items %}
+        <dt>{{ info|rkhelpermodule_formattedTitle }}</dt>
+        {% if info.infoDescription %}
+            <dd>{{ info.infoDescription|striptags|truncate(200, true, '&hellip;') }}</dd>
+        {% endif %}
+        <dd><a href="{{ path('rkhelpermodule_info_display', { 'id': info.getId() }) }}">{{ __('Read more') }}</a>
+        </dd>
+    {% else %}
+        <dt>{{ __('No entries found.') }}</dt>
+    {% endfor %}
+</dl>

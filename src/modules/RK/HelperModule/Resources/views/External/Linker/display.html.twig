@@ -1,0 +1,51 @@
+{# Purpose of this template: Display one certain linker within an external context #}
+{{ pageAddAsset('javascript', asset('magnific-popup/jquery.magnific-popup.min.js')) }}
+{{ pageAddAsset('stylesheet', asset('magnific-popup/magnific-popup.css')) }}
+{{ pageAddAsset('javascript', zasset('@RKHelperModule:js/RKHelperModule.js')) }}
+<div id="linker{$linker->getKey()}" class="rkhelpermodule-external-linker">
+{% if displayMode == 'link' %}
+    <p class="rkhelpermodule-external-link">
+    <a href="{{ path('rkhelpermodule_linker_display', { 'id': linker.getId() }) }}" title="{{ linker|rkhelpermodule_formattedTitle|e('html_attr') }}">
+    {{ linker|rkhelpermodule_formattedTitle|notifyFilters('helper.filter_hooks.linkers.filter')|safeHtml }}
+    </a>
+    </p>
+{% endif %}
+{% if hasPermission('RKHelperModule::', '::', 'ACCESS_EDIT') %}
+    {# for normal users without edit permission show only the actual file per default #}
+    {% if displayMode == 'embed' %}
+        <p class="rkhelpermodule-external-title">
+            <strong>{{ linker|rkhelpermodule_formattedTitle|notifyFilters('helper.filter_hooks.linkers.filter')|safeHtml }}</strong>
+        </p>
+    {% endif %}
+{% endif %}
+
+{% if displayMode == 'link' %}
+{% elseif displayMode == 'embed' %}
+    <div class="rkhelpermodule-external-snippet">
+        {% if linker.linkerImageMeta|default %}
+        <a href="{{ linker.linkerImageUrl }}" title="{{ linker|rkhelpermodule_formattedTitle|e('html_attr') }}"{% if linker.linkerImageMeta.isImage %} class="image-link"{% endif %}>
+        {% if linker.linkerImageMeta.isImage %}
+            {% set thumbOptions = attribute(thumbRuntimeOptions, 'linkerLinkerImage') %}
+            <img src="{{ linker.linkerImage.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ linker|rkhelpermodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
+        {% else %}
+            {{ __('Download') }} ({{ linker.linkerImageMeta.size|rkhelpermodule_fileSize(linker.linkerImage.getPathname(), false, false) }})
+        {% endif %}
+        </a>
+        {% endif %}
+    </div>
+
+    {# you can distinguish the context like this: #}
+    {# % if source == 'contentType' %}
+        ...
+    {% elseif source == 'scribite' %}
+        ...
+    {% endif % #}
+
+    {# you can enable more details about the item: #}
+    {#
+        <p class="rkhelpermodule-external-description">
+            {% if linker.linkerText is not empty %}{{ linker.linkerText }}<br />{% endif %}
+        </p>
+    #}
+{% endif %}
+</div>

@@ -1,0 +1,13 @@
+services:
+    # Entity factory
+    rk_helper_module.entity_factory:
+        class: RK\HelperModule\Entity\Factory\EntityFactory
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@rk_helper_module.entity_initialiser"
+            - "@rk_helper_module.collection_filter_helper"
+            - "@rk_helper_module.feature_activation_helper"
+    
+    # Entity initialiser
+    rk_helper_module.entity_initialiser:
+        class: RK\HelperModule\Entity\Factory\EntityInitialiser

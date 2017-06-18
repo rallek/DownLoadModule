@@ -1,0 +1,28 @@
+{# purpose of this template: inclusion template for managing related carousel #}
+{% if displayMode is not defined or displayMode is empty %}
+    {% set displayMode = 'choices' %}
+{% endif %}
+{% if tabs|default(false) == true %}
+    <div role="tabpanel" class="tab-pane fade" id="tabCarousel" aria-labelledby="carouselTab">
+        <h3>{{ __('Carousel') }}</h3>
+{% else %}
+    <fieldset class="carousel">
+{% endif %}
+    <legend>{{ __('Carousel') }}</legend>
+    {% if displayMode == 'choices' %}
+        {{ form_row(attribute(form, alias)) }}
+    {% elseif displayMode == 'autocomplete' %}
+        {{ form_row(attribute(form, alias)) }}
+        <div class="rkhelpermodule-relation-leftside">
+            {{ include(
+                '@RKHelperModule/Carousel/includeSelectItemListOne.html.twig',
+                attribute(linkingItem, alias) is defined ? { item: attribute(linkingItem, alias) } : {}
+            ) }}
+        </div>
+        <br style="clear: both" />
+    {% endif %}
+{% if tabs|default(false) == true %}
+    </div>
+{% else %}
+    </fieldset>
+{% endif %}

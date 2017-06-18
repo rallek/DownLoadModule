@@ -1,0 +1,151 @@
+{# purpose of this template: infos list view #}
+{% extends routeArea == 'admin' ? 'RKHelperModule::adminBase.html.twig' : 'RKHelperModule::base.html.twig' %}
+{% block title own ? __('My infos') : __('Info list') %}
+{% block admin_page_icon 'list-alt' %}
+{% block content %}
+<div class="rkhelpermodule-info rkhelpermodule-view">
+
+    <p class="alert alert-info">{{ __('This is for creating simple translatable pages') }}</p>
+
+    {{ block('page_nav_links') }}
+
+    {{ include('@RKHelperModule/Info/viewQuickNav.html.twig', { workflowStateFilter: false }) }}{# see template file for available options #}
+
+    {% if routeArea == 'admin' %}
+    <form action="{{ path('rkhelpermodule_info_' ~ routeArea ~ 'handleselectedentries') }}" method="post" id="infosViewForm" class="form-horizontal" role="form">
+        <div>
+    {% endif %}
+        <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover{% if routeArea == 'admin' %} table-condensed{% endif %}">
+            <colgroup>
+                {% if routeArea == 'admin' %}
+                    <col id="cSelect" />
+                {% endif %}
+                <col id="cItemActions" />
+                <col id="cInfoTitle" />
+                <col id="cTitleImage" />
+                <col id="cInfoDescription" />
+                <col id="cInfoLocale" />
+            </colgroup>
+            <thead>
+            <tr>
+                {% if routeArea == 'admin' %}
+                    <th id="hSelect" scope="col" class="{% if items|length > 0 %}fixed-column {% endif %}text-center z-w02">
+                        <input type="checkbox" class="rkhelper-mass-toggle" />
+                    </th>
+                {% endif %}
+                <th id="hItemActions" scope="col" class="{% if items|length > 0 %}fixed-column {% endif %}z-order-unsorted z-w02">{{ __('Actions') }}</th>
+                <th id="hInfoTitle" scope="col" class="text-left">
+                    <a href="{{ sort.infoTitle.url }}" title="{{ __f('Sort by %s', {'%s': 'info title'}) }}" class="{{ sort.infoTitle.class }}">{{ __('Info title') }}</a>
+                </th>
+                <th id="hTitleImage" scope="col" class="text-left z-order-unsorted">
+                    {{ __('Title image') }}
+                </th>
+                <th id="hInfoDescription" scope="col" class="text-left">
+                    <a href="{{ sort.infoDescription.url }}" title="{{ __f('Sort by %s', {'%s': 'info description'}) }}" class="{{ sort.infoDescription.class }}">{{ __('Info description') }}</a>
+                </th>
+                <th id="hInfoLocale" scope="col" class="text-left">
+                    <a href="{{ sort.infoLocale.url }}" title="{{ __f('Sort by %s', {'%s': 'info locale'}) }}" class="{{ sort.infoLocale.class }}">{{ __('Info locale') }}</a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+        
+        {% for info in items %}
+            <tr>
+                {% if routeArea == 'admin' %}
+                    <td headers="hSelect" class="fixed-column text-center z-w02">
+                        <input type="checkbox" name="items[]" value="{{ info.getKey() }}" class="rkhelper-toggle-checkbox" />
+                    </td>
+                {% endif %}
+                <td id="itemActions{{ info.getKey() }}" headers="hItemActions" class="fixed-column actions nowrap z-w02">
+                    {% set itemActions = knp_menu_get('RKHelperModule:ItemActionsMenu:menu', [], { entity: info, area: routeArea, context: 'view' }) %}
+                    <div class="dropdown">
+                        <a id="itemActions{{ info.getKey() }}DropDownToggle" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> <span class="caret"></span></a>
+                        {{ knp_menu_render(itemActions, { template: 'ZikulaMenuModule:Override:actions.html.twig' }) }}
+                    </div>
+                </td>
+                <td headers="hInfoTitle" class="text-left">
+                    {{ info.infoTitle }}
+                </td>
+                <td headers="hTitleImage" class="text-left">
+                    {% if info.titleImage is not empty and info.titleImageMeta|default %}
+                                <a href="{{ info.titleImageUrl }}" title="{{ info|rkhelpermodule_formattedTitle|e('html_attr') }}"{% if info.titleImageMeta.isImage %} class="image-link"{% endif %}>
+                    {% if info.titleImageMeta.isImage %}
+                        {% set thumbOptions = attribute(thumbRuntimeOptions, 'infoTitleImage') %}
+                        <img src="{{ info.titleImage.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ info|rkhelpermodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
+                    {% else %}
+                        {{ __('Download') }} ({{ info.titleImageMeta.size|rkhelpermodule_fileSize(info.titleImage.getPathname(), false, false) }})
+                    {% endif %}
+                    </a>
+                    {% else %}&nbsp;{% endif %}
+                </td>
+                <td headers="hInfoDescription" class="text-left">
+                    {{ info.infoDescription|safeHtml|truncate(50) }}
+                </td>
+                <td headers="hInfoLocale" class="text-left">
+                    {{ info.infoLocale|languageName }}
+                </td>
+            </tr>
+        {% else %}
+            <tr class="z-{{ routeArea == 'admin' ? 'admin' : 'data' }}tableempty">
+                <td class="text-left" colspan="{% if routeArea == 'admin' %}6{% else %}5{% endif %}">
+            {{ __('No infos found.') }}
+              </td>
+            </tr>
+        {% endfor %}
+        
+            </tbody>
+        </table>
+        </div>
+        
+        {% if all != 1 and pager|default %}
+            {{ pager({ rowcount: pager.amountOfItems, limit: pager.itemsPerPage, display: 'page', route: 'rkhelpermodule_info_' ~ routeArea ~ 'view'}) }}
+        {% endif %}
+    {% if routeArea == 'admin' %}
+            <fieldset>
+                <label for="rKHelperModuleAction" class="col-sm-3 control-label">{{ __('With selected infos') }}</label>
+                <div class="col-sm-6">
+                    <select id="rKHelperModuleAction" name="action" class="form-control input-sm">
+                        <option value="">{{ __('Choose action') }}</option>
+                        <option value="delete" title="{{ __('Delete content permanently.') }}">{{ __('Delete') }}</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <input type="submit" value="{{ __('Submit') }}" class="btn btn-default btn-sm" />
+                </div>
+            </fieldset>
+        </div>
+    </form>
+    {% endif %}
+
+    {{ block('display_hooks') }}
+</div>
+{% endblock %}
+{% block page_nav_links %}
+    <p>
+        {% if canBeCreated %}
+            {% if hasPermission('RKHelperModule:Info:', '::', 'ACCESS_EDIT') %}
+                {% set createTitle = __('Create info') %}
+                <a href="{{ path('rkhelpermodule_info_' ~ routeArea ~ 'edit') }}" title="{{ createTitle|e('html_attr') }}" class="fa fa-plus">{{ createTitle }}</a>
+            {% endif %}
+        {% endif %}
+        {% if all == 1 %}
+            {% set linkTitle = __('Back to paginated view') %}
+            <a href="{{ path('rkhelpermodule_info_' ~ routeArea ~ 'view') }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
+        {% else %}
+            {% set linkTitle = __('Show all entries') %}
+            <a href="{{ path('rkhelpermodule_info_' ~ routeArea ~ 'view', { all: 1 }) }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
+        {% endif %}
+    </p>
+{% endblock %}
+{% block display_hooks %}
+    
+    {# here you can activate calling display hooks for the view page if you need it #}
+    {# % if routeArea != 'admin' %}
+        {% set hooks = notifyDisplayHooks(eventName='rkhelpermodule.ui_hooks.infos.display_view', urlObject=currentUrlObject) %}
+        {% for providerArea, hook in hooks %}
+            {{ hook }}
+        {% endfor %}
+    {% endif % #}
+{% endblock %}

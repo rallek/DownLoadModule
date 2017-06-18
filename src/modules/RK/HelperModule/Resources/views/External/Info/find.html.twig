@@ -1,0 +1,117 @@
+{# Purpose of this template: Display a popup selector of infos for scribite integration #}
+{% set useFinder = true %}
+{% extends 'RKHelperModule::raw.html.twig' %}
+{% block title __('Search and select info') %}
+{% block content %}
+    <div class="container">
+        <div class="zikula-bootstrap-tab-container">
+            <ul class="nav nav-tabs">
+            {% set activatedObjectTypes = getModVar('RKHelperModule', 'enabledFinderTypes', []) %}
+            {% if 'linker' in activatedObjectTypes %}
+                <li{{ objectType == 'linker' ? ' class="active"' : '' }}><a href="{{ path('rkhelpermodule_external_finder', {'objectType': 'linker', 'editor': editorName}) }}" title="{{ __('Search and select linker') }}">{{ __('Linkers') }}</a></li>
+            {% endif %}
+            {% if 'carouselItem' in activatedObjectTypes %}
+                <li{{ objectType == 'carouselItem' ? ' class="active"' : '' }}><a href="{{ path('rkhelpermodule_external_finder', {'objectType': 'carouselItem', 'editor': editorName}) }}" title="{{ __('Search and select carousel item') }}">{{ __('Carousel items') }}</a></li>
+            {% endif %}
+            {% if 'image' in activatedObjectTypes %}
+                <li{{ objectType == 'image' ? ' class="active"' : '' }}><a href="{{ path('rkhelpermodule_external_finder', {'objectType': 'image', 'editor': editorName}) }}" title="{{ __('Search and select image') }}">{{ __('Images') }}</a></li>
+            {% endif %}
+            {% if 'info' in activatedObjectTypes %}
+                <li{{ objectType == 'info' ? ' class="active"' : '' }}><a href="{{ path('rkhelpermodule_external_finder', {'objectType': 'info', 'editor': editorName}) }}" title="{{ __('Search and select info') }}">{{ __('Infos') }}</a></li>
+            {% endif %}
+            </ul>
+        </div>
+        {% form_theme finderForm with [
+            '@RKHelperModule/Form/bootstrap_3.html.twig',
+            'ZikulaFormExtensionBundle:Form:form_div_layout.html.twig'
+        ] %}
+        {{ form_start(finderForm, {attr: { id: 'rKHelperModuleSelectorForm' }}) }}
+        {{ form_errors(finderForm) }}
+        <fieldset>
+            <legend>{{ __('Search and select info') }}</legend>
+            {{ form_row(finderForm.onlyImages) }}
+            <div id="imageFieldRow">
+                {{ form_row(finderForm.imageField) }}
+            </div>
+            {{ form_row(finderForm.pasteAs) }}
+            <br />
+            <div class="form-group">
+                <label class="col-sm-3 control-label">{{ __('Info') }}:</label>
+                <div class="col-sm-9">
+                    <div id="rkhelpermoduleItemContainer">
+                        {% if not onlyImages %}
+                            <ul>
+                        {% endif %}
+                            {% for info in items %}
+                                {% if not onlyImages or (attribute(info, imageField) is not empty and attribute(info, imageField ~ 'Meta').isImage) %}
+                                {% if not onlyImages %}
+                                    <li>
+                                {% endif %}
+                                    {% set itemId = info.getKey() %}
+                                    <a href="#" data-itemid="{{ itemId }}">
+                                        {% if onlyImages %}
+                                            {% set thumbOptions = attribute(thumbRuntimeOptions, 'info' ~ imageField[:1]|upper ~ imageField[1:]) %}
+                                            <img src="{{ attribute(info, imageField).getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ info|rkhelpermodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-rounded" />
+                                        {% else %}
+                                            {{ info|rkhelpermodule_formattedTitle }}
+                                        {% endif %}
+                                    </a>
+                                    <input type="hidden" id="path{{ itemId }}" value="{{ path('rkhelpermodule_info_display', { 'id': info.getId() }) }}" />
+                                    <input type="hidden" id="url{{ itemId }}" value="{{ url('rkhelpermodule_info_display', { 'id': info.getId() }) }}" />
+                                    <input type="hidden" id="title{{ itemId }}" value="{{ info|rkhelpermodule_formattedTitle|e('html_attr') }}" />
+                                    <input type="hidden" id="desc{{ itemId }}" value="{% set description %}{% if info.infoDescription is not empty %}{{ info.infoDescription }}{% endif %}
+                                    {% endset %}{{ description|striptags|e('html_attr') }}" />
+                                    {% if onlyImages %}
+                                        <input type="hidden" id="imagePath{{ itemId }}" value="/{{ attribute(info, imageField).getPathname() }}" />
+                                    {% endif %}
+                                {% if not onlyImages %}
+                                    </li>
+                                {% endif %}
+                                {% endif %}
+                            {% else %}
+                                {% if not onlyImages %}<li>{% endif %}{{ __('No infos found.') }}{% if not onlyImages %}</li>{% endif %}
+                            {% endfor %}
+                        {% if not onlyImages %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {{ form_row(finderForm.sort) }}
+            {{ form_row(finderForm.sortdir) }}
+            {{ form_row(finderForm.num) }}
+            <div id="searchTermRow">
+                {{ form_row(finderForm.q) }}
+            </div>
+            <div>
+                {{ pager({ display: 'page', rowcount: pager.numitems, limit: pager.itemsperpage, posvar: 'pos', maxpages: 10, route: 'rkhelpermodule_external_finder'}) }}
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                    {{ form_widget(finderForm.update) }}
+                    {{ form_widget(finderForm.cancel) }}
+                </div>
+            </div>
+        </fieldset>
+        {{ form_end(finderForm) }}
+    </div>
+
+    {#
+    <div class="rkhelpermodule-finderform">
+        <fieldset>
+            {{ render(controller('RKHelperModule:Info:edit')) }}
+        </fieldset>
+    </div>
+    #}
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+        ( function($) {
+            $(document).ready(function() {
+                rKHelperModule.finder.onLoad();
+            });
+        })(jQuery);
+    /* ]]> */
+    </script>
+{% endblock %}

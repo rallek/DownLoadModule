@@ -1,0 +1,77 @@
+services:
+    # Event subscribers and listeners
+    rk_helper_module.entity_lifecycle_listener:
+        class: RK\HelperModule\Listener\EntityLifecycleListener
+        arguments:
+            - "@service_container"
+            - "@event_dispatcher"
+            - "@logger"
+            - "@translator.default"
+        tags:
+            - { name: doctrine.event_subscriber }
+    
+    rk_helper_module.kernel_listener:
+        class: RK\HelperModule\Listener\KernelListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.installer_listener:
+        class: RK\HelperModule\Listener\InstallerListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.moduledispatch_listener:
+        class: RK\HelperModule\Listener\ModuleDispatchListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.mailer_listener:
+        class: RK\HelperModule\Listener\MailerListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.theme_listener:
+        class: RK\HelperModule\Listener\ThemeListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.userlogin_listener:
+        class: RK\HelperModule\Listener\UserLoginListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.userlogout_listener:
+        class: RK\HelperModule\Listener\UserLogoutListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.user_listener:
+        class: RK\HelperModule\Listener\UserListener
+        arguments:
+            - "@translator.default"
+            - "@rk_helper_module.entity_factory"
+            - "@zikula_users_module.current_user"
+            - "@logger"
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.userregistration_listener:
+        class: RK\HelperModule\Listener\UserRegistrationListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.users_listener:
+        class: RK\HelperModule\Listener\UsersListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.group_listener:
+        class: RK\HelperModule\Listener\GroupListener
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    rk_helper_module.thirdparty_listener:
+        class: RK\HelperModule\Listener\ThirdPartyListener
+        tags:
+            - { name: kernel.event_subscriber }
+    

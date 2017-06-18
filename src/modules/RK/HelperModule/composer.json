@@ -1,0 +1,47 @@
+{
+    "name": "rk/helper-module",
+    "version": "1.0.1",
+    "description": "here you can find the helpers for this site e.g. carousel, linker, simple info pages or images",
+    "type": "zikula-module",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "Ralf Koester",
+            "email": "ralf@familie-koester.de",
+            "homepage": "http://k62.de",
+            "role": "owner"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "RK\\HelperModule\\": "" }
+    },
+    "require": {
+        "php": ">=5.4.1"
+    },
+    "suggest": {
+    },
+    "extra": {
+        "zikula": {
+            "core-compatibility": ">=1.4.6 <3.0",
+            "class": "RK\\HelperModule\\RKHelperModule",
+            "displayname": "Helper",
+            "url": "helper",
+            "capabilities": {
+                "user": {"route": "rkhelpermodule_linker_index"},
+                "admin": {"route": "rkhelpermodule_linker_adminindex"},
+                "hook_subscriber": {"class": "RK\\HelperModule\\Container\\HookContainer"}
+            },
+            "securityschema": {
+                "RKHelperModule::": "::",
+                "RKHelperModule:ItemListBlock:": "Block title::",
+                "RKHelperModule:Linker:": "Linker ID::",
+                "RKHelperModule:CarouselItem:": "CarouselItem ID::",
+                "RKHelperModule:Carousel:CarouselItem": "Carousel ID:CarouselItem ID:",
+                "RKHelperModule:Carousel:": "Carousel ID::",
+                "RKHelperModule:Image:": "Image ID::",
+                "RKHelperModule:Info:": "Info ID::",
+                "RKHelperModule::Ajax": "::"
+            }
+        }
+    }
+}

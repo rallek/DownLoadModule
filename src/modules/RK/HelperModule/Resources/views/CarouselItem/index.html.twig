@@ -1,0 +1,7 @@
+{# purpose of this template: carousel items index view #}
+{% extends routeArea == 'admin' ? 'RKHelperModule::adminBase.html.twig' : 'RKHelperModule::base.html.twig' %}
+{% block title __('carousel items') %}
+{% block admin_page_icon 'home' %}
+{% block content %}
+    <p>{{ __('Welcome to the carousel item section of the Helper application.') }}</p>
+{% endblock %}

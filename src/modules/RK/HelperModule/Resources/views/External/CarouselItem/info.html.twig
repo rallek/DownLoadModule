@@ -1,0 +1,16 @@
+{# Purpose of this template: Display item information for previewing from other modules #}
+<dl id="carouselItem{{ carouselItem.getKey() }}">
+<dt>{{ carouselItem|rkhelpermodule_formattedTitle|notifyFilters('helper.filter_hooks.carouselitems.filter')|safeHtml }}</dt>
+<dd>{% if carouselItem.itemImage is not empty and carouselItem.itemImageMeta|default %}
+            <a href="{{ carouselItem.itemImageUrl }}" title="{{ carouselItem|rkhelpermodule_formattedTitle|e('html_attr') }}"{% if carouselItem.itemImageMeta.isImage %} class="image-link"{% endif %}>
+{% if carouselItem.itemImageMeta.isImage %}
+    {% set thumbOptions = attribute(thumbRuntimeOptions, 'carouselItemItemImage') %}
+    <img src="{{ carouselItem.itemImage.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ carouselItem|rkhelpermodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
+{% else %}
+    {{ __('Download') }} ({{ carouselItem.itemImageMeta.size|rkhelpermodule_fileSize(carouselItem.itemImage.getPathname(), false, false) }})
+{% endif %}
+</a>
+{% else %}&nbsp;{% endif %}
+</dd>
+{% if carouselItem.itemName is not empty %}<dd>{{ carouselItem.itemName }}</dd>{% endif %}
+</dl>

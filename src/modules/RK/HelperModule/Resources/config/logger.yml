@@ -1,0 +1,6 @@
+services:
+    # Log processor
+    rk_helper_module.log.processor:
+        class: Monolog\Processor\PsrLogMessageProcessor
+        tags:
+            - { name: monolog.processor }

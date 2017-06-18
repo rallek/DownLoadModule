@@ -1,0 +1,32 @@
+{# Purpose of this template: Display search options #}
+<input type="hidden" id="rKHelperModuleActive" name="active[RKHelperModule]" value="1" />
+{% if active_linker is defined %}
+    <div>
+        <input type="checkbox" id="active_rKHelperModuleLinkers" name="rKHelperModuleSearchTypes[]" value="linker"{% if active_linker %} checked="checked"{% endif %} />
+        <label for="active_rKHelperModuleLinkers">{{ __('Linkers', 'rkhelpermodule') }}</label>
+    </div>
+{% endif %}
+{% if active_carouselItem is defined %}
+    <div>
+        <input type="checkbox" id="active_rKHelperModuleCarouselItems" name="rKHelperModuleSearchTypes[]" value="carouselItem"{% if active_carouselItem %} checked="checked"{% endif %} />
+        <label for="active_rKHelperModuleCarouselItems">{{ __('Carousel items', 'rkhelpermodule') }}</label>
+    </div>
+{% endif %}
+{% if active_carousel is defined %}
+    <div>
+        <input type="checkbox" id="active_rKHelperModuleCarousells" name="rKHelperModuleSearchTypes[]" value="carousel"{% if active_carousel %} checked="checked"{% endif %} />
+        <label for="active_rKHelperModuleCarousells">{{ __('Carousells', 'rkhelpermodule') }}</label>
+    </div>
+{% endif %}
+{% if active_image is defined %}
+    <div>
+        <input type="checkbox" id="active_rKHelperModuleImages" name="rKHelperModuleSearchTypes[]" value="image"{% if active_image %} checked="checked"{% endif %} />
+        <label for="active_rKHelperModuleImages">{{ __('Images', 'rkhelpermodule') }}</label>
+    </div>
+{% endif %}
+{% if active_info is defined %}
+    <div>
+        <input type="checkbox" id="active_rKHelperModuleInfos" name="rKHelperModuleSearchTypes[]" value="info"{% if active_info %} checked="checked"{% endif %} />
+        <label for="active_rKHelperModuleInfos">{{ __('Infos', 'rkhelpermodule') }}</label>
+    </div>
+{% endif %}

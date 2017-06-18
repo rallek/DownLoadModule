@@ -1,0 +1,106 @@
+services:
+    # Helper services
+    rk_helper_module.collection_filter_helper:
+        class: RK\HelperModule\Helper\CollectionFilterHelper
+        arguments:
+            - "@request_stack"
+            - "@zikula_users_module.current_user"
+            - "@=service('zikula_extensions_module.api.variable').get('RKHelperModule', 'showOnlyOwnEntries', false)"
+            - "@=service('zikula_extensions_module.api.variable').get('RKHelperModule', 'filterDataByLocale', false)"
+    
+    rk_helper_module.controller_helper:
+        class: RK\HelperModule\Helper\ControllerHelper
+        arguments:
+            - "@translator.default"
+            - "@request_stack"
+            - "@logger"
+            - "@form.factory"
+            - "@zikula_extensions_module.api.variable"
+            - "@rk_helper_module.entity_factory"
+            - "@rk_helper_module.collection_filter_helper"
+            - "@rk_helper_module.model_helper"
+            - "@rk_helper_module.image_helper"
+            - "@rk_helper_module.feature_activation_helper"
+    
+    rk_helper_module.entity_display_helper:
+        class: RK\HelperModule\Helper\EntityDisplayHelper
+        arguments:
+            - "@translator.default"
+            - "@request_stack"
+            - "@rk_helper_module.listentries_helper"
+    
+    rk_helper_module.feature_activation_helper:
+        class: RK\HelperModule\Helper\FeatureActivationHelper
+    
+    rk_helper_module.hook_helper:
+        class: RK\HelperModule\Helper\HookHelper
+        arguments:
+            - "@hook_dispatcher"
+    
+    rk_helper_module.image_helper:
+        class: RK\HelperModule\Helper\ImageHelper
+        arguments:
+            - "@translator.default"
+            - "@session"
+            - "@zikula_extensions_module.api.variable"
+    
+    rk_helper_module.listentries_helper:
+        class: RK\HelperModule\Helper\ListEntriesHelper
+        arguments:
+            - "@translator.default"
+    
+    rk_helper_module.model_helper:
+        class: RK\HelperModule\Helper\ModelHelper
+        arguments:
+            - "@rk_helper_module.entity_factory"
+    
+    rk_helper_module.search_helper:
+        class: RK\HelperModule\Helper\SearchHelper
+        arguments:
+            - "@translator.default"
+            - "@zikula_permissions_module.api.permission"
+            - "@templating.engine.twig"
+            - "@session"
+            - "@request_stack"
+            - "@rk_helper_module.entity_factory"
+            - "@rk_helper_module.controller_helper"
+            - "@rk_helper_module.entity_display_helper"
+        tags:
+            - { name: zikula.searchable_module, bundleName: RKHelperModule }
+    
+    rk_helper_module.translatable_helper:
+        class: RK\HelperModule\Helper\TranslatableHelper
+        arguments:
+            - "@translator.default"
+            - "@request_stack"
+            - "@zikula_extensions_module.api.variable"
+            - "@zikula_settings_module.locale_api"
+            - "@rk_helper_module.entity_factory"
+    
+    rk_helper_module.upload_helper:
+        class: RK\HelperModule\Helper\UploadHelper
+        arguments:
+            - "@translator.default"
+            - "@session"
+            - "@liip_imagine.cache.manager"
+            - "@logger"
+            - "@zikula_users_module.current_user"
+            - "@=service('zikula_extensions_module.api.variable').getAll('RKHelperModule')"
+            - "%datadir%"
+    
+    rk_helper_module.view_helper:
+        class: RK\HelperModule\Helper\ViewHelper
+        arguments:
+            - "@twig"
+            - "@twig.loader"
+            - "@request_stack"
+            - "@zikula_permissions_module.api.permission"
+            - "@zikula_extensions_module.api.variable"
+            - "@zikula_core.common.theme.pagevars"
+            - "@rk_helper_module.controller_helper"
+    
+    rk_helper_module.workflow_helper:
+        class: RK\HelperModule\Helper\WorkflowHelper
+        arguments:
+            - "@translator.default"
+            - "@rk_helper_module.listentries_helper"

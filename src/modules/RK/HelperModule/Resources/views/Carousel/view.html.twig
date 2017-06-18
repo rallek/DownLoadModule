@@ -1,0 +1,158 @@
+{# purpose of this template: carousells list view #}
+{% extends routeArea == 'admin' ? 'RKHelperModule::adminBase.html.twig' : 'RKHelperModule::base.html.twig' %}
+{% block title own ? __('My carousells') : __('Carousel list') %}
+{% block admin_page_icon 'list-alt' %}
+{% block content %}
+<div class="rkhelpermodule-carousel rkhelpermodule-view">
+
+    {{ block('page_nav_links') }}
+
+    {{ include('@RKHelperModule/Carousel/viewQuickNav.html.twig', { workflowStateFilter: false }) }}{# see template file for available options #}
+
+    {% if routeArea == 'admin' %}
+    <form action="{{ path('rkhelpermodule_carousel_' ~ routeArea ~ 'handleselectedentries') }}" method="post" id="carousellsViewForm" class="form-horizontal" role="form">
+        <div>
+    {% endif %}
+        <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover{% if routeArea == 'admin' %} table-condensed{% endif %}">
+            <colgroup>
+                {% if routeArea == 'admin' %}
+                    <col id="cSelect" />
+                {% endif %}
+                <col id="cItemActions" />
+                <col id="cCarouselName" />
+                <col id="cRemarks" />
+                <col id="cSlidingTime" />
+                <col id="cControls" />
+                <col id="cCarouselGroup" />
+                <col id="cCarouselLocale" />
+            </colgroup>
+            <thead>
+            <tr>
+                {% if routeArea == 'admin' %}
+                    <th id="hSelect" scope="col" class="{% if items|length > 0 %}fixed-column {% endif %}text-center z-w02">
+                        <input type="checkbox" class="rkhelper-mass-toggle" />
+                    </th>
+                {% endif %}
+                <th id="hItemActions" scope="col" class="{% if items|length > 0 %}fixed-column {% endif %}z-order-unsorted z-w02">{{ __('Actions') }}</th>
+                <th id="hCarouselName" scope="col" class="text-left">
+                    <a href="{{ sort.carouselName.url }}" title="{{ __f('Sort by %s', {'%s': 'carousel name'}) }}" class="{{ sort.carouselName.class }}">{{ __('Carousel name') }}</a>
+                </th>
+                <th id="hRemarks" scope="col" class="text-left">
+                    <a href="{{ sort.remarks.url }}" title="{{ __f('Sort by %s', {'%s': 'remarks'}) }}" class="{{ sort.remarks.class }}">{{ __('Remarks') }}</a>
+                </th>
+                <th id="hSlidingTime" scope="col" class="text-right">
+                    <a href="{{ sort.slidingTime.url }}" title="{{ __f('Sort by %s', {'%s': 'sliding time'}) }}" class="{{ sort.slidingTime.class }}">{{ __('Sliding time') }}</a>
+                </th>
+                <th id="hControls" scope="col" class="text-center">
+                    <a href="{{ sort.controls.url }}" title="{{ __f('Sort by %s', {'%s': 'controls'}) }}" class="{{ sort.controls.class }}">{{ __('Controls') }}</a>
+                </th>
+                <th id="hCarouselGroup" scope="col" class="text-left">
+                    <a href="{{ sort.carouselGroup.url }}" title="{{ __f('Sort by %s', {'%s': 'carousel group'}) }}" class="{{ sort.carouselGroup.class }}">{{ __('Carousel group') }}</a>
+                </th>
+                <th id="hCarouselLocale" scope="col" class="text-left">
+                    <a href="{{ sort.carouselLocale.url }}" title="{{ __f('Sort by %s', {'%s': 'carousel locale'}) }}" class="{{ sort.carouselLocale.class }}">{{ __('Carousel locale') }}</a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+        
+        {% for carousel in items %}
+            <tr>
+                {% if routeArea == 'admin' %}
+                    <td headers="hSelect" class="fixed-column text-center z-w02">
+                        <input type="checkbox" name="items[]" value="{{ carousel.getKey() }}" class="rkhelper-toggle-checkbox" />
+                    </td>
+                {% endif %}
+                <td id="itemActions{{ carousel.getKey() }}" headers="hItemActions" class="fixed-column actions nowrap z-w02">
+                    {% set itemActions = knp_menu_get('RKHelperModule:ItemActionsMenu:menu', [], { entity: carousel, area: routeArea, context: 'view' }) %}
+                    <div class="dropdown">
+                        <a id="itemActions{{ carousel.getKey() }}DropDownToggle" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> <span class="caret"></span></a>
+                        {{ knp_menu_render(itemActions, { template: 'ZikulaMenuModule:Override:actions.html.twig' }) }}
+                    </div>
+                </td>
+                <td headers="hCarouselName" class="text-left">
+                    {{ carousel.carouselName }}
+                </td>
+                <td headers="hRemarks" class="text-left">
+                    {{ carousel.remarks }}
+                </td>
+                <td headers="hSlidingTime" class="text-right">
+                    {{ carousel.slidingTime }}
+                </td>
+                <td headers="hControls" class="text-center">
+                    {% if carousel.controls %}
+                        <i class="fa fa-check" title="{{ __('Yes') }}"></i>
+                    {% else %}
+                        <i class="fa fa-times" title="{{ __('No') }}"></i>
+                    {% endif %}
+                </td>
+                <td headers="hCarouselGroup" class="text-left">
+                    {{ carousel.carouselGroup }}
+                </td>
+                <td headers="hCarouselLocale" class="text-left">
+                    {{ carousel.carouselLocale|languageName }}
+                </td>
+            </tr>
+        {% else %}
+            <tr class="z-{{ routeArea == 'admin' ? 'admin' : 'data' }}tableempty">
+                <td class="text-left" colspan="{% if routeArea == 'admin' %}8{% else %}7{% endif %}">
+            {{ __('No carousells found.') }}
+              </td>
+            </tr>
+        {% endfor %}
+        
+            </tbody>
+        </table>
+        </div>
+        
+        {% if all != 1 and pager|default %}
+            {{ pager({ rowcount: pager.amountOfItems, limit: pager.itemsPerPage, display: 'page', route: 'rkhelpermodule_carousel_' ~ routeArea ~ 'view'}) }}
+        {% endif %}
+    {% if routeArea == 'admin' %}
+            <fieldset>
+                <label for="rKHelperModuleAction" class="col-sm-3 control-label">{{ __('With selected carousells') }}</label>
+                <div class="col-sm-6">
+                    <select id="rKHelperModuleAction" name="action" class="form-control input-sm">
+                        <option value="">{{ __('Choose action') }}</option>
+                        <option value="delete" title="{{ __('Delete content permanently.') }}">{{ __('Delete') }}</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <input type="submit" value="{{ __('Submit') }}" class="btn btn-default btn-sm" />
+                </div>
+            </fieldset>
+        </div>
+    </form>
+    {% endif %}
+
+    {{ block('display_hooks') }}
+</div>
+{% endblock %}
+{% block page_nav_links %}
+    <p>
+        {% if canBeCreated %}
+            {% if hasPermission('RKHelperModule:Carousel:', '::', 'ACCESS_EDIT') %}
+                {% set createTitle = __('Create carousel') %}
+                <a href="{{ path('rkhelpermodule_carousel_' ~ routeArea ~ 'edit') }}" title="{{ createTitle|e('html_attr') }}" class="fa fa-plus">{{ createTitle }}</a>
+            {% endif %}
+        {% endif %}
+        {% if all == 1 %}
+            {% set linkTitle = __('Back to paginated view') %}
+            <a href="{{ path('rkhelpermodule_carousel_' ~ routeArea ~ 'view') }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
+        {% else %}
+            {% set linkTitle = __('Show all entries') %}
+            <a href="{{ path('rkhelpermodule_carousel_' ~ routeArea ~ 'view', { all: 1 }) }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
+        {% endif %}
+    </p>
+{% endblock %}
+{% block display_hooks %}
+    
+    {# here you can activate calling display hooks for the view page if you need it #}
+    {# % if routeArea != 'admin' %}
+        {% set hooks = notifyDisplayHooks(eventName='rkhelpermodule.ui_hooks.carousells.display_view', urlObject=currentUrlObject) %}
+        {% for providerArea, hook in hooks %}
+            {{ hook }}
+        {% endfor %}
+    {% endif % #}
+{% endblock %}

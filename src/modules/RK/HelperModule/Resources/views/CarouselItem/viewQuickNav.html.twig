@@ -1,0 +1,68 @@
+{# purpose of this template: carousel items view filter form #}
+{% if hasPermission('RKHelperModule:CarouselItem:', '::', 'ACCESS_EDIT') %}
+    {% form_theme quickNavForm with [
+        'bootstrap_3_layout.html.twig'
+    ] %}
+    {{ form_start(quickNavForm, {attr: {id: 'rKHelperModuleCarouselItemQuickNavForm', class: 'rkhelpermodule-quicknav navbar-form', role: 'navigation'}}) }}
+    {{ form_errors(quickNavForm) }}
+    <a href="#collapseCarouselItemQuickNav" role="button" data-toggle="collapse" class="btn btn-default" aria-expanded="false" aria-controls="collapseCarouselItemQuickNav">
+        <i class="fa fa-filter" aria-hidden="true"></i> {{ __('Filter') }}
+    </a>
+    <div id="collapseCarouselItemQuickNav" class="collapse">
+        <fieldset>
+            <h3>{{ __('Quick navigation') }}</h3>
+            {% if carouselFilter is defined and carouselFilter != true %}
+                <div class="hidden">
+            {% endif %}
+                {{ form_row(quickNavForm.carousel) }}
+            {% if carouselFilter is defined and carouselFilter != true %}
+                </div>
+            {% endif %}
+            {% if workflowStateFilter is defined and workflowStateFilter != true %}
+                <div class="hidden">
+            {% endif %}
+                {{ form_row(quickNavForm.workflowState) }}
+            {% if workflowStateFilter is defined and workflowStateFilter != true %}
+                </div>
+            {% endif %}
+            {% if itemLocaleFilter is defined and itemLocaleFilter != true %}
+                <div class="hidden">
+            {% endif %}
+                {{ form_row(quickNavForm.itemLocale) }}
+            {% if itemLocaleFilter is defined and itemLocaleFilter != true %}
+                </div>
+            {% endif %}
+            {% if searchFilter is defined and searchFilter != true %}
+                <div class="hidden">
+            {% endif %}
+                {{ form_row(quickNavForm.q) }}
+            {% if searchFilter is defined and searchFilter != true %}
+                </div>
+            {% endif %}
+            {% if sorting is defined and sorting != true %}
+                <div class="hidden">
+            {% endif %}
+                {{ form_row(quickNavForm.sort) }}
+                {{ form_row(quickNavForm.sortdir) }}
+            {% if sorting is defined and sorting != true %}
+                </div>
+            {% endif %}
+            {% if pageSizeSelector is defined and pageSizeSelector != true %}
+                <div class="hidden">
+            {% endif %}
+                {{ form_row(quickNavForm.num) }}
+            {% if pageSizeSelector is defined and pageSizeSelector != true %}
+                </div>
+            {% endif %}
+            {% if linkExternalFilter is defined and linkExternalFilter != true %}
+                <div class="hidden">
+            {% endif %}
+                {{ form_row(quickNavForm.linkExternal) }}
+            {% if linkExternalFilter is defined and linkExternalFilter != true %}
+                </div>
+            {% endif %}
+            {{ form_widget(quickNavForm.updateview) }}
+        </fieldset>
+    </div>
+    {{ form_end(quickNavForm) }}
+{% endif %}
