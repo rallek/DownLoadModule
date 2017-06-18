@@ -16,7 +16,7 @@ $generator="C:\Users\Ralf\MostGenerator\ModuleStudio-generator.jar"
 
 # Welche Module sollen in einem Rutsch generiert werden? 
 # Bitte Modulnamen in Hochkommata und mit Komma getrennt ins Array schreiben
-$module=@("Helper")
+$module=@("Download")
 
 # Damit der Generator die Module findet, müssen wir ihm noch sagen, wo die Module liegen. 
 # Auch hier das \ am Ende nicht vergessen
