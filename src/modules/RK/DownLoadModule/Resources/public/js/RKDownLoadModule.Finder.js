@@ -166,7 +166,7 @@ rKDownLoadModule.itemSelector.onLoad = function (baseId, selectedId)
 
 rKDownLoadModule.itemSelector.onParamChanged = function ()
 {
-    jQuery('#ajax_indicator').removeClass('hidden');
+    jQuery('#ajaxIndicator').removeClass('hidden');
 
     rKDownLoadModule.itemSelector.getItemList();
 };
@@ -189,16 +189,12 @@ rKDownLoadModule.itemSelector.getItemList = function ()
         params[catidsMain] = jQuery('#' + baseId + '_catidsMain').val();
     }
 
-    jQuery.ajax({
-        type: 'POST',
-        url: Routing.generate('rkdownloadmodule_ajax_getitemlistfinder'),
-        data: params
-    }).done(function(res) {
-        // get data returned by the ajax response
+    jQuery.getJSON(Routing.generate('rkdownloadmodule_ajax_getitemlistfinder'), params, function( data ) {
         var baseId;
+
         baseId = rKDownLoadModule.itemSelector.baseId;
-        rKDownLoadModule.itemSelector.items[baseId] = res.data;
-        jQuery('#ajax_indicator').addClass('hidden');
+        rKDownLoadModule.itemSelector.items[baseId] = data;
+        jQuery('#ajaxIndicator').addClass('hidden');
         rKDownLoadModule.itemSelector.updateItemDropdownEntries();
         rKDownLoadModule.itemSelector.updatePreview();
     });

@@ -64,8 +64,14 @@ abstract class AbstractLinkContainer implements LinkContainerInterface
      * @param CurrentUserApi      $currentUserApi   CurrentUserApi service instance
      * @param ControllerHelper    $controllerHelper ControllerHelper service instance
      */
-    public function __construct(TranslatorInterface $translator, RouterInterface $router, PermissionApi $permissionApi, VariableApi $variableApi, CurrentUserApi $currentUserApi, ControllerHelper $controllerHelper)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        RouterInterface $router,
+        PermissionApi $permissionApi,
+        VariableApi $variableApi,
+        CurrentUserApi $currentUserApi,
+        ControllerHelper $controllerHelper
+    ) {
         $this->setTranslator($translator);
         $this->router = $router;
         $this->permissionApi = $permissionApi;
@@ -111,7 +117,7 @@ abstract class AbstractLinkContainer implements LinkContainerInterface
                 if ($this->permissionApi->hasPermission($this->getBundleName() . ':' . ucfirst($objectType) . ':', '::', ACCESS_READ)) {
                     $links[] = [
                         'url' => $this->router->generate('rkdownloadmodule_' . strtolower($objectType) . '_view', ['own' => 1]),
-                        'text' => $this->__('My files'),
+                        'text' => $this->__('My files', 'rkdownloadmodule'),
                         'icon' => 'list-alt'
                     ];
                 }
@@ -120,7 +126,7 @@ abstract class AbstractLinkContainer implements LinkContainerInterface
             if ($this->permissionApi->hasPermission($this->getBundleName() . '::', '::', ACCESS_ADMIN)) {
                 $links[] = [
                     'url' => $this->router->generate('rkdownloadmodule_file_adminindex'),
-                    'text' => $this->__('Down load Backend'),
+                    'text' => $this->__('Down load Backend', 'rkdownloadmodule'),
                     'icon' => 'wrench'
                 ];
             }
@@ -134,8 +140,8 @@ abstract class AbstractLinkContainer implements LinkContainerInterface
             if ($this->permissionApi->hasPermission($this->getBundleName() . '::', '::', ACCESS_READ)) {
                 $links[] = [
                     'url' => $this->router->generate('rkdownloadmodule_file_index'),
-                    'text' => $this->__('Frontend'),
-                    'title' => $this->__('Switch to user area.'),
+                    'text' => $this->__('Frontend', 'rkdownloadmodule'),
+                    'title' => $this->__('Switch to user area.', 'rkdownloadmodule'),
                     'icon' => 'home'
                 ];
             }
@@ -143,8 +149,8 @@ abstract class AbstractLinkContainer implements LinkContainerInterface
             if ($this->permissionApi->hasPermission($this->getBundleName() . '::', '::', ACCESS_ADMIN)) {
                 $links[] = [
                     'url' => $this->router->generate('rkdownloadmodule_file_adminindex'),
-                    'text' => $this->__('Backend'),
-                    'title' => $this->__('Switch to administration area.'),
+                    'text' => $this->__('Backend', 'rkdownloadmodule'),
+                    'title' => $this->__('Switch to administration area.', 'rkdownloadmodule'),
                     'icon' => 'wrench'
                 ];
             }
@@ -154,15 +160,15 @@ abstract class AbstractLinkContainer implements LinkContainerInterface
             && $this->permissionApi->hasPermission($this->getBundleName() . ':File:', '::', $permLevel)) {
             $links[] = [
                 'url' => $this->router->generate('rkdownloadmodule_file_' . $routeArea . 'view'),
-                'text' => $this->__('Files'),
-                'title' => $this->__('File list')
+                'text' => $this->__('Files', 'rkdownloadmodule'),
+                'title' => $this->__('File list', 'rkdownloadmodule')
             ];
         }
         if ($routeArea == 'admin' && $this->permissionApi->hasPermission($this->getBundleName() . '::', '::', ACCESS_ADMIN)) {
             $links[] = [
                 'url' => $this->router->generate('rkdownloadmodule_config_config'),
-                'text' => $this->__('Configuration'),
-                'title' => $this->__('Manage settings for this application'),
+                'text' => $this->__('Configuration', 'rkdownloadmodule'),
+                'title' => $this->__('Manage settings for this application', 'rkdownloadmodule'),
                 'icon' => 'wrench'
             ];
         }

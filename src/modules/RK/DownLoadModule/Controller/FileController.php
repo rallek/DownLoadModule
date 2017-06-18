@@ -28,7 +28,7 @@ use RK\DownLoadModule\Entity\FileEntity;
 class FileController extends AbstractFileController
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/admin/files",
      *        methods = {"GET"}
@@ -47,7 +47,7 @@ class FileController extends AbstractFileController
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/files",
      *        methods = {"GET"}
@@ -64,7 +64,7 @@ class FileController extends AbstractFileController
         return parent::indexAction($request);
     }
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/admin/files/view/{sort}/{sortdir}/{pos}/{num}.{_format}",
      *        requirements = {"sortdir" = "asc|desc|ASC|DESC", "pos" = "\d+", "num" = "\d+", "_format" = "html"},
@@ -89,7 +89,7 @@ class FileController extends AbstractFileController
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/files/view/{sort}/{sortdir}/{pos}/{num}.{_format}",
      *        requirements = {"sortdir" = "asc|desc|ASC|DESC", "pos" = "\d+", "num" = "\d+", "_format" = "html"},
@@ -112,7 +112,7 @@ class FileController extends AbstractFileController
         return parent::viewAction($request, $sort, $sortdir, $pos, $num);
     }
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/admin/file/{id}.{_format}",
      *        requirements = {"id" = "\d+", "_format" = "html"},
@@ -135,7 +135,7 @@ class FileController extends AbstractFileController
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/file/{id}.{_format}",
      *        requirements = {"id" = "\d+", "_format" = "html"},
@@ -156,7 +156,7 @@ class FileController extends AbstractFileController
         return parent::displayAction($request, $file);
     }
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/admin/file/edit/{id}.{_format}",
      *        requirements = {"id" = "\d+", "_format" = "html"},
@@ -179,7 +179,7 @@ class FileController extends AbstractFileController
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/file/edit/{id}.{_format}",
      *        requirements = {"id" = "\d+", "_format" = "html"},
@@ -200,7 +200,7 @@ class FileController extends AbstractFileController
         return parent::editAction($request);
     }
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/admin/file/delete/{id}.{_format}",
      *        requirements = {"id" = "\d+", "_format" = "html"},
@@ -224,7 +224,7 @@ class FileController extends AbstractFileController
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @Route("/file/delete/{id}.{_format}",
      *        requirements = {"id" = "\d+", "_format" = "html"},

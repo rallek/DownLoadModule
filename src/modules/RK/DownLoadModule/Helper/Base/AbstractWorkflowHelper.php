@@ -47,8 +47,10 @@ abstract class AbstractWorkflowHelper
      *
      * @return void
      */
-    public function __construct(TranslatorInterface $translator, ListEntriesHelper $listEntriesHelper)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        ListEntriesHelper $listEntriesHelper
+    ) {
         $this->name = 'RKDownLoadModule';
         $this->translator = $translator;
         $this->listEntriesHelper = $listEntriesHelper;
@@ -133,24 +135,6 @@ abstract class AbstractWorkflowHelper
     }
     
     /**
-     * This method returns the workflow schema for a certain object type.
-     *
-     * @param string $objectType Name of treated object type
-     *
-     * @return array|null The resulting workflow schema
-     */
-    public function getWorkflowSchema($objectType = '')
-    {
-        $schema = null;
-        $schemaName = $this->getWorkflowName($objectType);
-        if ($schemaName != '') {
-            $schema = Zikula_Workflow_Util::loadSchema($schemaName, $this->name);
-        }
-    
-        return $schema;
-    }
-    
-    /**
      * Retrieve the available actions for a given entity object.
      *
      * @param EntityAccess $entity The given entity instance
@@ -176,7 +160,7 @@ abstract class AbstractWorkflowHelper
     
         $actions = [];
         foreach ($wfActions as $actionId => $action) {
-            $nextState = (isset($action['nextState']) ? $action['nextState'] : '');
+            $nextState = isset($action['nextState']) ? $action['nextState'] : '';
             if (!in_array($nextState, ['', 'deleted']) && !in_array($nextState, $allowedStates)) {
                 continue;
             }
@@ -258,6 +242,7 @@ abstract class AbstractWorkflowHelper
     
         return (false !== $result);
     }
+    
     /**
      * Performs a conversion of the workflow object back to an array.
      *
@@ -296,37 +281,4 @@ abstract class AbstractWorkflowHelper
         return true;
     }
     
-    /**
-     * Collects amount of moderation items foreach object type.
-     *
-     * @return array List of collected amounts
-     */
-    public function collectAmountOfModerationItems()
-    {
-        $amounts = [];
-    
-        // nothing required here as no entities use enhanced workflows including approval actions
-    
-        return $amounts;
-    }
-    
-    /**
-     * Retrieves the amount of moderation items for a given object type
-     * and a certain workflow state.
-     *
-     * @param string $objectType Name of treated object type
-     * @param string $state The given state value
-     *
-     * @return integer The affected amount of objects
-     */
-    public function getAmountOfModerationItems($objectType, $state)
-    {
-        $repository = $this->entityFactory->getRepository($objectType);
-    
-        $where = 'tbl.workflowState:eq:' . $state;
-        $parameters = ['workflowState' => $state];
-        $useJoins = false;
-    
-        return $repository->selectCount($where, $useJoins, $parameters);
-    }
 }

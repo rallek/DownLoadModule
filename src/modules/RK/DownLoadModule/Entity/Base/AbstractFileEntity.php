@@ -17,12 +17,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use Zikula\Core\Doctrine\EntityAccess;
 use RK\DownLoadModule\Traits\EntityWorkflowTrait;
 use RK\DownLoadModule\Traits\StandardFieldsTrait;
-
-use RuntimeException;
-use ServiceUtil;
-use Zikula\Core\Doctrine\EntityAccess;
+use RK\DownLoadModule\Validator\Constraints as DownLoadAssert;
 
 /**
  * Entity class that defines the entity structure and behaviours.
@@ -53,12 +51,6 @@ abstract class AbstractFileEntity extends EntityAccess
     protected $_objectType = 'file';
     
     /**
-     * @Assert\Type(type="bool")
-     * @var boolean Option to bypass validation if needed
-     */
-    protected $_bypassValidation = false;
-    
-    /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", unique=true)
@@ -73,7 +65,7 @@ abstract class AbstractFileEntity extends EntityAccess
      * the current workflow state
      * @ORM\Column(length=20)
      * @Assert\NotBlank()
-     * @Assert\Choice(callback="getWorkflowStateAllowedValues", multiple=false)
+     * @DownLoadAssert\ListEntry(entityName="file", propertyName="workflowState", multiple=false)
      * @var string $workflowState
      */
     protected $workflowState = 'initial';
@@ -100,7 +92,7 @@ abstract class AbstractFileEntity extends EntityAccess
      * @Assert\NotBlank()
      * @Assert\Length(min="0", max="255")
      * @Assert\File(
-        mimeTypes = {"application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation"}
+     *    mimeTypes = {"application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation"}
      * )
      * @var string $myFile
      */
@@ -155,13 +147,9 @@ abstract class AbstractFileEntity extends EntityAccess
      * Will not be called by Doctrine and can therefore be used
      * for own implementation purposes. It is also possible to add
      * arbitrary arguments as with every other class method.
-     *
-     * @param TODO
      */
     public function __construct()
     {
-        $this->startDate = \DateTime::createFromFormat('Y-m-d', date('Y-m-d'));
-        $this->endDate = \DateTime::createFromFormat('Y-m-d', '2099-12-31');
         $this->initWorkflow();
         $this->categories = new ArrayCollection();
     }
@@ -185,29 +173,9 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function set_objectType($_objectType)
     {
-        $this->_objectType = $_objectType;
-    }
-    
-    /**
-     * Returns the _bypass validation.
-     *
-     * @return boolean
-     */
-    public function get_bypassValidation()
-    {
-        return $this->_bypassValidation;
-    }
-    
-    /**
-     * Sets the _bypass validation.
-     *
-     * @param boolean $_bypassValidation
-     *
-     * @return void
-     */
-    public function set_bypassValidation($_bypassValidation)
-    {
-        $this->_bypassValidation = $_bypassValidation;
+        if ($this->_objectType != $_objectType) {
+            $this->_objectType = $_objectType;
+        }
     }
     
     
@@ -230,7 +198,9 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function setId($id)
     {
-        $this->id = intval($id);
+        if (intval($this->id) !== intval($id)) {
+            $this->id = intval($id);
+        }
     }
     
     /**
@@ -252,7 +222,9 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function setWorkflowState($workflowState)
     {
-        $this->workflowState = isset($workflowState) ? $workflowState : '';
+        if ($this->workflowState !== $workflowState) {
+            $this->workflowState = isset($workflowState) ? $workflowState : '';
+        }
     }
     
     /**
@@ -274,7 +246,9 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function setFileName($fileName)
     {
-        $this->fileName = isset($fileName) ? $fileName : '';
+        if ($this->fileName !== $fileName) {
+            $this->fileName = isset($fileName) ? $fileName : '';
+        }
     }
     
     /**
@@ -296,7 +270,9 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function setMyFile($myFile)
     {
-        $this->myFile = isset($myFile) ? $myFile : '';
+        if ($this->myFile !== $myFile) {
+            $this->myFile = isset($myFile) ? $myFile : '';
+        }
     }
     
     /**
@@ -318,7 +294,9 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function setMyFileUrl($myFileUrl)
     {
-        $this->myFileUrl = isset($myFileUrl) ? $myFileUrl : '';
+        if ($this->myFileUrl !== $myFileUrl) {
+            $this->myFileUrl = isset($myFileUrl) ? $myFileUrl : '';
+        }
     }
     
     /**
@@ -340,7 +318,9 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function setMyFileMeta($myFileMeta = [])
     {
-        $this->myFileMeta = isset($myFileMeta) ? $myFileMeta : '';
+        if ($this->myFileMeta !== $myFileMeta) {
+            $this->myFileMeta = isset($myFileMeta) ? $myFileMeta : '';
+        }
     }
     
     /**
@@ -362,7 +342,9 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function setMyDescription($myDescription)
     {
-        $this->myDescription = $myDescription;
+        if ($this->myDescription !== $myDescription) {
+            $this->myDescription = $myDescription;
+        }
     }
     
     /**
@@ -384,10 +366,12 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function setStartDate($startDate)
     {
-        if (is_object($startDate) && $startDate instanceOf \DateTime) {
-            $this->startDate = $startDate;
-        } else {
-            $this->startDate = new \DateTime($startDate);
+        if ($this->startDate !== $startDate) {
+            if (is_object($startDate) && $startDate instanceOf \DateTime) {
+                $this->startDate = $startDate;
+            } else {
+                $this->startDate = new \DateTime($startDate);
+            }
         }
     }
     
@@ -410,10 +394,12 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function setEndDate($endDate)
     {
-        if (is_object($endDate) && $endDate instanceOf \DateTime) {
-            $this->endDate = $endDate;
-        } else {
-            $this->endDate = new \DateTime($endDate);
+        if ($this->endDate !== $endDate) {
+            if (is_object($endDate) && $endDate instanceOf \DateTime) {
+                $this->endDate = $endDate;
+            } else {
+                $this->endDate = new \DateTime($endDate);
+            }
         }
     }
     
@@ -474,69 +460,6 @@ abstract class AbstractFileEntity extends EntityAccess
     
     
     /**
-     * Returns the formatted title conforming to the display pattern
-     * specified for this entity.
-     *
-     * @return string The display title
-     */
-    public function getTitleFromDisplayPattern()
-    {
-        $listHelper = ServiceUtil::get('rk_download_module.listentries_helper');
-    
-        $formattedTitle = ''
-                . $this->getFileName();
-    
-        return $formattedTitle;
-    }
-    
-    
-    /**
-     * Returns a list of possible choices for the workflowState list field.
-     * This method is used for validation.
-     *
-     * @return array List of allowed choices
-     */
-    public static function getWorkflowStateAllowedValues()
-    {
-        $container = ServiceUtil::get('service_container');
-        $helper = $container->get('rk_download_module.listentries_helper');
-        $listEntries = $helper->getWorkflowStateEntriesForFile();
-    
-        $allowedValues = ['initial'];
-        foreach ($listEntries as $entry) {
-            $allowedValues[] = $entry['value'];
-        }
-    
-        return $allowedValues;
-    }
-    
-    /**
-     * Start validation and raise exception if invalid data is found.
-     *
-     * @return boolean Whether everything is valid or not
-     */
-    public function validate()
-    {
-        if (true === $this->_bypassValidation) {
-            return true;
-        }
-    
-        $validator = ServiceUtil::get('validator');
-        $errors = $validator->validate($this);
-    
-        if (count($errors) > 0) {
-            $flashBag = ServiceUtil::get('session')->getFlashBag();
-            foreach ($errors as $error) {
-                $flashBag->add('error', $error->getMessage());
-            }
-    
-            return false;
-        }
-    
-        return true;
-    }
-    
-    /**
      * Return entity data in JSON format.
      *
      * @return string JSON-encoded data
@@ -553,27 +476,19 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function createUrlArgs()
     {
-        $args = [];
-    
-        $args['id'] = $this['id'];
-    
-        if (property_exists($this, 'slug')) {
-            $args['slug'] = $this['slug'];
-        }
-    
-        return $args;
+        return [
+            'id' => $this->getId()
+        ];
     }
     
     /**
-     * Create concatenated identifier string (for composite keys).
+     * Returns the primary key.
      *
-     * @return String concatenated identifiers
+     * @return integer The identifier
      */
-    public function createCompositeIdentifier()
+    public function getKey()
     {
-        $itemId = $this['id'];
-    
-        return $itemId;
+        return $this->getId();
     }
     
     /**
@@ -616,7 +531,7 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     public function __toString()
     {
-        return 'File ' . $this->createCompositeIdentifier() . ': ' . $this->getTitleFromDisplayPattern();
+        return 'File ' . $this->getKey() . ': ' . $this->getFileName();
     }
     
     /**
@@ -632,13 +547,13 @@ abstract class AbstractFileEntity extends EntityAccess
     public function __clone()
     {
         // if the entity has no identity do nothing, do NOT throw an exception
-        if (!($this->id)) {
+        if (!$this->id) {
             return;
         }
     
         // otherwise proceed
     
-        // unset identifiers
+        // unset identifier
         $this->setId(0);
     
         // reset workflow

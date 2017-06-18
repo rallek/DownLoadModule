@@ -18,20 +18,25 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Zikula\Common\Translator\TranslatorInterface;
+use Zikula\Common\Translator\TranslatorTrait;
 use Zikula\Core\RouteUrl;
 use Zikula\PermissionsModule\Api\PermissionApi;
 use Zikula\SearchModule\Entity\SearchResultEntity;
-use Zikula\SearchModule\SearchableInterface;
-use RK\DownLoadModule\Entity\Factory\DownLoadFactory;
+use Zikula\SearchModule\AbstractSearchable;
+use RK\DownLoadModule\Entity\Factory\EntityFactory;
 use RK\DownLoadModule\Helper\CategoryHelper;
 use RK\DownLoadModule\Helper\ControllerHelper;
+use RK\DownLoadModule\Helper\EntityDisplayHelper;
 use RK\DownLoadModule\Helper\FeatureActivationHelper;
 
 /**
  * Search helper base class.
  */
-abstract class AbstractSearchHelper implements SearchableInterface
+abstract class AbstractSearchHelper extends AbstractSearchable
 {
+    use TranslatorTrait;
+    
     /**
      * @var PermissionApi
      */
@@ -53,7 +58,7 @@ abstract class AbstractSearchHelper implements SearchableInterface
     private $request;
     
     /**
-     * @var DownLoadFactory
+     * @var EntityFactory
      */
     private $entityFactory;
     
@@ -61,6 +66,11 @@ abstract class AbstractSearchHelper implements SearchableInterface
      * @var ControllerHelper
      */
     private $controllerHelper;
+    
+    /**
+     * @var EntityDisplayHelper
+     */
+    protected $entityDisplayHelper;
     
     /**
      * @var FeatureActivationHelper
@@ -75,37 +85,53 @@ abstract class AbstractSearchHelper implements SearchableInterface
     /**
      * SearchHelper constructor.
      *
+     * @param TranslatorInterface $translator          Translator service instance
      * @param PermissionApi    $permissionApi   PermissionApi service instance
-     * @param EngineInterface  $templateEngine  Template engine service instance
-     * @param SessionInterface $session         Session service instance
-     * @param RequestStack     $requestStack    RequestStack service instance
-     * @param DownLoadFactory $entityFactory EntityFactory service instance
-     * @param ControllerHelper $controllerHelper ControllerHelper service instance
+     * @param EngineInterface     $templateEngine      Template engine service instance
+     * @param SessionInterface    $session             Session service instance
+     * @param RequestStack        $requestStack        RequestStack service instance
+     * @param EntityFactory       $entityFactory       EntityFactory service instance
+     * @param ControllerHelper    $controllerHelper    ControllerHelper service instance
+     * @param EntityDisplayHelper $entityDisplayHelper EntityDisplayHelper service instance
      * @param FeatureActivationHelper $featureActivationHelper FeatureActivationHelper service instance
-     * @param CategoryHelper   $categoryHelper CategoryHelper service instance
+     * @param CategoryHelper      $categoryHelper      CategoryHelper service instance
      */
     public function __construct(
+        TranslatorInterface $translator,
         PermissionApi $permissionApi,
         EngineInterface $templateEngine,
         SessionInterface $session,
         RequestStack $requestStack,
-        DownLoadFactory $entityFactory,
+        EntityFactory $entityFactory,
         ControllerHelper $controllerHelper,
+        EntityDisplayHelper $entityDisplayHelper,
         FeatureActivationHelper $featureActivationHelper,
         CategoryHelper $categoryHelper
     ) {
+        $this->setTranslator($translator);
         $this->permissionApi = $permissionApi;
         $this->templateEngine = $templateEngine;
         $this->session = $session;
         $this->request = $requestStack->getCurrentRequest();
         $this->entityFactory = $entityFactory;
         $this->controllerHelper = $controllerHelper;
+        $this->entityDisplayHelper = $entityDisplayHelper;
         $this->featureActivationHelper = $featureActivationHelper;
         $this->categoryHelper = $categoryHelper;
     }
     
     /**
-     * {@inheritdoc}
+     * Sets the translator.
+     *
+     * @param TranslatorInterface $translator Translator service instance
+     */
+    public function setTranslator(/*TranslatorInterface */$translator)
+    {
+        $this->translator = $translator;
+    }
+    
+    /**
+     * @inheritDoc
      */
     public function getOptions($active, $modVars = null)
     {
@@ -115,16 +141,17 @@ abstract class AbstractSearchHelper implements SearchableInterface
     
         $templateParameters = [];
     
-        $searchTypes = ['file'];
-        foreach ($searchTypes as $searchType) {
-            $templateParameters['active_' . $searchType] = !isset($args['rKDownLoadModuleSearchTypes']) || in_array($searchType, $args['rKDownLoadModuleSearchTypes']);
+        $searchTypes = $this->getSearchTypes();
+    
+        foreach ($searchTypes as $searchType => $typeInfo) {
+            $templateParameters['active_' . $typeInfo['value']] = true;
         }
     
         return $this->templateEngine->renderResponse('@RKDownLoadModule/Search/options.html.twig', $templateParameters)->getContent();
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getResults(array $words, $searchType = 'AND', $modVars = null)
     {
@@ -145,13 +172,7 @@ abstract class AbstractSearchHelper implements SearchableInterface
             }
         }
     
-        $allowedTypes = $this->controllerHelper->getObjectTypes('helper', ['helper' => 'search', 'action' => 'getResults']);
-    
         foreach ($searchTypes as $objectType) {
-            if (!in_array($objectType, $allowedTypes)) {
-                continue;
-            }
-    
             $whereArray = [];
             $languageField = null;
             switch ($objectType) {
@@ -185,7 +206,7 @@ abstract class AbstractSearchHelper implements SearchableInterface
                 continue;
             }
     
-            $descriptionField = $repository->getDescriptionFieldName();
+            $descriptionFieldName = $this->entityDisplayHelper->getDescriptionFieldName($objectType);
     
             $entitiesWithDisplayAction = ['file'];
     
@@ -193,9 +214,8 @@ abstract class AbstractSearchHelper implements SearchableInterface
                 $urlArgs = $entity->createUrlArgs();
                 $hasDisplayAction = in_array($objectType, $entitiesWithDisplayAction);
     
-                $instanceId = $entity->createCompositeIdentifier();
                 // perform permission check
-                if (!$this->permissionApi->hasPermission('RKDownLoadModule:' . ucfirst($objectType) . ':', $instanceId . '::', ACCESS_OVERVIEW)) {
+                if (!$this->permissionApi->hasPermission('RKDownLoadModule:' . ucfirst($objectType) . ':', $entity->getKey() . '::', ACCESS_OVERVIEW)) {
                     continue;
                 }
     
@@ -207,15 +227,16 @@ abstract class AbstractSearchHelper implements SearchableInterface
                     }
                 }
     
-                $description = !empty($descriptionField) ? $entity[$descriptionField] : '';
+                $description = !empty($descriptionFieldName) ? $entity[$descriptionFieldName] : '';
                 $created = isset($entity['createdDate']) ? $entity['createdDate'] : null;
     
                 $urlArgs['_locale'] = (null !== $languageField && !empty($entity[$languageField])) ? $entity[$languageField] : $this->request->getLocale();
     
+                $formattedTitle = $this->entityDisplayHelper->getFormattedTitle($entity);
                 $displayUrl = $hasDisplayAction ? new RouteUrl('rkdownloadmodule_' . $objectType . '_display', $urlArgs) : '';
     
                 $result = new SearchResultEntity();
-                $result->setTitle($entity->getTitleFromDisplayPattern())
+                $result->setTitle($formattedTitle)
                     ->setText($description)
                     ->setModule('RKDownLoadModule')
                     ->setCreated($created)
@@ -229,7 +250,33 @@ abstract class AbstractSearchHelper implements SearchableInterface
     }
     
     /**
-     * {@inheritdoc}
+     * Returns list of supported search types.
+     *
+     * @return array
+     */
+    protected function getSearchTypes()
+    {
+        $searchTypes = [
+            'rKDownLoadModuleFiles' => [
+                'value' => 'file',
+                'label' => $this->__('Files')
+            ]
+        ];
+    
+        $allowedTypes = $this->controllerHelper->getObjectTypes('helper', ['helper' => 'search', 'action' => 'getSearchTypes']);
+        $allowedSearchTypes = [];
+        foreach ($searchTypes as $searchType => $typeInfo) {
+            if (!in_array($typeInfo['value'], $allowedTypes)) {
+                continue;
+            }
+            $allowedSearchTypes[$searchType] = $typeInfo;
+        }
+    
+        return $allowedSearchTypes;
+    }
+    
+    /**
+     * @inheritDoc
      */
     public function getErrors()
     {

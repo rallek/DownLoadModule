@@ -36,7 +36,7 @@
                         <input type="checkbox" class="rkdownload-mass-toggle" />
                     </th>
                 {% endif %}
-                <th id="hItemActions" scope="col" class="{% if items|length > 0 %}fixed-column {% endif %}z-order-unsorted">{{ __('Actions') }}</th>
+                <th id="hItemActions" scope="col" class="{% if items|length > 0 %}fixed-column {% endif %}z-order-unsorted z-w02">{{ __('Actions') }}</th>
                 {% if routeArea == 'admin' %}
                 <th id="hWorkflowState" scope="col" class="text-left">
                     <a href="{{ sort.workflowState.url }}" title="{{ __f('Sort by %s', {'%s': 'state'}) }}" class="{{ sort.workflowState.class }}">{{ __('State') }}</a>
@@ -64,14 +64,14 @@
         {% for file in items %}
             <tr>
                 {% if routeArea == 'admin' %}
-                    <td headers="hSelect" class="fixed-column text-center">
-                        <input type="checkbox" name="items[]" value="{{ file.id }}" class="rkdownload-toggle-checkbox" />
+                    <td headers="hSelect" class="fixed-column text-center z-w02">
+                        <input type="checkbox" name="items[]" value="{{ file.getKey() }}" class="rkdownload-toggle-checkbox" />
                     </td>
                 {% endif %}
-                <td id="itemActions{{ file.id }}" headers="hItemActions" class="fixed-column actions nowrap z-w02">
+                <td id="itemActions{{ file.getKey() }}" headers="hItemActions" class="fixed-column actions nowrap z-w02">
                     {% set itemActions = knp_menu_get('RKDownLoadModule:ItemActionsMenu:menu', [], { entity: file, area: routeArea, context: 'view' }) %}
                     <div class="dropdown">
-                        <a id="itemActions{{ file.id }}DropDownToggle" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> <span class="caret"></span></a>
+                        <a id="itemActions{{ file.getKey() }}DropDownToggle" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> <span class="caret"></span></a>
                         {{ knp_menu_render(itemActions, { template: 'ZikulaMenuModule:Override:actions.html.twig' }) }}
                     </div>
                 </td>
@@ -83,10 +83,10 @@
                 </td>
                 <td headers="hMyFile" class="text-left">
                     {% if file.myFileMeta|default %}
-                    <a href="{{ file.myFileUrl }}" title="{{ file.getTitleFromDisplayPattern()|e('html_attr') }}"{% if file.myFileMeta.isImage %} class="image-link"{% endif %}>
+                    <a href="{{ file.myFileUrl }}" title="{{ file|rkdownloadmodule_formattedTitle|e('html_attr') }}"{% if file.myFileMeta.isImage %} class="image-link"{% endif %}>
                     {% if file.myFileMeta.isImage %}
                         {% set thumbOptions = attribute(thumbRuntimeOptions, 'fileMyFile') %}
-                        <img src="{{ file.myFile.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ file.getTitleFromDisplayPattern()|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
+                        <img src="{{ file.myFile.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ file|rkdownloadmodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
                     {% else %}
                         {{ __('Download') }} ({{ file.myFileMeta.size|rkdownloadmodule_fileSize(file.myFile.getPathname(), false, false) }})
                     {% endif %}
@@ -94,7 +94,7 @@
                     {% endif %}
                 </td>
                 <td headers="hMyDescription" class="text-left">
-                    {{ file.myDescription|safeHtml }}
+                    {{ file.myDescription|safeHtml|truncate(50) }}
                 </td>
                 <td headers="hStartDate" class="text-left">
                     {{ file.startDate|localizeddate('medium', 'none') }}
@@ -115,7 +115,7 @@
         </table>
         </div>
         
-        {% if showAllEntries != 1 and pager|default %}
+        {% if all != 1 and pager|default %}
             {{ pager({ rowcount: pager.amountOfItems, limit: pager.itemsPerPage, display: 'page', route: 'rkdownloadmodule_file_' ~ routeArea ~ 'view'}) }}
         {% endif %}
     {% if routeArea == 'admin' %}
@@ -147,7 +147,7 @@
                 <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'edit') }}" title="{{ createTitle|e('html_attr') }}" class="fa fa-plus">{{ createTitle }}</a>
             {% endif %}
         {% endif %}
-        {% if showAllEntries == 1 %}
+        {% if all == 1 %}
             {% set linkTitle = __('Back to paginated view') %}
             <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view') }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
         {% else %}

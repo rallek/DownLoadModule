@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Zikula\Common\Translator\TranslatorInterface;
 use Zikula\Common\Translator\TranslatorTrait;
-use RK\DownLoadModule\Entity\Factory\DownLoadFactory;
+use RK\DownLoadModule\Entity\Factory\EntityFactory;
 use RK\DownLoadModule\Helper\FeatureActivationHelper;
 use RK\DownLoadModule\Helper\ListEntriesHelper;
 
@@ -33,7 +33,7 @@ abstract class AbstractFileType extends AbstractType
     use TranslatorTrait;
 
     /**
-     * @var DownLoadFactory
+     * @var EntityFactory
      */
     protected $entityFactory;
 
@@ -51,12 +51,16 @@ abstract class AbstractFileType extends AbstractType
      * FileType constructor.
      *
      * @param TranslatorInterface $translator    Translator service instance
-     * @param DownLoadFactory        $entityFactory Entity factory service instance
+     * @param EntityFactory       $entityFactory EntityFactory service instance
      * @param ListEntriesHelper   $listHelper    ListEntriesHelper service instance
      * @param FeatureActivationHelper $featureActivationHelper FeatureActivationHelper service instance
      */
-    public function __construct(TranslatorInterface $translator, DownLoadFactory $entityFactory, ListEntriesHelper $listHelper, FeatureActivationHelper $featureActivationHelper)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        EntityFactory $entityFactory,
+        ListEntriesHelper $listHelper,
+        FeatureActivationHelper $featureActivationHelper
+    ) {
         $this->setTranslator($translator);
         $this->entityFactory = $entityFactory;
         $this->listHelper = $listHelper;
@@ -74,7 +78,7 @@ abstract class AbstractFileType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -121,8 +125,7 @@ abstract class AbstractFileType extends AbstractType
                 'class' => '',
                 'title' => $this->__('Enter the file name of the file')
             ],
-            'required' => true
-            ,
+            'required' => true,
         ]);
         
         $builder->add('myFile', 'RK\DownLoadModule\Form\Type\Field\UploadType', [
@@ -131,8 +134,8 @@ abstract class AbstractFileType extends AbstractType
                 'class' => ' validate-upload',
                 'title' => $this->__('Enter the my file of the file')
             ],
-            'required' => true && $options['mode'] == 'create'
-            ,'entity' => $options['entity'],
+            'required' => true && $options['mode'] == 'create',
+            'entity' => $options['entity'],
             'allowed_extensions' => 'pdf, doc, docx, xls, xlsx, ppt, pptx',
             'allowed_size' => ''
         ]);
@@ -143,15 +146,14 @@ abstract class AbstractFileType extends AbstractType
                 'class' => 'tooltips',
                 'title' => $this->__('the quantity of characters are limited to {{length}}')
             ],
-            'help' => $this->__('the quantity of characters are limited to {{length}}'),
+            'help' => [$this->__('the quantity of characters are limited to {{length}}'), $this->__f('Note: this value must not exceed %amount% characters.', ['%amount%' => 2000])],
             'empty_data' => '',
             'attr' => [
                 'maxlength' => 2000,
                 'class' => '',
                 'title' => $this->__('Enter the my description of the file')
             ],
-            'required' => false
-            ,
+            'required' => false,
         ]);
         
         $builder->add('startDate', 'Symfony\Component\Form\Extension\Core\Type\DateType', [
@@ -161,8 +163,8 @@ abstract class AbstractFileType extends AbstractType
                 'class' => ' validate-daterange-file',
                 'title' => $this->__('Enter the start date of the file')
             ],
-            'required' => false
-            ,'empty_data' => date('Y-m-d'),
+            'required' => false,
+            'empty_data' => date('Y-m-d'),
             'widget' => 'single_text'
         ]);
         
@@ -173,8 +175,8 @@ abstract class AbstractFileType extends AbstractType
                 'class' => ' validate-daterange-file',
                 'title' => $this->__('Enter the end date of the file')
             ],
-            'required' => true
-            ,'empty_data' => '2099-12-31',
+            'required' => true,
+            'empty_data' => '2099-12-31',
             'widget' => 'single_text'
         ]);
     }
@@ -225,7 +227,7 @@ abstract class AbstractFileType extends AbstractType
             'required' => false,
             'help' => $this->__('Here you can choose a user which will be set as creator')
         ]);
-        $builder->add('moderationSpecificCreationDate', 'RK\DownLoadModule\Form\Type\Field\DateTimeType', [
+        $builder->add('moderationSpecificCreationDate', 'Symfony\Component\Form\Extension\Core\Type\DateTimeType', [
             'mapped' => false,
             'label' => $this->__('Creation date') . ':',
             'attr' => [
@@ -234,7 +236,9 @@ abstract class AbstractFileType extends AbstractType
             ],
             'empty_data' => '',
             'required' => false,
-            'widget' => 'single_text',
+            'with_seconds' => true,
+            'date_widget' => 'single_text',
+            'time_widget' => 'single_text',
             'help' => $this->__('Here you can choose a custom creation date')
         ]);
     }
@@ -294,7 +298,7 @@ abstract class AbstractFileType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getBlockPrefix()
     {
@@ -302,7 +306,7 @@ abstract class AbstractFileType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function configureOptions(OptionsResolver $resolver)
     {

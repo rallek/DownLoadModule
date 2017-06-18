@@ -4,7 +4,7 @@
 {% block admin_page_icon 'trash-o' %}
 {% block content %}
     <div class="rkdownloadmodule-file rkdownloadmodule-delete">
-        <p class="alert alert-warning">{{ __f('Do you really want to delete this file: "%name%" ?', {'%name%': file.getTitleFromDisplayPattern()}) }}</p>
+        <p class="alert alert-warning">{{ __f('Do you really want to delete this file: "%name%" ?', { '%name%': file|rkdownloadmodule_formattedTitle }) }}</p>
 
         {% form_theme deleteForm with [
             '@RKDownLoadModule/Form/bootstrap_3.html.twig',
@@ -28,7 +28,7 @@
     </div>
 {% endblock %}
 {% block display_hooks %}
-    {% set hooks = notifyDisplayHooks(eventName='rkdownloadmodule.ui_hooks.files.form_delete', id=file.id) %}
+    {% set hooks = notifyDisplayHooks(eventName='rkdownloadmodule.ui_hooks.files.form_delete', id=file.getKey()) %}
     {% if hooks is iterable and hooks|length > 0 %}
         {% for providerArea, hook in hooks %}
             <fieldset>

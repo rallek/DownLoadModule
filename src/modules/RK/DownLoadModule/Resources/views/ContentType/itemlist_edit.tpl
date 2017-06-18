@@ -87,13 +87,8 @@
     {formlabel for='rKDownLoadModuleFilter' text=$filterLabel cssClass='col-sm-3 control-label'}
     <div class="col-sm-9">
         {formtextinput id='rKDownLoadModuleFilter' dataField='filter' group='data' mandatory=false maxLength=255 cssClass='form-control'}
-        {*<span class="help-block">
-            <a class="fa fa-filter" data-toggle="modal" data-target="#filterSyntaxModal">{gt text='Show syntax examples' domain='rkdownloadmodule'}</a>
-        </span>*}
     </div>
 </div>
-
-{*include file='include_filterSyntaxDialog.tpl'*}
 
 <script type="text/javascript">
     (function($) {

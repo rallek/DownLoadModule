@@ -1,16 +1,14 @@
 services:
-    # Event subscriber and listener classes
+    # Event subscribers and listeners
     rk_download_module.entity_lifecycle_listener:
         class: RK\DownLoadModule\Listener\EntityLifecycleListener
         arguments:
             - "@service_container"
+            - "@event_dispatcher"
+            - "@logger"
+            - "@translator.default"
         tags:
             - { name: doctrine.event_subscriber }
-    
-    rk_download_module.core_listener:
-        class: RK\DownLoadModule\Listener\CoreListener
-        tags:
-            - { name: kernel.event_subscriber }
     
     rk_download_module.kernel_listener:
         class: RK\DownLoadModule\Listener\KernelListener
@@ -32,18 +30,8 @@ services:
         tags:
             - { name: kernel.event_subscriber }
     
-    rk_download_module.page_listener:
-        class: RK\DownLoadModule\Listener\PageListener
-        tags:
-            - { name: kernel.event_subscriber }
-    
     rk_download_module.theme_listener:
         class: RK\DownLoadModule\Listener\ThemeListener
-        tags:
-            - { name: kernel.event_subscriber }
-    
-    rk_download_module.view_listener:
-        class: RK\DownLoadModule\Listener\ViewListener
         tags:
             - { name: kernel.event_subscriber }
     

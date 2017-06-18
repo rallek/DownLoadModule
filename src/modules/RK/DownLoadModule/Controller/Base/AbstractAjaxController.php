@@ -14,13 +14,7 @@ namespace RK\DownLoadModule\Controller\Base;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use RuntimeException;
 use Zikula\Core\Controller\AbstractController;
-use Zikula\Core\Response\Ajax\AjaxResponse;
-use Zikula\Core\Response\Ajax\BadDataResponse;
-use Zikula\Core\Response\Ajax\FatalResponse;
-use Zikula\Core\Response\Ajax\NotFoundResponse;
 
 /**
  * Ajax controller base class.
@@ -41,13 +35,7 @@ abstract class AbstractAjaxController extends AbstractController
             return true;
         }
         
-        $fragment = '';
-        if ($request->isMethod('POST') && $request->request->has('fragment')) {
-            $fragment = $request->request->get('fragment', '');
-        } elseif ($request->isMethod('GET') && $request->query->has('fragment')) {
-            $fragment = $request->query->get('fragment', '');
-        }
-        
+        $fragment = $request->query->get('fragment', '');
         $userRepository = $this->get('zikula_users_module.user_repository');
         $limit = 50;
         $filter = [
@@ -70,6 +58,7 @@ abstract class AbstractAjaxController extends AbstractController
             }
         }
         
+        // return response
         return new JsonResponse($resultItems);
     }
     
@@ -80,7 +69,7 @@ abstract class AbstractAjaxController extends AbstractController
      * @param string $sort    Sorting field
      * @param string $sortdir Sorting direction
      *
-     * @return AjaxResponse
+     * @return JsonResponse
      */
     public function getItemListFinderAction(Request $request)
     {
@@ -88,7 +77,7 @@ abstract class AbstractAjaxController extends AbstractController
             return true;
         }
         
-        $objectType = $request->request->getAlnum('ot', 'file');
+        $objectType = $request->query->getAlnum('ot', 'file');
         $controllerHelper = $this->get('rk_download_module.controller_helper');
         $contextArgs = ['controller' => 'ajax', 'action' => 'getItemListFinder'];
         if (!in_array($objectType, $controllerHelper->getObjectTypes('controllerAction', $contextArgs))) {
@@ -96,24 +85,21 @@ abstract class AbstractAjaxController extends AbstractController
         }
         
         $repository = $this->get('rk_download_module.entity_factory')->getRepository($objectType);
-        $repository->setRequest($request);
-        $selectionHelper = $this->get('rk_download_module.selection_helper');
-        $idFields = $selectionHelper->getIdFields($objectType);
+        $entityDisplayHelper = $this->get('rk_download_module.entity_display_helper');
+        $descriptionFieldName = $entityDisplayHelper->getDescriptionFieldName($objectType);
         
-        $descriptionField = $repository->getDescriptionFieldName();
-        
-        $sort = $request->request->getAlnum('sort', '');
+        $sort = $request->query->getAlnum('sort', '');
         if (empty($sort) || !in_array($sort, $repository->getAllowedSortingFields())) {
             $sort = $repository->getDefaultSortingField();
         }
         
-        $sdir = strtolower($request->request->getAlpha('sortdir', ''));
+        $sdir = strtolower($request->query->getAlpha('sortdir', ''));
         if ($sdir != 'asc' && $sdir != 'desc') {
             $sdir = 'asc';
         }
         
         $where = ''; // filters are processed inside the repository class
-        $searchTerm = $request->request->get('q', '');
+        $searchTerm = $request->query->get('q', '');
         $sortParam = $sort . ' ' . $sdir;
         
         $entities = [];
@@ -126,17 +112,15 @@ abstract class AbstractAjaxController extends AbstractController
         $slimItems = [];
         $component = 'RKDownLoadModule:' . ucfirst($objectType) . ':';
         foreach ($entities as $item) {
-            $itemId = '';
-            foreach ($idFields as $idField) {
-                $itemId .= ((!empty($itemId)) ? '_' : '') . $item[$idField];
-            }
+            $itemId = $item->getKey();
             if (!$this->hasPermission($component, $itemId . '::', ACCESS_READ)) {
                 continue;
             }
-            $slimItems[] = $this->prepareSlimItem($repository, $objectType, $item, $itemId, $descriptionField);
+            $slimItems[] = $this->prepareSlimItem($repository, $objectType, $item, $itemId, $descriptionFieldName);
         }
         
-        return new AjaxResponse($slimItems);
+        // return response
+        return new JsonResponse($slimItems);
     }
     
     /**
@@ -153,16 +137,14 @@ abstract class AbstractAjaxController extends AbstractController
     protected function prepareSlimItem($repository, $objectType, $item, $itemId, $descriptionField)
     {
         $previewParameters = [
-            $objectType => $item,
-            'featureActivationHelper' => $this->get('rk_download_module.feature_activation_helper')
+            $objectType => $item
         ];
         $contextArgs = ['controller' => $objectType, 'action' => 'display'];
-        $additionalParameters = $repository->getAdditionalTemplateParameters($this->get('rk_download_module.image_helper'), 'controllerAction', $contextArgs);
-        $previewParameters = array_merge($previewParameters, $additionalParameters);
+        $previewParameters = $this->get('rk_download_module.controller_helper')->addTemplateParameters($objectType, $previewParameters, 'controllerAction', $contextArgs);
     
         $previewInfo = base64_encode($this->get('twig')->render('@RKDownLoadModule/External/' . ucfirst($objectType) . '/info.html.twig', $previewParameters));
     
-        $title = $item->getTitleFromDisplayPattern();
+        $title = $this->get('rk_download_module.entity_display_helper')->getFormattedTitle($item);
         $description = $descriptionField != '' ? $item[$descriptionField] : '';
     
         return [

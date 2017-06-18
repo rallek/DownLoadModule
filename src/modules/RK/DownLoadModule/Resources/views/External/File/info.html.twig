@@ -1,6 +1,6 @@
 {# Purpose of this template: Display item information for previewing from other modules #}
-<dl id="file{{ file.id }}">
-<dt>{{ file.getTitleFromDisplayPattern()|notifyFilters('download.filter_hooks.files.filter') }}</dt>
+<dl id="file{{ file.getKey() }}">
+<dt>{{ file|rkdownloadmodule_formattedTitle|notifyFilters('download.filter_hooks.files.filter')|safeHtml }}</dt>
 {% if file.myDescription is not empty %}<dd>{{ file.myDescription }}</dd>{% endif %}
 {% if featureActivationHelper.isEnabled(constant('RK\\DownLoadModule\\Helper\\FeatureActivationHelper::CATEGORIES'), 'file') %}
     <dd>

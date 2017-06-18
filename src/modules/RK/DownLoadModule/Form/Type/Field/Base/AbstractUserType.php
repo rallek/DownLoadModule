@@ -19,7 +19,6 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Zikula\UsersModule\Entity\RepositoryInterface\UserRepositoryInterface;
-use Zikula\UsersModule\Entity\UserEntity;
 use RK\DownLoadModule\Form\DataTransformer\UserFieldTransformer;
 
 /**
@@ -43,7 +42,7 @@ abstract class AbstractUserType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -52,7 +51,7 @@ abstract class AbstractUserType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
@@ -68,7 +67,7 @@ abstract class AbstractUserType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -85,7 +84,7 @@ abstract class AbstractUserType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getParent()
     {
@@ -93,7 +92,7 @@ abstract class AbstractUserType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getBlockPrefix()
     {

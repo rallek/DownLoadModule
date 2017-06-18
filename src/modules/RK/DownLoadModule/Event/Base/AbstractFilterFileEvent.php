@@ -25,13 +25,40 @@ class AbstractFilterFileEvent extends Event
      */
     protected $file;
 
-    public function __construct(FileEntity $file)
+    /**
+     * @var array Entity change set for preUpdate events.
+     */
+    protected $entityChangeSet = [];
+
+    /**
+     * FilterFileEvent constructor.
+     *
+     * @param FileEntity $file Processed entity
+     * @param array $entityChangeSet Change set for preUpdate events
+     */
+    public function __construct(FileEntity $file, $entityChangeSet = [])
     {
         $this->file = $file;
+        $this->entityChangeSet = $entityChangeSet;
     }
 
+    /**
+     * Returns the entity.
+     *
+     * @return FileEntity
+     */
     public function getFile()
     {
         return $this->file;
+    }
+
+    /**
+     * Returns the change set.
+     *
+     * @return array
+     */
+    public function getEntityChangeSet()
+    {
+        return $this->entityChangeSet;
     }
 }

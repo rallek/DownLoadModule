@@ -13,14 +13,7 @@
 namespace RK\DownLoadModule\Entity;
 
 use RK\DownLoadModule\Entity\Base\AbstractFileEntity as BaseEntity;
-
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Constraints as Assert;
-use RK\DownLoadModule\Traits\EntityWorkflowTrait;
-use RK\DownLoadModule\Traits\StandardFieldsTrait;
 
 /**
  * Entity class that defines the entity structure and behaviours.

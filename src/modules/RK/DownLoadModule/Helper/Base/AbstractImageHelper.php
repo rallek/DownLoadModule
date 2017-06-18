@@ -50,8 +50,11 @@ abstract class AbstractImageHelper
      * @param SessionInterface    $session     Session service instance
      * @param VariableApi         $variableApi VariableApi service instance
      */
-    public function __construct(TranslatorInterface $translator, SessionInterface $session, VariableApi $variableApi)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        SessionInterface $session,
+        VariableApi $variableApi
+    ) {
         $this->translator = $translator;
         $this->session = $session;
         $this->variableApi = $variableApi;

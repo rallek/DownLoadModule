@@ -13,7 +13,6 @@
 namespace RK\DownLoadModule\Container\Base;
 
 use Zikula\Bundle\HookBundle\AbstractHookContainer as ZikulaHookContainer;
-
 use Zikula\Bundle\HookBundle\Bundle\SubscriberBundle;
 
 /**
@@ -50,7 +49,6 @@ abstract class AbstractHookContainer extends ZikulaHookContainer
         // A filter applied to the given area.
         $bundle->addEvent('filter', 'rkdownloadmodule.filter_hooks.files.filter');
         $this->registerHookSubscriberBundle($bundle);
-        
         
         
     }

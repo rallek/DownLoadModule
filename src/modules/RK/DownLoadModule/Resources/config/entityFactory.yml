@@ -1,6 +1,12 @@
 services:
-    # Entity factory class
+    # Entity factory
     rk_download_module.entity_factory:
-        class: RK\DownLoadModule\Entity\Factory\DownLoadFactory
+        class: RK\DownLoadModule\Entity\Factory\EntityFactory
         arguments:
             - "@doctrine.orm.default_entity_manager"
+            - "@rk_download_module.entity_initialiser"
+            - "@rk_download_module.collection_filter_helper"
+    
+    # Entity initialiser
+    rk_download_module.entity_initialiser:
+        class: RK\DownLoadModule\Entity\Factory\EntityInitialiser

@@ -21,7 +21,7 @@ use Zikula\Core\Event\GenericEvent;
 class ThirdPartyListener extends AbstractThirdPartyListener
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public static function getSubscribedEvents()
     {
@@ -30,7 +30,7 @@ class ThirdPartyListener extends AbstractThirdPartyListener
     
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function contentGetTypes(\Zikula_Event $event)
     {
@@ -57,7 +57,7 @@ class ThirdPartyListener extends AbstractThirdPartyListener
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getEditorHelpers(\Zikula_Event $event)
     {
@@ -84,7 +84,7 @@ class ThirdPartyListener extends AbstractThirdPartyListener
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getTinyMcePlugins(\Zikula_Event $event)
     {
@@ -111,7 +111,7 @@ class ThirdPartyListener extends AbstractThirdPartyListener
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getCKEditorPlugins(\Zikula_Event $event)
     {

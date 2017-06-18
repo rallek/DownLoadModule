@@ -12,11 +12,14 @@
 
 namespace RK\DownLoadModule\Helper\Base;
 
+use Doctrine\ORM\QueryBuilder;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Zikula\Common\Translator\TranslatorInterface;
+use Zikula\Core\RouteUrl;
 use Zikula\PermissionsModule\Api\PermissionApi;
-use RK\DownLoadModule\Entity\Factory\DownLoadFactory;
+use RK\DownLoadModule\Entity\Factory\EntityFactory;
 use RK\DownLoadModule\Helper\HookHelper;
 use RK\DownLoadModule\Helper\WorkflowHelper;
 
@@ -31,9 +34,9 @@ abstract class AbstractArchiveHelper
     protected $translator;
 
     /**
-     * @var SessionInterface
+     * @var Request
      */
-    protected $session;
+    protected $request;
 
     /**
      * @var LoggerInterface
@@ -46,7 +49,7 @@ abstract class AbstractArchiveHelper
     protected $permissionApi;
 
     /**
-     * @var DownLoadFactory
+     * @var EntityFactory
      */
     protected $entityFactory;
 
@@ -64,24 +67,24 @@ abstract class AbstractArchiveHelper
      * ArchiveHelper constructor.
      *
      * @param TranslatorInterface $translator     Translator service instance
-     * @param SessionInterface    $session        Session service instance
+     * @param RequestStack        $requestStack   RequestStack service instance
      * @param LoggerInterface     $logger         Logger service instance
      * @param PermissionApi       $permissionApi  PermissionApi service instance
-     * @param DownLoadFactory $entityFactory DownLoadFactory service instance
+     * @param EntityFactory       $entityFactory  EntityFactory service instance
      * @param WorkflowHelper      $workflowHelper WorkflowHelper service instance
      * @param HookHelper          $hookHelper     HookHelper service instance
      */
     public function __construct(
         TranslatorInterface $translator,
-        SessionInterface $session,
+        RequestStack $requestStack,
         LoggerInterface $logger,
         PermissionApi $permissionApi,
-        DownLoadFactory $entityFactory,
+        EntityFactory $entityFactory,
         WorkflowHelper $workflowHelper,
-        HookHelper $hookHelper)
-    {
+        HookHelper $hookHelper
+    ) {
         $this->translator = $translator;
-        $this->session = $session;
+        $this->request = $requestStack->getCurrentRequest();
         $this->logger = $logger;
         $this->permissionApi = $permissionApi;
         $this->entityFactory = $entityFactory;
@@ -92,23 +95,111 @@ abstract class AbstractArchiveHelper
     /**
      * Moves obsolete data into the archive.
      */
-    public function archiveObjects()
+    public function archiveObsoleteObjects()
     {
         $randProbability = mt_rand(1, 1000);
-    
         if ($randProbability < 750) {
             return;
         }
     
-        $this->session->set('RKDownLoadModuleAutomaticArchiving', true);
+        if (!$this->permissionApi->hasPermission('RKDownLoadModule', '.*', ACCESS_EDIT)) {
+            // abort if current user has no permission for executing the archive workflow action
+            return;
+        }
     
         // perform update for files becoming archived
         $logArgs = ['app' => 'RKDownLoadModule', 'entity' => 'file'];
         $this->logger->notice('{app}: Automatic archiving for the {entity} entity started.', $logArgs);
-        $repository = $this->entityFactory->getRepository('file');
-        $repository->archiveObjects($this->permissionApi, $this->session, $this->translator, $this->workflowHelper, $this->hookHelper);
+        $this->archiveFiles();
         $this->logger->notice('{app}: Automatic archiving for the {entity} entity completed.', $logArgs);
+    }
     
-        $this->session->del('RKDownLoadModuleAutomaticArchiving');
+    /**
+     * Moves files into the archive which reached their end date.
+     *
+     * @throws RuntimeException Thrown if workflow action execution fails
+     */
+    protected function archiveFiles()
+    {
+        $today = date('Y-m-d') . ' 00:00:00';
+    
+        $affectedEntities = $this->getObjectsToBeArchived('file', 'endDate', $today);
+        foreach ($affectedEntities as $entity) {
+            $this->archiveSingleObject($entity);
+        }
+    }
+    
+    /**
+     * Returns the list of entities which should be archived.
+     *
+     * @param string $objectType Name of treated entity type
+     * @param string $endField   Name of field storing the end date
+     * @param mixed  $endDate    Datetime or date string for the threshold date
+     *
+     * @return array List of affected entities
+     */
+    protected function getObjectsToBeArchived($objectType = '', $endField = '', $endDate = '')
+    {
+        $repository = $this->entityFactory->getRepository($objectType);
+        $qb = $repository->genericBaseQuery('', '', false);
+    
+        /*$qb->andWhere('tbl.workflowState != :archivedState')
+           ->setParameter('archivedState', 'archived');*/
+        $qb->andWhere('tbl.workflowState = :approvedState')
+           ->setParameter('approvedState', 'approved');
+    
+        $qb->andWhere('tbl.' . $endField . ' < :endThreshold')
+           ->setParameter('endThreshold', $endDate);
+    
+        $query = $repository->getQueryFromBuilder($qb);
+    
+        return $query->getResult();
+    }
+    
+    /**
+     * Archives a single entity.
+     *
+     * @param object $entity The given entity instance
+     *
+     * @return bool True if everything worked successfully, false otherwise
+     */
+    protected function archiveSingleObject($entity)
+    {
+        $entity->initWorkflow();
+    
+        if ($entity->supportsHookSubscribers()) {
+            // Let any hooks perform additional validation actions
+            $validationHooksPassed = $this->hookHelper->callValidationHooks($entity, 'validate_edit');
+            if (!$validationHooksPassed) {
+                return false;
+            }
+        }
+    
+        $success = false;
+        try {
+            // execute the workflow action
+            $success = $this->workflowHelper->executeAction($entity, 'archive');
+        } catch(\Exception $exception) {
+            $flashBag = $this->request->getSession()->getFlashBag();
+            $flashBag->add('error', $this->translator->__f('Sorry, but an error occured during the %action% action. Please apply the changes again!', ['%action%' => $action]) . '  ' . $exception->getMessage());
+        }
+    
+        if (!$success) {
+            return false;
+        }
+    
+        if ($entity->supportsHookSubscribers()) {
+            // Let any hooks know that we have updated an item
+            $objectType = $entity->get_objectType();
+            $url = null;
+    
+            $hasDisplayPage = in_array($objectType, ['file']);
+            if ($hasDisplayPage) {
+                $urlArgs = $entity->createUrlArgs();
+                $urlArgs['_locale'] = $this->request->getLocale();
+                $url = new RouteUrl('rkdownloadmodule_' . strtolower($objectType) . '_display', $urlArgs);
+        	}
+            $this->hookHelper->callProcessHooks($entity, 'process_edit', $url);
+        }
     }
 }

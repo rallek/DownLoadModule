@@ -1,0 +1,9 @@
+services:
+    # Custom validators
+    rk_download_module.validator.list_entry.validator:
+        class: RK\DownLoadModule\Validator\Constraints\ListEntryValidator
+        arguments:
+            - "@translator.default"
+            - "@rk_download_module.listentries_helper"
+        tags:
+            - { name: validator.constraint_validator, alias: rk_download_module.validator.list_entry.validator }

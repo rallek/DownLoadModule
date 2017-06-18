@@ -39,8 +39,8 @@ abstract class AbstractExternalController extends AbstractController
     {
         $controllerHelper = $this->get('rk_download_module.controller_helper');
         $contextArgs = ['controller' => 'external', 'action' => 'display'];
-        if (!in_array($objectType, $controllerHelper->getObjectTypes('controller', $contextArgs))) {
-            $objectType = $controllerHelper->getDefaultObjectType('controllerType', $contextArgs);
+        if (!in_array($objectType, $controllerHelper->getObjectTypes('controllerAction', $contextArgs))) {
+            $objectType = $controllerHelper->getDefaultObjectType('controllerAction', $contextArgs);
         }
         
         $component = 'RKDownLoadModule:' . ucfirst($objectType) . ':';
@@ -48,24 +48,16 @@ abstract class AbstractExternalController extends AbstractController
             return '';
         }
         
-        $repository = $this->get('rk_download_module.entity_factory')->getRepository($objectType);
-        $repository->setRequest($this->get('request_stack')->getCurrentRequest());
-        $idValues = ['id' => $id];
-        
-        $hasIdentifier = $controllerHelper->isValidIdentifier($idValues);
-        if (!$hasIdentifier) {
-            return new Response($this->__('Error! Invalid identifier received.'));
-        }
+        $entityFactory = $this->get('rk_download_module.entity_factory');
+        $repository = $entityFactory->getRepository($objectType);
         
         // assign object data fetched from the database
-        $entity = $repository->selectById($idValues);
+        $entity = $repository->selectById($id);
         if (null === $entity) {
             return new Response($this->__('No such item.'));
         }
         
         $entity->initWorkflow();
-        
-        $instance = $entity->createCompositeIdentifier() . '::';
         
         $templateParameters = [
             'objectType' => $objectType,
@@ -74,11 +66,8 @@ abstract class AbstractExternalController extends AbstractController
             'displayMode' => $displayMode
         ];
         
-        $contextArgs = ['controller' => $objectType, 'action' => 'display'];
-        $additionalParameters = $repository->getAdditionalTemplateParameters($this->get('rk_download_module.image_helper'), 'controllerAction', $contextArgs);
-        $templateParameters = array_merge($templateParameters, $additionalParameters);
-        
-        $templateParameters['featureActivationHelper'] = $this->get('rk_download_module.feature_activation_helper');
+        $contextArgs = ['controller' => 'external', 'action' => 'display'];
+        $templateParameters = $this->get('rk_download_module.controller_helper')->addTemplateParameters($objectType, $templateParameters, 'controllerAction', $contextArgs);
         
         return $this->render('@RKDownLoadModule/External/' . ucfirst($objectType) . '/display.html.twig', $templateParameters);
     }
@@ -105,10 +94,9 @@ abstract class AbstractExternalController extends AbstractController
         $cssAssetBag = $this->get('zikula_core.common.theme.assets_css');
         $cssAssetBag->add($assetHelper->resolve('@RKDownLoadModule:css/style.css'));
         
-        $controllerHelper = $this->get('rk_download_module.controller_helper');
-        $contextArgs = ['controller' => 'external', 'action' => 'finder'];
-        if (!in_array($objectType, $controllerHelper->getObjectTypes('controller', $contextArgs))) {
-            $objectType = $controllerHelper->getDefaultObjectType('controllerType', $contextArgs);
+        $activatedObjectTypes = $this->getVar('enabledFinderTypes', []);
+        if (!in_array($objectType, $activatedObjectTypes)) {
+            throw new AccessDeniedException();
         }
         
         if (!$this->hasPermission('RKDownLoadModule:' . ucfirst($objectType) . ':', '::', ACCESS_COMMENT)) {
@@ -120,7 +108,6 @@ abstract class AbstractExternalController extends AbstractController
         }
         
         $repository = $this->get('rk_download_module.entity_factory')->getRepository($objectType);
-        $repository->setRequest($request);
         if (empty($sort) || !in_array($sort, $repository->getAllowedSortingFields())) {
             $sort = $repository->getDefaultSortingField();
         }
@@ -165,13 +152,16 @@ abstract class AbstractExternalController extends AbstractController
         }
         
         $where = '';
-        $sortParam = $sort . ' ' . $sdir;
+        $orderBy = $sort . ' ' . $sdir;
+        
+        $qb = $repository->getListQueryBuilder($where, $orderBy);
         
         if ($searchTerm != '') {
-            list($entities, $objectCount) = $repository->selectSearch($searchTerm, [], $sortParam, $currentPage, $resultsPerPage);
-        } else {
-            list($entities, $objectCount) = $repository->selectWherePaginated($where, $sortParam, $currentPage, $resultsPerPage);
+            $qb = $this->get('rk_download_module.collection_filter_helper')->addSearchFilter($objectType, $qb, $searchTerm);
         }
+        $query = $repository->getQueryFromBuilder($qb);
+        
+        list($entities, $objectCount) = $repository->retrieveCollectionResult($query, true);
         
         if (in_array($objectType, ['file'])) {
             $featureActivationHelper = $this->get('rk_download_module.feature_activation_helper');
@@ -187,7 +177,8 @@ abstract class AbstractExternalController extends AbstractController
         $templateParameters['items'] = $entities;
         $templateParameters['finderForm'] = $form->createView();
         
-        $templateParameters['featureActivationHelper'] = $this->get('rk_download_module.feature_activation_helper');
+        $contextArgs = ['controller' => 'external', 'action' => 'display'];
+        $templateParameters = $this->get('rk_download_module.controller_helper')->addTemplateParameters($objectType, $templateParameters, 'controllerAction', $contextArgs);
         
         $templateParameters['pager'] = [
             'numitems' => $objectCount,

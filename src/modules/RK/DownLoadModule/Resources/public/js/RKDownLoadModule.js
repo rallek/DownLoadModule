@@ -6,7 +6,7 @@ function rKDownLoadCapitaliseFirstLetter(string)
 }
 
 /**
- * Initialise the quick navigation panel in list views.
+ * Initialise the quick navigation form in list views.
  */
 function rKDownLoadInitQuickNavigation()
 {
@@ -59,8 +59,13 @@ function rKDownLoadSimpleAlert(beforeElem, title, content, alertId, cssClass)
 function rKDownLoadInitMassToggle()
 {
     if (jQuery('.rkdownload-mass-toggle').length > 0) {
-        jQuery('.rkdownload-mass-toggle').click(function (event) {
-            jQuery('.rkdownload-toggle-checkbox').prop('checked', jQuery(this).prop('checked'));
+        jQuery('.rkdownload-mass-toggle').unbind('click').click(function (event) {
+            if (jQuery('.table.fixed-columns').length > 0) {
+                jQuery('.rkdownload-toggle-checkbox').prop('checked', false);
+                jQuery('.table.fixed-columns .rkdownload-toggle-checkbox').prop('checked', jQuery(this).prop('checked'));
+            } else {
+                jQuery('.rkdownload-toggle-checkbox').prop('checked', jQuery(this).prop('checked'));
+            }
         });
     }
 }
@@ -70,24 +75,31 @@ function rKDownLoadInitMassToggle()
  */
 function rKDownLoadInitFixedColumns()
 {
-    var originalTable, fixedColumnsTable;
-
     jQuery('.table.fixed-columns').remove();
     jQuery('.table').each(function() {
+        var originalTable, fixedColumnsTable, fixedTableWidth;
+
         originalTable = jQuery(this);
+        fixedTableWidth = 0;
         if (originalTable.find('.fixed-column').length > 0) {
-            fixedColumnsTable = originalTable.clone().insertBefore(originalTable).addClass('fixed-columns');
+            fixedColumnsTable = originalTable.clone().insertBefore(originalTable).addClass('fixed-columns').removeAttr('id');
             originalTable.find('.dropdown').addClass('hidden');
             fixedColumnsTable.find('.dropdown').removeClass('hidden');
-            fixedColumnsTable.css('left', originalTable.parent().offset().left);
+            fixedColumnsTable.css('left', originalTable.parent().position().left);
 
             fixedColumnsTable.find('th, td').not('.fixed-column').remove();
+            fixedColumnsTable.find('th').each(function (i, elem) {
+                jQuery(this).css('width', originalTable.find('th').eq(i).css('width'));
+                fixedTableWidth += originalTable.find('th').eq(i).width();
+            });
+            fixedColumnsTable.css('width', fixedTableWidth + 'px');
 
             fixedColumnsTable.find('tr').each(function (i, elem) {
                 jQuery(this).height(originalTable.find('tr:eq(' + i + ')').height());
             });
         }
     });
+    rKDownLoadInitMassToggle();
 }
 
 /**
@@ -119,7 +131,7 @@ function rKDownLoadInitItemActions(context)
 
     containers.find('.dropdown > ul').removeClass('list-inline').addClass(listClasses);
     containers.find('.dropdown > ul a').each(function (index) {
-        jQuery(this).html(jQuery(this).html() + jQuery(this).find('i').first().data('original-title'));
+        jQuery(this).html(jQuery(this).html() + jQuery(this).find('i').first().attr('title'));
     });
     containers.find('.dropdown > ul a i').addClass('fa-fw');
     containers.find('.dropdown-toggle').removeClass('hidden').dropdown();

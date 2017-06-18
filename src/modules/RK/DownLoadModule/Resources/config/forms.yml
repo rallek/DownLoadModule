@@ -24,7 +24,6 @@ services:
             - "@rk_download_module.entity_factory"
             - "@rk_download_module.controller_helper"
             - "@rk_download_module.model_helper"
-            - "@rk_download_module.selection_helper"
             - "@rk_download_module.workflow_helper"
             - "@rk_download_module.hook_helper"
             - "@rk_download_module.feature_activation_helper"
@@ -65,10 +64,10 @@ services:
         tags:
             - { name: form.type }
     
-    rk_download_module.form.type.appsettings:
-        class: RK\DownLoadModule\Form\AppSettingsType
+    rk_download_module.form.type.config:
+        class: RK\DownLoadModule\Form\Type\ConfigType
         arguments:
             - "@translator.default"
-            - "@zikula_extensions_module.api.variable"
+            - "@=service('zikula_extensions_module.api.variable').getAll('RKDownLoadModule')"
         tags:
             - { name: form.type }

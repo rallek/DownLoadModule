@@ -43,6 +43,9 @@ abstract class AbstractEditHandler extends EditHandler
         $this->hasPageLockSupport = true;
     
         $result = parent::processForm($templateParameters);
+        if ($result instanceof RedirectResponse) {
+            return $result;
+        }
     
         if ($this->templateParameters['mode'] == 'create') {
             if (!$this->modelHelper->canBeCreated($this->objectType)) {
@@ -71,7 +74,7 @@ abstract class AbstractEditHandler extends EditHandler
             'entity' => $this->entityRef,
             'mode' => $this->templateParameters['mode'],
             'actions' => $this->templateParameters['actions'],
-            'has_moderate_permission' => $this->permissionApi->hasPermission($this->permissionComponent, $this->createCompositeIdentifier() . '::', ACCESS_MODERATE),
+            'has_moderate_permission' => $this->permissionApi->hasPermission($this->permissionComponent, $this->idValue . '::', ACCESS_MODERATE),
         ];
     
         return $this->formFactory->create('RK\DownLoadModule\Form\Type\FileType', $this->entityRef, $options);
@@ -90,7 +93,7 @@ abstract class AbstractEditHandler extends EditHandler
         // only allow editing for the owner or people with higher permissions
         $currentUserId = $this->currentUserApi->isLoggedIn() ? $this->currentUserApi->get('uid') : 1;
         $isOwner = null !== $entity->getCreatedBy() && $currentUserId == $entity->getCreatedBy()->getUid();
-        if (!$isOwner && !$this->permissionApi->hasPermission($this->permissionComponent, $this->createCompositeIdentifier() . '::', ACCESS_ADD)) {
+        if (!$isOwner && !$this->permissionApi->hasPermission($this->permissionComponent, $this->idValue . '::', ACCESS_ADD)) {
             throw new AccessDeniedException();
         }
     
@@ -140,7 +143,6 @@ abstract class AbstractEditHandler extends EditHandler
         $objectIsPersisted = $args['commandName'] != 'delete' && !($this->templateParameters['mode'] == 'create' && $args['commandName'] == 'cancel');
     
         if (null !== $this->returnTo) {
-            
             $isDisplayOrEditPage = substr($this->returnTo, -7) == 'display' || substr($this->returnTo, -4) == 'edit';
             if (!$isDisplayOrEditPage || $objectIsPersisted) {
                 // return to referer
@@ -152,8 +154,7 @@ abstract class AbstractEditHandler extends EditHandler
         $routePrefix = 'rkdownloadmodule_' . $this->objectTypeLower . '_' . $routeArea;
     
         // redirect to the list of files
-        $viewArgs = [];
-        $url = $this->router->generate($routePrefix . 'view', $viewArgs);
+        $url = $this->router->generate($routePrefix . 'view');
     
         return $url;
     }
@@ -243,9 +244,9 @@ abstract class AbstractEditHandler extends EditHandler
         try {
             // execute the workflow action
             $success = $this->workflowHelper->executeAction($entity, $action);
-        } catch(\Exception $e) {
-            $flashBag->add('error', $this->__f('Sorry, but an error occured during the %action% action. Please apply the changes again!', ['%action%' => $action]) . ' ' . $e->getMessage());
-            $logArgs = ['app' => 'RKDownLoadModule', 'user' => $this->currentUserApi->get('uname'), 'entity' => 'file', 'id' => $entity->createCompositeIdentifier(), 'errorMessage' => $e->getMessage()];
+        } catch(\Exception $exception) {
+            $flashBag->add('error', $this->__f('Sorry, but an error occured during the %action% action. Please apply the changes again!', ['%action%' => $action]) . ' ' . $exception->getMessage());
+            $logArgs = ['app' => 'RKDownLoadModule', 'user' => $this->currentUserApi->get('uname'), 'entity' => 'file', 'id' => $entity->getKey(), 'errorMessage' => $exception->getMessage()];
             $this->logger->error('{app}: User {user} tried to edit the {entity} with id {id}, but failed. Error details: {errorMessage}.', $logArgs);
         }
     
@@ -253,9 +254,7 @@ abstract class AbstractEditHandler extends EditHandler
     
         if ($success && $this->templateParameters['mode'] == 'create') {
             // store new identifier
-            foreach ($this->idFields as $idField) {
-                $this->idValues[$idField] = $entity[$idField];
-            }
+            $this->idValue = $entity->getKey();
         }
     
         return $success;
@@ -274,8 +273,8 @@ abstract class AbstractEditHandler extends EditHandler
             return $this->repeatReturnUrl;
         }
     
-        if ($this->request->getSession()->has('rkdownloadmoduleReferer')) {
-            $this->request->getSession()->del('rkdownloadmoduleReferer');
+        if ($this->request->getSession()->has('rkdownloadmodule' . $this->objectTypeCapital . 'Referer')) {
+            $this->request->getSession()->del('rkdownloadmodule' . $this->objectTypeCapital . 'Referer');
         }
     
         // normal usage, compute return url from given redirect code
@@ -301,11 +300,7 @@ abstract class AbstractEditHandler extends EditHandler
             case 'userDisplay':
             case 'adminDisplay':
                 if ($args['commandName'] != 'delete' && !($this->templateParameters['mode'] == 'create' && $args['commandName'] == 'cancel')) {
-                    foreach ($this->idFields as $idField) {
-                        $urlArgs[$idField] = $this->idValues[$idField];
-                    }
-    
-                    return $this->router->generate($routePrefix . 'display', $urlArgs);
+                    return $this->router->generate($routePrefix . 'display', $this->entityRef->createUrlArgs());
                 }
     
                 return $this->getDefaultReturnUrl($args);

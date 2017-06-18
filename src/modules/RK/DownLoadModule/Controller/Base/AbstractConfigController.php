@@ -36,11 +36,12 @@ abstract class AbstractConfigController extends AbstractController
             throw new AccessDeniedException();
         }
         
-        $form = $this->createForm('RK\DownLoadModule\Form\AppSettingsType');
+        $form = $this->createForm('RK\DownLoadModule\Form\Type\ConfigType');
         
         if ($form->handleRequest($request)->isValid()) {
             if ($form->get('save')->isClicked()) {
-                $this->setVars($form->getData());
+                $formData = $form->getData();
+                $this->setVars($formData);
         
                 $this->addFlash('status', $this->__('Done! Module configuration updated.'));
                 $userName = $this->get('zikula_users_module.current_user')->get('uname');

@@ -19,23 +19,11 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
-use Symfony\Component\HttpFoundation\Request;
-use Zikula\Component\FilterUtil\FilterUtil;
-use Zikula\Component\FilterUtil\Config as FilterConfig;
-use Zikula\Component\FilterUtil\PluginManager as FilterPluginManager;
-use Zikula\Core\FilterUtil\CategoryPlugin as CategoryFilter;
-use Zikula\Component\FilterUtil\Plugin\DatePlugin as DateFilter;
 use Psr\Log\LoggerInterface;
-use ServiceUtil;
 use Zikula\Common\Translator\TranslatorInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Zikula\Core\RouteUrl;
-use Zikula\PermissionsModule\Api\PermissionApi;
 use Zikula\UsersModule\Api\CurrentUserApi;
 use RK\DownLoadModule\Entity\FileEntity;
-use RK\DownLoadModule\Helper\HookHelper;
-use RK\DownLoadModule\Helper\ImageHelper;
-use RK\DownLoadModule\Helper\WorkflowHelper;
+use RK\DownLoadModule\Helper\CollectionFilterHelper;
 
 /**
  * Repository class used to implement own convenience methods for performing certain DQL queries.
@@ -44,17 +32,15 @@ use RK\DownLoadModule\Helper\WorkflowHelper;
  */
 abstract class AbstractFileRepository extends EntityRepository
 {
-    
     /**
      * @var string The default sorting field/expression
      */
     protected $defaultSortingField = 'fileName';
 
     /**
-     * @var Request The request object given by the calling controller
+     * @var CollectionFilterHelper
      */
-    protected $request;
-    
+    protected $collectionFilterHelper = null;
 
     /**
      * Retrieves an array with all fields which can be used for sorting instances.
@@ -92,159 +78,41 @@ abstract class AbstractFileRepository extends EntityRepository
      */
     public function setDefaultSortingField($defaultSortingField)
     {
-        $this->defaultSortingField = $defaultSortingField;
+        if ($this->defaultSortingField != $defaultSortingField) {
+            $this->defaultSortingField = $defaultSortingField;
+        }
     }
     
     /**
-     * Returns the request.
+     * Returns the collection filter helper.
      *
-     * @return Request
+     * @return CollectionFilterHelper
      */
-    public function getRequest()
+    public function getCollectionFilterHelper()
     {
-        return $this->request;
+        return $this->collectionFilterHelper;
     }
     
     /**
-     * Sets the request.
+     * Sets the collection filter helper.
      *
-     * @param Request $request
+     * @param CollectionFilterHelper $collectionFilterHelper
      *
      * @return void
      */
-    public function setRequest($request)
+    public function setCollectionFilterHelper($collectionFilterHelper)
     {
-        $this->request = $request;
-    }
-    
-
-    /**
-     * Returns name of the field used as title / name for entities of this repository.
-     *
-     * @return string Name of field to be used as title
-     */
-    public function getTitleFieldName()
-    {
-        $fieldName = 'fileName';
-    
-        return $fieldName;
-    }
-    
-    /**
-     * Returns name of the field used for describing entities of this repository.
-     *
-     * @return string Name of field to be used as description
-     */
-    public function getDescriptionFieldName()
-    {
-        $fieldName = 'myDescription';
-    
-        return $fieldName;
-    }
-    
-    /**
-     * Returns name of first upload field which is capable for handling images.
-     *
-     * @return string Name of field to be used for preview images
-     */
-    public function getPreviewFieldName()
-    {
-        $fieldName = '';
-    
-        return $fieldName;
-    }
-    
-    /**
-     * Returns name of the date(time) field to be used for representing the start
-     * of this object. Used for providing meta data to the tag module.
-     *
-     * @return string Name of field to be used as date
-     */
-    public function getStartDateFieldName()
-    {
-        $fieldName = 'startDate';
-    
-        return $fieldName;
-    }
-
-    /**
-     * Returns an array of additional template variables which are specific to the object type treated by this repository.
-     *
-     * @param string $context Usage context (allowed values: controllerAction, api, actionHandler, block, contentType)
-     * @param array  $args    Additional arguments
-     *
-     * @return array List of template variables to be assigned
-     */
-    public function getAdditionalTemplateParameters(ImageHelper $imageHelper, $context = '', $args = [])
-    {
-        if (!in_array($context, ['controllerAction', 'api', 'actionHandler', 'block', 'contentType'])) {
-            $context = 'controllerAction';
+        if ($this->collectionFilterHelper != $collectionFilterHelper) {
+            $this->collectionFilterHelper = $collectionFilterHelper;
         }
-    
-        $templateParameters = [];
-    
-        if ($context == 'controllerAction') {
-            if (!isset($args['action'])) {
-                $args['action'] = $this->getRequest()->query->getAlpha('func', 'index');
-            }
-            if (in_array($args['action'], ['index', 'view'])) {
-                $templateParameters = $this->getViewQuickNavParameters($context, $args);
-            }
-    
-            // initialise Imagine runtime options
-            $objectType = 'file';
-            $thumbRuntimeOptions = [];
-            $thumbRuntimeOptions[$objectType . 'MyFile'] = $imageHelper->getRuntimeOptions($objectType, 'myFile', $context, $args);
-            $templateParameters['thumbRuntimeOptions'] = $thumbRuntimeOptions;
-            if (in_array($args['action'], ['display', 'view'])) {
-                // use separate preset for images in related items
-                $templateParameters['relationThumbRuntimeOptions'] = $imageHelper->getCustomRuntimeOptions('', '', 'RKDownLoadModule_relateditem', $context, $args);
-            }
-        }
-    
-        // in the concrete child class you could do something like
-        // $parameters = parent::getAdditionalTemplateParameters($imageHelper, $context, $args);
-        // $parameters['myvar'] = 'myvalue';
-        // return $parameters;
-    
-        return $templateParameters;
     }
-    /**
-     * Returns an array of additional template variables for view quick navigation forms.
-     *
-     * @param string $context Usage context (allowed values: controllerAction, api, actionHandler, block, contentType)
-     * @param array  $args    Additional arguments
-     *
-     * @return array List of template variables to be assigned
-     */
-    protected function getViewQuickNavParameters($context = '', $args = [])
-    {
-        if (!in_array($context, ['controllerAction', 'api', 'actionHandler', 'block', 'contentType'])) {
-            $context = 'controllerAction';
-        }
     
-        $parameters = [];
-        $categoryHelper = ServiceUtil::get('rk_download_module.category_helper');
-        $parameters['catIdList'] = $categoryHelper->retrieveCategoriesFromRequest('file', 'GET');
-        $parameters['workflowState'] = $this->getRequest()->query->get('workflowState', '');
-        $parameters['q'] = $this->getRequest()->query->get('q', '');
-        
-    
-        // in the concrete child class you could do something like
-        // $parameters = parent::getViewQuickNavParameters($context, $args);
-        // $parameters['myvar'] = 'myvalue';
-        // return $parameters;
-    
-        return $parameters;
-    }
 
     /**
      * Helper method for truncating the table.
      * Used during installation when inserting default data.
      *
      * @param LoggerInterface $logger Logger service instance
-     *
-     * @return void
      */
     public function truncateTable(LoggerInterface $logger)
     {
@@ -281,7 +149,7 @@ abstract class AbstractFileRepository extends EntityRepository
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->update('RK\DownLoadModule\Entity\FileEntity', 'tbl')
            ->set('tbl.createdBy', $newUserId)
-           ->where('tbl.createdBy= :creator')
+           ->where('tbl.createdBy = :creator')
            ->setParameter('creator', $userId);
         $query = $qb->getQuery();
         $query->execute();
@@ -347,7 +215,6 @@ abstract class AbstractFileRepository extends EntityRepository
            ->where('tbl.createdBy = :creator')
            ->setParameter('creator', $userId);
         $query = $qb->getQuery();
-    
         $query->execute();
     
         $logArgs = ['app' => 'RKDownLoadModule', 'user' => $currentUserApi->get('uname'), 'entities' => 'files', 'userid' => $userId];
@@ -378,7 +245,6 @@ abstract class AbstractFileRepository extends EntityRepository
            ->where('tbl.updatedBy = :editor')
            ->setParameter('editor', $userId);
         $query = $qb->getQuery();
-    
         $query->execute();
     
         $logArgs = ['app' => 'RKDownLoadModule', 'user' => $currentUserApi->get('uname'), 'entities' => 'files', 'userid' => $userId];
@@ -388,10 +254,12 @@ abstract class AbstractFileRepository extends EntityRepository
     /**
      * Adds an array of id filters to given query instance.
      *
-     * @param mixed        $idList The array of ids to use to retrieve the object
+     * @param array        $idList The array of ids to use to retrieve the object
      * @param QueryBuilder $qb     Query builder to be enhanced
      *
      * @return QueryBuilder Enriched query builder instance
+     *
+     * @throws InvalidArgumentException Thrown if invalid parameters are received
      */
     protected function addIdListFilter($idList, QueryBuilder $qb)
     {
@@ -403,15 +271,7 @@ abstract class AbstractFileRepository extends EntityRepository
                 throw new InvalidArgumentException('Invalid identifier received.');
             }
     
-            if (is_array($id)) {
-                $andX = $qb->expr()->andX();
-                foreach ($id as $fieldName => $fieldValue) {
-                    $andX->add($qb->expr()->eq('tbl.' . $fieldName, $fieldValue));
-                }
-                $orX->add($andX);
-            } else {
-                $orX->add($qb->expr()->eq('tbl.id', $id));
-            }
+            $orX->add($qb->expr()->eq('tbl.id', $id));
         }
     
         $qb->andWhere($orX);
@@ -426,9 +286,7 @@ abstract class AbstractFileRepository extends EntityRepository
      * @param boolean $useJoins Whether to include joining related objects (optional) (default=true)
      * @param boolean $slimMode If activated only some basic fields are selected without using any joins (optional) (default=false)
      *
-     * @return array|fileEntity retrieved data array or fileEntity instance
-     *
-     * @throws InvalidArgumentException Thrown if invalid parameters are received
+     * @return array|fileEntity Retrieved data array or fileEntity instance
      */
     public function selectById($id = 0, $useJoins = true, $slimMode = false)
     {
@@ -444,9 +302,7 @@ abstract class AbstractFileRepository extends EntityRepository
      * @param boolean $useJoins Whether to include joining related objects (optional) (default=true)
      * @param boolean $slimMode If activated only some basic fields are selected without using any joins (optional) (default=false)
      *
-     * @return ArrayCollection collection containing retrieved fileEntity instances
-     *
-     * @throws InvalidArgumentException Thrown if invalid parameters are received
+     * @return ArrayCollection Collection containing retrieved fileEntity instances
      */
     public function selectByIdList($idList = [0], $useJoins = true, $slimMode = false)
     {
@@ -457,48 +313,22 @@ abstract class AbstractFileRepository extends EntityRepository
     
         $results = $query->getResult();
     
-        return (count($results) > 0) ? $results : null;
+        return count($results) > 0 ? $results : null;
     }
 
     /**
      * Adds where clauses excluding desired identifiers from selection.
      *
-     * @param QueryBuilder $qb        Query builder to be enhanced
-     * @param integer      $excludeId The id to be excluded from selection
+     * @param QueryBuilder $qb           Query builder to be enhanced
+     * @param array        $excludesions Array of ids to be excluded from selection
      *
      * @return QueryBuilder Enriched query builder instance
      */
-    protected function addExclusion(QueryBuilder $qb, $excludeId)
+    protected function addExclusion(QueryBuilder $qb, array $exclusions = [])
     {
-        if ($excludeId > 0) {
-            $qb->andWhere('tbl.id != :excludeId')
-               ->setParameter('excludeId', $excludeId);
-        }
-    
-        return $qb;
-    }
-
-    /**
-     * Adds a filter for the createdBy field.
-     *
-     * @param QueryBuilder $qb Query builder to be enhanced
-     * @param integer      $userId The user identifier used for filtering (optional)
-     *
-     * @return QueryBuilder Enriched query builder instance
-     */
-    public function addCreatorFilter(QueryBuilder $qb, $userId = null)
-    {
-        if (null === $userId) {
-            $currentUserApi = ServiceUtil::get('zikula_users_module.current_user');
-            $userId = $currentUserApi->isLoggedIn() ? $currentUserApi->get('uid') : 1;
-        }
-    
-        if (is_array($userId)) {
-            $qb->andWhere('tbl.createdBy IN (:userIds)')
-               ->setParameter('userIds', $userId);
-        } else {
-            $qb->andWhere('tbl.createdBy = :userId')
-               ->setParameter('userId', $userId);
+        if (count($exclusions) > 0) {
+            $qb->andWhere('tbl.id NOT IN (:excludedIdentifiers)')
+               ->setParameter('excludedIdentifiers', $exclusions);
         }
     
         return $qb;
@@ -512,13 +342,13 @@ abstract class AbstractFileRepository extends EntityRepository
      * @param boolean $useJoins Whether to include joining related objects (optional) (default=true)
      * @param boolean $slimMode If activated only some basic fields are selected without using any joins (optional) (default=false)
      *
-     * @return QueryBuilder query builder for the given arguments
+     * @return QueryBuilder Query builder for the given arguments
      */
     public function getListQueryBuilder($where = '', $orderBy = '', $useJoins = true, $slimMode = false)
     {
         $qb = $this->genericBaseQuery($where, $orderBy, $useJoins, $slimMode);
-        if (!$useJoins || !$slimMode) {
-            $qb = $this->addCommonViewFilters($qb);
+        if ((!$useJoins || !$slimMode) && null !== $this->collectionFilterHelper) {
+            $qb = $this->collectionFilterHelper->addCommonViewFilters('file', $qb);
         }
     
         return $qb;
@@ -532,7 +362,7 @@ abstract class AbstractFileRepository extends EntityRepository
      * @param boolean $useJoins Whether to include joining related objects (optional) (default=true)
      * @param boolean $slimMode If activated only some basic fields are selected without using any joins (optional) (default=false)
      *
-     * @return ArrayCollection collection containing retrieved fileEntity instances
+     * @return ArrayCollection Collection containing retrieved fileEntity instances
      */
     public function selectWhere($where = '', $orderBy = '', $useJoins = true, $slimMode = false)
     {
@@ -540,7 +370,7 @@ abstract class AbstractFileRepository extends EntityRepository
     
         $query = $this->getQueryFromBuilder($qb);
     
-        return $this->retrieveCollectionResult($query, $orderBy, false);
+        return $this->retrieveCollectionResult($query, false);
     }
 
     /**
@@ -554,8 +384,6 @@ abstract class AbstractFileRepository extends EntityRepository
      */
     public function getSelectWherePaginatedQuery(QueryBuilder $qb, $currentPage = 1, $resultsPerPage = 25)
     {
-        $qb = $this->addCommonViewFilters($qb);
-    
         $query = $this->getQueryFromBuilder($qb);
         $offset = ($currentPage-1) * $resultsPerPage;
     
@@ -575,120 +403,14 @@ abstract class AbstractFileRepository extends EntityRepository
      * @param boolean $useJoins       Whether to include joining related objects (optional) (default=true)
      * @param boolean $slimMode       If activated only some basic fields are selected without using any joins (optional) (default=false)
      *
-     * @return array with retrieved collection and amount of total records affected by this query
+     * @return array Retrieved collection and amount of total records affected by this query
      */
     public function selectWherePaginated($where = '', $orderBy = '', $currentPage = 1, $resultsPerPage = 25, $useJoins = true, $slimMode = false)
     {
-        $qb = $this->genericBaseQuery($where, $orderBy, $useJoins, $slimMode);
+        $qb = $this->getListQueryBuilder($where, $orderBy, $useJoins, $slimMode);
+        $query = $this->getSelectWherePaginatedQuery($qb, $currentPage, $resultsPerPage);
     
-        $page = $currentPage;
-        
-        $query = $this->getSelectWherePaginatedQuery($qb, $page, $resultsPerPage);
-    
-        return $this->retrieveCollectionResult($query, $orderBy, true);
-    }
-    
-    /**
-     * Adds quick navigation related filter options as where clauses.
-     *
-     * @param QueryBuilder $qb Query builder to be enhanced
-     *
-     * @return QueryBuilder Enriched query builder instance
-     */
-    public function addCommonViewFilters(QueryBuilder $qb)
-    {
-        if (null === $this->getRequest()) {
-            // if no request is set we return (#433)
-            return $qb;
-        }
-    
-        $routeName = $this->getRequest()->get('_route');
-        if (false !== strpos($routeName, 'edit')) {
-            return $qb;
-        }
-    
-        $parameters = $this->getViewQuickNavParameters('', []);
-        foreach ($parameters as $k => $v) {
-            if ($k == 'catId') {
-                // single category filter
-                if ($v > 0) {
-                    $qb->andWhere('tblCategories.category = :category')
-                       ->setParameter('category', $v);
-                }
-            } elseif ($k == 'catIdList') {
-                // multi category filter
-                /* old
-                $qb->andWhere('tblCategories.category IN (:categories)')
-                   ->setParameter('categories', $v);
-                 */
-                $categoryHelper = ServiceUtil::get('rk_download_module.category_helper');
-                $qb = $categoryHelper->buildFilterClauses($qb, 'file', $v);
-            } elseif (in_array($k, ['q', 'searchterm'])) {
-                // quick search
-                if (!empty($v)) {
-                    $qb = $this->addSearchFilter($qb, $v);
-                }
-            } else if (!is_array($v)) {
-                // field filter
-                if ((!is_numeric($v) && $v != '') || (is_numeric($v) && $v > 0)) {
-                    if ($k == 'workflowState' && substr($v, 0, 1) == '!') {
-                        $qb->andWhere('tbl.' . $k . ' != :' . $k)
-                           ->setParameter($k, substr($v, 1, strlen($v)-1));
-                    } elseif (substr($v, 0, 1) == '%') {
-                        $qb->andWhere('tbl.' . $k . ' LIKE :' . $k)
-                           ->setParameter($k, '%' . $v . '%');
-                    } else {
-                        $qb->andWhere('tbl.' . $k . ' = :' . $k)
-                           ->setParameter($k, $v);
-                   }
-                }
-            }
-        }
-    
-        $qb = $this->applyDefaultFilters($qb, $parameters);
-    
-        return $qb;
-    }
-    
-    /**
-     * Adds default filters as where clauses.
-     *
-     * @param QueryBuilder $qb         Query builder to be enhanced
-     * @param array        $parameters List of determined filter options
-     *
-     * @return QueryBuilder Enriched query builder instance
-     */
-    protected function applyDefaultFilters(QueryBuilder $qb, $parameters = [])
-    {
-        if (null === $this->getRequest()) {
-            $this->request = ServiceUtil::get('request_stack')->getCurrentRequest();
-        }
-        $routeName = $this->request->get('_route');
-        $isAdminArea = false !== strpos($routeName, 'rkdownloadmodule_file_admin');
-        if ($isAdminArea) {
-            return $qb;
-        }
-    
-        if (!in_array('workflowState', array_keys($parameters)) || empty($parameters['workflowState'])) {
-            // per default we show approved files only
-            $onlineStates = ['approved'];
-            
-            $showOnlyOwnEntries = $this->getRequest()->query->getInt('own', 0);
-            if ($showOnlyOwnEntries == 1) {
-                // allow the owner to see his deferred files
-                $onlineStates[] = 'deferred';
-            }
-            $qb->andWhere('tbl.workflowState IN (:onlineStates)')
-               ->setParameter('onlineStates', $onlineStates);
-        }
-        $startDate = null !== $this->getRequest() ? $this->getRequest()->query->get('startDate', date('Y-m-d')) : date('Y-m-d');
-        $qb->andWhere('(tbl.startDate <= :startDate OR tbl.startDate IS NULL)')
-           ->setParameter('startDate', $startDate);
-        $endDate = null !== $this->getRequest() ? $this->getRequest()->query->get('endDate', date('Y-m-d')) : date('Y-m-d');
-        $qb->andWhere('tbl.endDate >= :endDate')
-           ->setParameter('endDate', $endDate);
-    
-        return $qb;
+        return $this->retrieveCollectionResult($query, true);
     }
 
     /**
@@ -701,84 +423,33 @@ abstract class AbstractFileRepository extends EntityRepository
      * @param integer $resultsPerPage Amount of items to select
      * @param boolean $useJoins       Whether to include joining related objects (optional) (default=true)
      *
-     * @return array with retrieved collection and amount of total records affected by this query
+     * @return array Retrieved collection and amount of total records affected by this query
      */
     public function selectSearch($fragment = '', $exclude = [], $orderBy = '', $currentPage = 1, $resultsPerPage = 25, $useJoins = true)
     {
-        $qb = $this->genericBaseQuery('', $orderBy, $useJoins);
+        $qb = $this->getListQueryBuilder('', $orderBy, $useJoins);
         if (count($exclude) > 0) {
             $qb = $this->addExclusion($qb, $exclude);
         }
     
-        $qb = $this->addSearchFilter($qb, $fragment);
+        if (null !== $this->collectionFilterHelper) {
+            $qb = $this->collectionFilterHelper->addSearchFilter('file', $qb, $fragment);
+        }
     
         $query = $this->getSelectWherePaginatedQuery($qb, $currentPage, $resultsPerPage);
     
-        return $this->retrieveCollectionResult($query, $orderBy, true);
-    }
-    
-    /**
-     * Adds where clause for search query.
-     *
-     * @param QueryBuilder $qb       Query builder to be enhanced
-     * @param string       $fragment The fragment to search for
-     *
-     * @return QueryBuilder Enriched query builder instance
-     */
-    protected function addSearchFilter(QueryBuilder $qb, $fragment = '')
-    {
-        if ($fragment == '') {
-            return $qb;
-        }
-    
-        $fragment = str_replace('\'', '', \DataUtil::formatForStore($fragment));
-        $fragmentIsNumeric = is_numeric($fragment);
-    
-        $where = '';
-        if (!$fragmentIsNumeric) {
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.workflowState = \'' . $fragment . '\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.fileName LIKE \'%' . $fragment . '%\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.myFile = \'' . $fragment . '\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.myDescription LIKE \'%' . $fragment . '%\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.startDate = \'' . $fragment . '\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.endDate = \'' . $fragment . '\'';
-        } else {
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.workflowState = \'' . $fragment . '\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.fileName LIKE \'%' . $fragment . '%\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.myFile = \'' . $fragment . '\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.myDescription LIKE \'%' . $fragment . '%\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.startDate = \'' . $fragment . '\'';
-            $where .= ((!empty($where)) ? ' OR ' : '');
-            $where .= 'tbl.endDate = \'' . $fragment . '\'';
-        }
-        $where = '(' . $where . ')';
-    
-        $qb->andWhere($where);
-    
-        return $qb;
+        return $this->retrieveCollectionResult($query, true);
     }
 
     /**
      * Performs a given database selection and post-processed the results.
      *
      * @param Query   $query       The Query instance to be executed
-     * @param string  $orderBy     The order-by clause to use when retrieving the collection (optional) (default='')
      * @param boolean $isPaginated Whether the given query uses a paginator or not (optional) (default=false)
      *
-     * @return array with retrieved collection and (for paginated queries) the amount of total records affected
+     * @return array Retrieved collection and (for paginated queries) the amount of total records affected
      */
-    public function retrieveCollectionResult(Query $query, $orderBy = '', $isPaginated = false)
+    public function retrieveCollectionResult(Query $query, $isPaginated = false)
     {
         $count = 0;
         if (!$isPaginated) {
@@ -801,15 +472,12 @@ abstract class AbstractFileRepository extends EntityRepository
      * Returns query builder instance for a count query.
      *
      * @param string  $where    The where clause to use when retrieving the object count (optional) (default='')
-     * @param boolean $useJoins Whether to include joining related objects (optional) (default=true)
+     * @param boolean $useJoins Whether to include joining related objects (optional) (default=false)
      *
      * @return QueryBuilder Created query builder instance
-     * @TODO fix usage of joins; please remove the first line and test
      */
-    protected function getCountQuery($where = '', $useJoins = true)
+    public function getCountQuery($where = '', $useJoins = false)
     {
-        $useJoins = false;
-    
         $selection = 'COUNT(tbl.id) AS numFiles';
         if (true === $useJoins) {
             $selection .= $this->addJoinsToSelection();
@@ -819,29 +487,33 @@ abstract class AbstractFileRepository extends EntityRepository
         $qb->select($selection)
            ->from('RK\DownLoadModule\Entity\FileEntity', 'tbl');
     
+        if (!empty($where)) {
+            $qb->andWhere($where);
+        }
+    
         if (true === $useJoins) {
             $this->addJoinsToFrom($qb);
         }
     
-        $this->genericBaseQueryAddWhere($qb, $where);
-    
         return $qb;
     }
-    
+
     /**
      * Selects entity count with a given where clause.
      *
      * @param string  $where      The where clause to use when retrieving the object count (optional) (default='')
-     * @param boolean $useJoins   Whether to include joining related objects (optional) (default=true)
+     * @param boolean $useJoins   Whether to include joining related objects (optional) (default=false)
      * @param array   $parameters List of determined filter options
      *
-     * @return integer amount of affected records
+     * @return integer Amount of affected records
      */
-    public function selectCount($where = '', $useJoins = true, $parameters = [])
+    public function selectCount($where = '', $useJoins = false, $parameters = [])
     {
         $qb = $this->getCountQuery($where, $useJoins);
     
-        $qb = $this->applyDefaultFilters($qb, $parameters);
+        if (null !== $this->collectionFilterHelper) {
+            $qb = $this->collectionFilterHelper->applyDefaultFilters('file', $qb, $parameters);
+        }
     
         $query = $qb->getQuery();
     
@@ -852,11 +524,11 @@ abstract class AbstractFileRepository extends EntityRepository
     /**
      * Checks for unique values.
      *
-     * @param string $fieldName  The name of the property to be checked
-     * @param string $fieldValue The value of the property to be checked
-     * @param int    $excludeId  Id of files to exclude (optional)
+     * @param string  $fieldName  The name of the property to be checked
+     * @param string  $fieldValue The value of the property to be checked
+     * @param integer $excludeId  Id of files to exclude (optional)
      *
-     * @return boolean result of this check, true if the given file does not already exist
+     * @return boolean Result of this check, true if the given file does not already exist
      */
     public function detectUniqueState($fieldName, $fieldValue, $excludeId = 0)
     {
@@ -864,7 +536,9 @@ abstract class AbstractFileRepository extends EntityRepository
         $qb->andWhere('tbl.' . $fieldName . ' = :' . $fieldName)
            ->setParameter($fieldName, $fieldValue);
     
-        $qb = $this->addExclusion($qb, $excludeId);
+        if ($excludeId > 0) {
+            $qb = $this->addExclusion($qb, [$excludeId]);
+        }
     
         $query = $qb->getQuery();
     
@@ -881,7 +555,7 @@ abstract class AbstractFileRepository extends EntityRepository
      * @param boolean $useJoins Whether to include joining related objects (optional) (default=true)
      * @param boolean $slimMode If activated only some basic fields are selected without using any joins (optional) (default=false)
      *
-     * @return QueryBuilder query builder instance to be further processed
+     * @return QueryBuilder Query builder instance to be further processed
      */
     public function genericBaseQuery($where = '', $orderBy = '', $useJoins = true, $slimMode = false)
     {
@@ -910,89 +584,11 @@ abstract class AbstractFileRepository extends EntityRepository
             $this->addJoinsToFrom($qb);
         }
     
-        $this->genericBaseQueryAddWhere($qb, $where);
-        $this->genericBaseQueryAddOrderBy($qb, $orderBy);
-    
-        return $qb;
-    }
-
-    /**
-     * Adds WHERE clause to given query builder.
-     *
-     * @param QueryBuilder $qb    Given query builder instance
-     * @param string       $where The where clause to use when retrieving the collection (optional) (default='')
-     *
-     * @return QueryBuilder query builder instance to be further processed
-     */
-    protected function genericBaseQueryAddWhere(QueryBuilder $qb, $where = '')
-    {
         if (!empty($where)) {
-            // Use FilterUtil to support generic filtering.
-            //$qb->where($where);
-    
-            // Create filter configuration.
-            $filterConfig = new FilterConfig($qb);
-    
-            // Define plugins to be used during filtering.
-            $filterPluginManager = new FilterPluginManager(
-                $filterConfig,
-    
-                // Array of plugins to load.
-                // If no plugin with default = true given the compare plugin is loaded and used for unconfigured fields.
-                // Multiple objects of the same plugin with different configurations are possible.
-                [
-                    new DateFilter(['startDate', 'endDate'/*, 'tblJoin.someJoinedField'*/])
-                ],
-    
-                // Allowed operators per field.
-                // Array in the form "field name => operator array".
-                // If a field is not set in this array all operators are allowed.
-                []
-            );
-    
-            // add category plugins dynamically for all existing registry properties
-            // we need to create one category plugin instance for each one
-            $categoryHelper = ServiceUtil::get('rk_download_module.category_helper');
-            $categoryProperties = $categoryHelper->getAllProperties('file');
-            foreach ($categoryProperties as $propertyName => $registryId) {
-                $config['plugins'][] = new CategoryFilter('RKDownLoadModule', $propertyName, 'categories' . ucfirst($propertyName));
-            }
-    
-            // Request object to obtain the filter string (only needed if the filter is set via GET or it reads values from GET).
-            // We do this not per default (for now) to prevent problems with explicite filters set by blocks or content types.
-            // TODO readd automatic request processing (basically replacing applyDefaultFilters() and addCommonViewFilters()).
-            $request = null;
-    
-            // Name of filter variable(s) (filterX).
-            $filterKey = 'filter';
-    
-            // initialise FilterUtil and assign both query builder and configuration
-            $filterUtil = new FilterUtil($filterPluginManager, $request, $filterKey);
-    
-            // set our given filter
-            $filterUtil->setFilter($where);
-    
-            // you could add explicit filters at this point, something like
-            // $filterUtil->addFilter('foo:eq:something,bar:gt:100');
-            // read more at https://github.com/zikula/core/tree/1.4/src/docs/Core-2.0/FilterUtil
-    
-            // now enrich the query builder
-            $filterUtil->enrichQuery();
+            $qb->andWhere($where);
         }
     
-        if (null === $this->getRequest()) {
-            // if no request is set we return (#783)
-            return $qb;
-        }
-    
-        
-        $showOnlyOwnEntries = $this->getRequest()->query->getInt('own', 0);
-        if ($showOnlyOwnEntries == 1) {
-            
-            $userId = $this->getRequest()->getSession()->get('uid');
-            $qb->andWhere('tbl.createdBy = :creator')
-               ->setParameter('creator', $userId);
-        }
+        $this->genericBaseQueryAddOrderBy($qb, $orderBy);
     
         return $qb;
     }
@@ -1003,7 +599,7 @@ abstract class AbstractFileRepository extends EntityRepository
      * @param QueryBuilder $qb      Given query builder instance
      * @param string       $orderBy The order-by clause to use when retrieving the collection (optional) (default='')
      *
-     * @return QueryBuilder query builder instance to be further processed
+     * @return QueryBuilder Query builder instance to be further processed
      */
     protected function genericBaseQueryAddOrderBy(QueryBuilder $qb, $orderBy = '')
     {
@@ -1011,38 +607,43 @@ abstract class AbstractFileRepository extends EntityRepository
             // random selection
             $qb->addSelect('MOD(tbl.id, ' . mt_rand(2, 15) . ') AS HIDDEN randomIdentifiers')
                ->add('orderBy', 'randomIdentifiers');
-            $orderBy = '';
-        } elseif (empty($orderBy)) {
+    
+            return $qb;
+        }
+    
+        if (empty($orderBy)) {
             $orderBy = $this->defaultSortingField;
         }
     
-        // add order by clause
-        if (!empty($orderBy)) {
-            if (false === strpos($orderBy, '.')) {
-                $orderBy = 'tbl.' . $orderBy;
-            }
-            if (false !== strpos($orderBy, 'tbl.createdBy')) {
-                $qb->addSelect('tblCreator')
-                   ->leftJoin('tbl.createdBy', 'tblCreator');
-                $orderBy = str_replace('tbl.createdBy', 'tblCreator.uname', $orderBy);
-            }
-            if (false !== strpos($orderBy, 'tbl.updatedBy')) {
-                $qb->addSelect('tblUpdater')
-                   ->leftJoin('tbl.updatedBy', 'tblUpdater');
-                $orderBy = str_replace('tbl.updatedBy', 'tblUpdater.uname', $orderBy);
-            }
-            $qb->add('orderBy', $orderBy);
+        if (empty($orderBy)) {
+            return $qb;
         }
+    
+        // add order by clause
+        if (false === strpos($orderBy, '.')) {
+            $orderBy = 'tbl.' . $orderBy;
+        }
+        if (false !== strpos($orderBy, 'tbl.createdBy')) {
+            $qb->addSelect('tblCreator')
+               ->leftJoin('tbl.createdBy', 'tblCreator');
+            $orderBy = str_replace('tbl.createdBy', 'tblCreator.uname', $orderBy);
+        }
+        if (false !== strpos($orderBy, 'tbl.updatedBy')) {
+            $qb->addSelect('tblUpdater')
+               ->leftJoin('tbl.updatedBy', 'tblUpdater');
+            $orderBy = str_replace('tbl.updatedBy', 'tblUpdater.uname', $orderBy);
+        }
+        $qb->add('orderBy', $orderBy);
     
         return $qb;
     }
 
     /**
-     * Retrieves Doctrine query from query builder, applying FilterUtil and other common actions.
+     * Retrieves Doctrine query from query builder.
      *
      * @param QueryBuilder $qb Query builder instance
      *
-     * @return Query query instance to be further processed
+     * @return Query Query instance to be further processed
      */
     public function getQueryFromBuilder(QueryBuilder $qb)
     {
@@ -1078,82 +679,5 @@ abstract class AbstractFileRepository extends EntityRepository
         $qb->leftJoin('tbl.categories', 'tblCategories');
     
         return $qb;
-    }
-
-    /**
-     * Update for files becoming archived.
-     *
-     * @return bool If everything went right or not
-     *
-     * @param PermissionApi       $permissionApi  PermissionApi service instance
-     * @param Session             $session        Session service instance
-     * @param TranslatorInterface $translator     Translator service instance
-     * @param WorkflowHelper      $workflowHelper WorkflowHelper service instance
-     * @param HookHelper          $hookHelper     HookHelper service instance
-     *
-     * @throws RuntimeException Thrown if workflow action execution fails
-     */
-    public function archiveObjects(PermissionApi $permissionApi, SessionInterface $session, TranslatorInterface $translator, WorkflowHelper $workflowHelper, HookHelper $hookHelper)
-    {
-        if (true !== $session->get('RKDownLoadModuleAutomaticArchiving', false) && !$permissionApi->hasPermission('RKDownLoadModule', '.*', ACCESS_EDIT)) {
-            // current user has no permission for executing the archive workflow action
-            return true;
-        }
-    
-        if (null == $this->getRequest()) {
-            // return as no request is given
-            return true;
-        }
-    
-        $today = date('Y-m-d') . ' 00:00:00';
-    
-        $qb = $this->genericBaseQuery('', '', false);
-    
-        /*$qb->andWhere('tbl.workflowState != :archivedState')
-           ->setParameter('archivedState', 'archived');*/
-        $qb->andWhere('tbl.workflowState = :approvedState')
-           ->setParameter('approvedState', 'approved');
-    
-        $qb->andWhere('tbl.endDate < :today')
-           ->setParameter('today', $today);
-    
-        $query = $this->getQueryFromBuilder($qb);
-    
-        $affectedEntities = $query->getResult();
-    
-        $action = 'archive';
-        foreach ($affectedEntities as $entity) {
-            $entity->initWorkflow();
-    
-            // Let any hooks perform additional validation actions
-            $validationHooksPassed = $hookHelper->callValidationHooks($entity, 'validate_edit');
-            if (!$validationHooksPassed) {
-                continue;
-            }
-    
-            $success = false;
-            try {
-                if (!$entity->validate()) {
-                    continue;
-                }
-                // execute the workflow action
-                $success = $workflowHelper->executeAction($entity, $action);
-            } catch(\Exception $e) {
-                $flashBag = $session->getFlashBag();
-                $flashBag->add('error', $translator->__f('Sorry, but an error occured during the %action% action. Please apply the changes again!', ['%action%' => $action]) . '  ' . $e->getMessage());
-            }
-    
-            if (!$success) {
-                continue;
-            }
-    
-            // Let any hooks know that we have updated an item
-            $urlArgs = $entity->createUrlArgs();
-            $urlArgs['_locale'] = $this->request->getLocale();
-            $url = new RouteUrl('rkdownloadmodule_file_display', $urlArgs);
-            $hookHelper->callProcessHooks($entity, 'process_edit', $url);
-        }
-    
-        return true;
     }
 }

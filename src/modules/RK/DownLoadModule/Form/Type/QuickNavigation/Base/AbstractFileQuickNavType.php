@@ -43,8 +43,11 @@ abstract class AbstractFileQuickNavType extends AbstractType
      * @param ListEntriesHelper   $listHelper   ListEntriesHelper service instance
      * @param FeatureActivationHelper $featureActivationHelper FeatureActivationHelper service instance
      */
-    public function __construct(TranslatorInterface $translator, ListEntriesHelper $listHelper, FeatureActivationHelper $featureActivationHelper)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        ListEntriesHelper $listHelper,
+        FeatureActivationHelper $featureActivationHelper
+    ) {
         $this->setTranslator($translator);
         $this->listHelper = $listHelper;
         $this->featureActivationHelper = $featureActivationHelper;
@@ -61,7 +64,7 @@ abstract class AbstractFileQuickNavType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -234,7 +237,7 @@ abstract class AbstractFileQuickNavType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getBlockPrefix()
     {

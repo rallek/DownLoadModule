@@ -14,12 +14,11 @@ namespace RK\DownLoadModule\Listener\Base;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Zikula\Common\Translator\TranslatorInterface;
 use Zikula\Core\Event\GenericEvent;
 use Zikula\UsersModule\Api\CurrentUserApi;
 use Zikula\UsersModule\UserEvents;
-use RK\DownLoadModule\Entity\Factory\DownLoadFactory;
+use RK\DownLoadModule\Entity\Factory\EntityFactory;
 
 /**
  * Event handler base class for user-related events.
@@ -32,7 +31,7 @@ abstract class AbstractUserListener implements EventSubscriberInterface
     protected $translator;
     
     /**
-     * @var DownLoadFactory
+     * @var EntityFactory
      */
     protected $entityFactory;
     
@@ -49,15 +48,19 @@ abstract class AbstractUserListener implements EventSubscriberInterface
     /**
      * UserListener constructor.
      *
-     * @param TranslatorInterface $translator     Translator service instance
-     * @param DownLoadFactory $entityFactory DownLoadFactory service instance
+     * @param TranslatorInterface $translator    Translator service instance
+     * @param EntityFactory       $entityFactory EntityFactory service instance
      * @param CurrentUserApi      $currentUserApi CurrentUserApi service instance
-     * @param LoggerInterface     $logger         Logger service instance
+     * @param LoggerInterface     $logger        Logger service instance
      *
      * @return void
      */
-    public function __construct(TranslatorInterface $translator, DownLoadFactory $entityFactory, CurrentUserApi $currentUserApi, LoggerInterface $logger)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        EntityFactory $entityFactory,
+        CurrentUserApi $currentUserApi,
+        LoggerInterface $logger
+    ) {
         $this->translator = $translator;
         $this->entityFactory = $entityFactory;
         $this->currentUserApi = $currentUserApi;
@@ -70,25 +73,10 @@ abstract class AbstractUserListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'user.gettheme'            => ['getTheme', 5],
             UserEvents::CREATE_ACCOUNT => ['create', 5],
             UserEvents::UPDATE_ACCOUNT => ['update', 5],
             UserEvents::DELETE_ACCOUNT => ['delete', 5]
         ];
-    }
-    
-    /**
-     * Listener for the `user.gettheme` event.
-     *
-     * Called during \UserUtil::getTheme() and is used to filter the results.
-     * Receives arg['type'] with the type of result to be filtered
-     * and the $themeName in the $event->data which can be modified.
-     * Must $event->stopPropagation() if handler performs filter.
-     *
-     * @param GenericEvent $event The event instance
-     */
-    public function getTheme(GenericEvent $event)
-    {
     }
     
     /**

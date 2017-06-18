@@ -38,7 +38,7 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
         // Check if upload directories exist and if needed create them
         try {
             $container = $this->container;
-            $uploadHelper = new \RK\DownLoadModule\Helper\UploadHelper($container->get('translator.default'), $container->get('session'), $container->get('logger'), $container->get('zikula_users_module.current_user'), $container->get('zikula_extensions_module.api.variable'), $container->getParameter('datadir'));
+            $uploadHelper = new \RK\DownLoadModule\Helper\UploadHelper($container->get('translator.default'), $container->get('session'), $container->get('liip_imagine.cache.manager'), $container->get('logger'), $container->get('zikula_users_module.current_user'), $container->get('zikula_extensions_module.api.variable'), $container->getParameter('datadir'));
             $uploadHelper->checkAndCreateAllUploadFolders();
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
@@ -59,13 +59,13 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
         // set up all our vars with initial values
         $this->setVar('fileEntriesPerPage', '10');
         $this->setVar('linkOwnFilesOnAccountPage', true);
+        $this->setVar('enabledFinderTypes', [ 'file' ]);
     
         $categoryRegistryIdsPerEntity = [];
     
         // add default entry for category registry (property named Main)
         $categoryHelper = new \RK\DownLoadModule\Helper\CategoryHelper(
             $this->container->get('translator.default'),
-            $this->container->get('session'),
             $this->container->get('request_stack'),
             $logger,
             $this->container->get('zikula_users_module.current_user'),
@@ -95,7 +95,6 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
     
         // install subscriber hooks
         $this->hookApi->installSubscriberHooks($this->bundle->getMetaData());
-        
     
         // initialisation successful
         return true;
@@ -394,10 +393,10 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
     
         // uninstall subscriber hooks
         $this->hookApi->uninstallSubscriberHooks($this->bundle->getMetaData());
-        
     
         // remove all module vars
         $this->delVars();
+    
         // remove category registry entries
         $categoryRegistryApi = $this->container->get('zikula_categories_module.api.category_registry');
         // assume that not more than five registries exist
