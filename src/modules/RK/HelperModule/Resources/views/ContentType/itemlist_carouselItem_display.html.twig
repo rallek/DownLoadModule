@@ -1,6 +1,0 @@
-{# Purpose of this template: Display carousel items within an external context #}
-{% for carouselItem in items %}
-    <h3>{{ carouselItem|rkhelpermodule_formattedTitle }}</h3>
-    <p><a href="{{ path('rkhelpermodule_carouselitem_display', { 'id': carouselItem.getId() }) }}">{{ __('Read more') }}</a>
-    </p>
-{% endfor %}

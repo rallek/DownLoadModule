@@ -1,6 +1,0 @@
-{# Purpose of this template: Display images within an external context #}
-{% for image in items %}
-    <h3>{{ image|rkhelpermodule_formattedTitle }}</h3>
-    <p><a href="{{ path('rkhelpermodule_image_display', { 'id': image.getId() }) }}">{{ __('Read more') }}</a>
-    </p>
-{% endfor %}
