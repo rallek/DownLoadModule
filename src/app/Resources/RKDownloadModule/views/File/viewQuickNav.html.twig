@@ -1,5 +1,5 @@
 {# purpose of this template: files view filter form #}
-{% if hasPermission('RKDownLoadModule:File:', '::', 'ACCESS_EDIT') %}
+{% if hasPermission('RKDownLoadModule:File:', '::', 'ACCESS_READ') %}
     {% form_theme quickNavForm with [
         'bootstrap_3_layout.html.twig'
     ] %}
