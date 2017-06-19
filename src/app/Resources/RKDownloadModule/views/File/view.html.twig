@@ -6,8 +6,12 @@
 <div class="rkdownloadmodule-file rkdownloadmodule-view">
 
     {{ block('page_nav_links') }}
-
-    {{ include('@RKDownLoadModule/File/viewQuickNav.html.twig') }}{# see template file for available options #}
+	
+	{% if routeArea == 'admin' %}
+	{{ include('@RKDownLoadModule/File/viewQuickNav.html.twig') }}{# see template file for available options #}
+	{% else %}
+    {{ include('@RKDownLoadModule/File/viewQuickNav.html.twig', {searchFilter:false, workflowStateFilter:false}) }}{# see template file for available options #}
+	{% endif %}
 
     {% if routeArea == 'admin' %}
     <form action="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'handleselectedentries') }}" method="post" id="filesViewForm" class="form-horizontal" role="form">
@@ -26,8 +30,10 @@
                 <col id="cFileName" />
                 <col id="cMyFile" />
                 <col id="cMyDescription" />
+				{% if routeArea == 'admin' %}
                 <col id="cStartDate" />
                 <col id="cEndDate" />
+				{% endif %}
             </colgroup>
             <thead>
             <tr>
@@ -51,12 +57,14 @@
                 <th id="hMyDescription" scope="col" class="text-left z-order-unsorted">
                     {{ __('My description') }}
                 </th>
+				{% if routeArea == 'admin' %}
                 <th id="hStartDate" scope="col" class="text-left z-order-unsorted">
                     {{ __('Start date') }}
                 </th>
                 <th id="hEndDate" scope="col" class="text-left z-order-unsorted">
                     {{ __('End date') }}
                 </th>
+				{% endif %}
             </tr>
             </thead>
             <tbody>
@@ -75,7 +83,8 @@
                         {{ knp_menu_render(itemActions, { template: 'ZikulaMenuModule:Override:actions.html.twig' }) }}
                     </div>
                 </td>
-                {% if routeArea == 'admin' %}<td headers="hWorkflowState" class="text-left nowrap">
+                {% if routeArea == 'admin' %}
+				<td headers="hWorkflowState" class="text-left nowrap">
                     {{ file.workflowState|rkdownloadmodule_objectState }}
                 </td>
                 {% endif %}<td headers="hFileName" class="text-left">
@@ -96,12 +105,14 @@
                 <td headers="hMyDescription" class="text-left">
                     {{ file.myDescription|safeHtml|truncate(50) }}
                 </td>
+				{% if routeArea == 'admin' %}
                 <td headers="hStartDate" class="text-left">
                     {{ file.startDate|localizeddate('medium', 'none') }}
                 </td>
                 <td headers="hEndDate" class="text-left">
                     {{ file.endDate|localizeddate('medium', 'none') }}
                 </td>
+				{% endif %}
             </tr>
         {% else %}
             <tr class="z-{{ routeArea == 'admin' ? 'admin' : 'data' }}tableempty">
