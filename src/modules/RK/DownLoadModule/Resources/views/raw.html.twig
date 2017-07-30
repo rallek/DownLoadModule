@@ -5,9 +5,7 @@
     <title>{{ block('pageTitle')|default(block('title')) }}</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap/css/bootstrap-theme.min.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ asset('jquery-ui/themes/base/jquery-ui.min.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap-jqueryui/bootstrap-jqueryui.min.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ app.request.basePath }}/style/core.css" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/core/css/core.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ zasset('@RKDownLoadModule:css/style.css') }}" />
     {% if useFinder|default == true %}
         <link rel="stylesheet" type="text/css" href="{{ zasset('@RKDownLoadModule:css/finder.css') }}" />
@@ -20,8 +18,6 @@
     </script>
     <script type="text/javascript" src="{{ asset('jquery/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('jquery-ui/jquery-ui.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('bootstrap-jqueryui/bootstrap-jqueryui.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/fos_js_routes.js') }}"></script>
     <script type="text/javascript" src="{{ asset('bundles/bazingajstranslation/js/translator.min.js') }}"></script>

@@ -5,7 +5,6 @@ services:
         arguments:
             - "@translator.default"
             - "@zikula_extensions_module.api.variable"
-            - "@zikula_users_module.user_repository"
             - "@rk_download_module.entity_display_helper"
             - "@rk_download_module.workflow_helper"
             - "@rk_download_module.listentries_helper"

@@ -4,7 +4,7 @@
 {% block admin_page_icon 'trash-o' %}
 {% block content %}
     <div class="rkdownloadmodule-file rkdownloadmodule-delete">
-        <p class="alert alert-warning">{{ __f('Do you really want to delete this file: "%name%" ?', { '%name%': file|rkdownloadmodule_formattedTitle }) }}</p>
+        <p class="alert alert-warning">{{ __f('Do you really want to delete this file: "%name%" ?', {'%name%': file|rkdownloadmodule_formattedTitle}) }}</p>
 
         {% form_theme deleteForm with [
             '@RKDownLoadModule/Form/bootstrap_3.html.twig',
@@ -13,6 +13,13 @@
         {{ form_start(deleteForm) }}
         {{ form_errors(deleteForm) }}
 
+        {% if formHookTemplates|length > 0 %}
+            <fieldset>
+                {% for hookTemplate in formHookTemplates %}
+                    {{ include(hookTemplate.0, hookTemplate.1, ignore_missing = true) }}
+                {% endfor %}
+            </fieldset>
+        {% endif %}
         <fieldset>
             <legend>{{ __('Confirmation prompt') }}</legend>
             <div class="form-group">
@@ -22,9 +29,9 @@
                 </div>
             </div>
         </fieldset>
+        {{ form_end(deleteForm) }}
 
         {{ block('display_hooks') }}
-        {{ form_end(deleteForm) }}
     </div>
 {% endblock %}
 {% block display_hooks %}

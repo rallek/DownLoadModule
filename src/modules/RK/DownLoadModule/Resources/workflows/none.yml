@@ -1,0 +1,38 @@
+workflow:
+    workflows:
+        rkdownloadmodule_none:
+            type: state_machine
+            marking_store:
+                type: single_state
+                arguments:
+                    - workflowState
+            supports:
+                - RK\DownLoadModule\Entity\FileEntity
+            places:
+                - initial
+                - deferred
+                - approved
+                - archived
+                - deleted
+            transitions:
+                defer:
+                    from: initial
+                    to: deferred
+                submit:
+                    from: [initial, deferred]
+                    to: approved
+                updateapproved:
+                    from: approved
+                    to: approved
+                updatedeferred:
+                    from: deferred
+                    to: deferred
+                archive:
+                    from: approved
+                    to: archived
+                updatearchived:
+                    from: archived
+                    to: archived
+                delete:
+                    from: [deferred, approved, archived]
+                    to: deleted

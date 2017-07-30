@@ -1,0 +1,22 @@
+services:
+    rk_download_module.hook_subscriber.filter_hooks.files:
+        class: RK\DownLoadModule\HookSubscriber\FileFilterHooksSubscriber
+        arguments:
+            - "@translator.default"
+        tags:
+            - { name: zikula.hook_subscriber, areaName: 'subscriber.rkdownloadmodule.filter_hooks.files' }
+
+    rk_download_module.hook_subscriber.form_aware_hook.files:
+        class: RK\DownLoadModule\HookSubscriber\FileFormAwareHookSubscriber
+        arguments:
+            - "@translator.default"
+        tags:
+            - { name: zikula.hook_subscriber, areaName: 'subscriber.rkdownloadmodule.form_aware_hook.files' }
+
+    rk_download_module.hook_subscriber.ui_hooks.files:
+        class: RK\DownLoadModule\HookSubscriber\FileUiHooksSubscriber
+        arguments:
+            - "@translator.default"
+        tags:
+            - { name: zikula.hook_subscriber, areaName: 'subscriber.rkdownloadmodule.ui_hooks.files' }
+

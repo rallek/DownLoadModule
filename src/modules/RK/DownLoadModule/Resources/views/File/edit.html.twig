@@ -27,21 +27,18 @@
         </fieldset>
         
         {% if featureActivationHelper.isEnabled(constant('RK\\DownLoadModule\\Helper\\FeatureActivationHelper::CATEGORIES'), 'file') %}
-            {{ include('@RKDownLoadModule/Helper/includeCategoriesEdit.html.twig', { obj: file }) }}
+            {{ include('@RKDownLoadModule/Helper/includeCategoriesEdit.html.twig', {obj: file}) }}
         {% endif %}
         {% if mode != 'create' %}
-            {{ include('@RKDownLoadModule/Helper/includeStandardFieldsEdit.html.twig', { obj: file }) }}
+            {{ include('@RKDownLoadModule/Helper/includeStandardFieldsEdit.html.twig', {obj: file}) }}
         {% endif %}
         
-        {% set hookId = mode != 'create' ? file.id : null %}
-        {% set hooks = notifyDisplayHooks(eventName='rkdownloadmodule.ui_hooks.files.form_edit', id=hookId) %}
-        {% if hooks is iterable and hooks|length > 0 %}
-            {% for providerArea, hook in hooks if providerArea != 'provider.scribite.ui_hooks.editor' %}
-                <fieldset>
-                    <legend>{{ providerArea }}</legend>
-                    {{ hook }}
-                </fieldset>
-            {% endfor %}
+        {% if formHookTemplates|length > 0 %}
+            <fieldset>
+                {% for hookTemplate in formHookTemplates %}
+                    {{ include(hookTemplate.0, hookTemplate.1, ignore_missing = true) }}
+                {% endfor %}
+            </fieldset>
         {% endif %}
         
         {% if form.moderationSpecificCreator is defined %}
@@ -73,27 +70,37 @@
             </div>
         </div>
         {{ form_end(form) }}
+        {% set hookId = mode != 'create' ? file.id : null %}
+        {% set hooks = notifyDisplayHooks(eventName='rkdownloadmodule.ui_hooks.files.form_edit', id=hookId) %}
+        {% if hooks is iterable and hooks|length > 0 %}
+            <h3>{{ __('Hooks') }}</h3>
+            {% for providerArea, hook in hooks if providerArea != 'provider.scribite.ui_hooks.editor' %}
+                <h4>{{ providerArea }}</h4>
+                {{ hook }}
+            {% endfor %}
+        {% endif %}
+        
     </div>
 {% endblock %}
 {% block footer %}
     {{ parent() }}
-    {% set editImage = '<span class="fa fa-pencil-square-o"></span>' %}
-    {% set removeImage = '<span class="fa fa-trash-o"></span>' %}
-    
-    <script type="text/javascript">
-    /* <![CDATA[ */
-        
-        ( function($) {
-            $(document).ready(function() {
-                // initialise auto completion for user fields
-                {% if form.moderationSpecificCreator is defined %}
-                    rKDownLoadInitUserField('rkdownloadmodule_file_moderationSpecificCreator', 'getCommonUsersList');
-                {% endif %}
-                rKDownLoadInitEditForm('{{ mode }}', '{% if mode != 'create' %}{{ file.id }}{% endif %}');
-                rKDownLoadInitUploadField('rkdownloadmodule_file_myFile_myFile');
-                rKDownLoadInitDateField('rkdownloadmodule_file_startDate');
-            });
-        })(jQuery);
-    /* ]]> */
-    </script>
+    {% set formInitScript %}
+        <script type="text/javascript">
+        /* <![CDATA[ */
+            
+            ( function($) {
+                $(document).ready(function() {
+                    // initialise auto completion for user fields
+                    {% if form.moderationSpecificCreator is defined %}
+                        initUserLiveSearch('rkdownloadmodule_file_moderationSpecificCreator');
+                    {% endif %}
+                    rKDownLoadInitEditForm('{{ mode }}', '{% if mode != 'create' %}{{ file.id }}{% endif %}');
+                    rKDownLoadInitUploadField('rkdownloadmodule_file_myFile_myFile');
+                    rKDownLoadInitDateField('rkdownloadmodule_file_startDate');
+                });
+            })(jQuery);
+        /* ]]> */
+        </script>
+    {% endset %}
+    {{ pageAddAsset('footer', formInitScript) }}
 {% endblock %}

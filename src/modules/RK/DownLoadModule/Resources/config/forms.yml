@@ -42,13 +42,6 @@ services:
         tags:
             - { name: form.type }
     
-    rk_download_module.form.type.deleteentity:
-        class: RK\DownLoadModule\Form\DeleteEntityType
-        arguments:
-            - "@translator.default"
-        tags:
-            - { name: form.type }
-    
     rk_download_module.form.type.block.itemlist:
         class: RK\DownLoadModule\Block\Form\Type\ItemListBlockType
         arguments:

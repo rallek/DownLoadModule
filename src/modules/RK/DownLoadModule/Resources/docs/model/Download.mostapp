@@ -65,4 +65,13 @@ application "DownLoad" {
             }
         }
     }
+    variables {
+        varContainer "MySettings" {
+            vars {
+                filePathVar "myDirectory",
+                listVar "myOptions",
+                textVar "myText"
+            }
+        }
     }
+}

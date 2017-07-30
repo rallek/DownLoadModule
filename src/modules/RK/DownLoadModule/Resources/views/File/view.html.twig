@@ -1,6 +1,6 @@
 {# purpose of this template: files list view #}
 {% extends routeArea == 'admin' ? 'RKDownLoadModule::adminBase.html.twig' : 'RKDownLoadModule::base.html.twig' %}
-{% block title own ? __('My files') : __('File list') %}
+{% block title own ? __('My files') : __('Files list') %}
 {% block admin_page_icon 'list-alt' %}
 {% block content %}
 <div class="rkdownloadmodule-file rkdownloadmodule-view">
@@ -69,10 +69,10 @@
                     </td>
                 {% endif %}
                 <td id="itemActions{{ file.getKey() }}" headers="hItemActions" class="fixed-column actions nowrap z-w02">
-                    {% set itemActions = knp_menu_get('RKDownLoadModule:ItemActionsMenu:menu', [], { entity: file, area: routeArea, context: 'view' }) %}
+                    {% set itemActions = knp_menu_get('RKDownLoadModule:ItemActionsMenu:menu', [], {entity: file, area: routeArea, context: 'view'}) %}
                     <div class="dropdown">
                         <a id="itemActions{{ file.getKey() }}DropDownToggle" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> <span class="caret"></span></a>
-                        {{ knp_menu_render(itemActions, { template: 'ZikulaMenuModule:Override:actions.html.twig' }) }}
+                        {{ knp_menu_render(itemActions, {template: 'ZikulaMenuModule:Override:actions.html.twig'}) }}
                     </div>
                 </td>
                 {% if routeArea == 'admin' %}<td headers="hWorkflowState" class="text-left nowrap">
@@ -116,7 +116,7 @@
         </div>
         
         {% if all != 1 and pager|default %}
-            {{ pager({ rowcount: pager.amountOfItems, limit: pager.itemsPerPage, display: 'page', route: 'rkdownloadmodule_file_' ~ routeArea ~ 'view'}) }}
+            {{ pager({rowcount: pager.amountOfItems, limit: pager.itemsPerPage, display: 'page', route: 'rkdownloadmodule_file_' ~ routeArea ~ 'view'}) }}
         {% endif %}
     {% if routeArea == 'admin' %}
             <fieldset>
@@ -152,7 +152,7 @@
             <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view') }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
         {% else %}
             {% set linkTitle = __('Show all entries') %}
-            <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view', { all: 1 }) }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
+            <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view', {all: 1}) }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
         {% endif %}
     </p>
 {% endblock %}

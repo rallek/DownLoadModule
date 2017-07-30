@@ -10,10 +10,3 @@ services:
             - "@rk_download_module.upload_helper"
         tags:
             - { name: form.type }
-    
-    rk_download_module.form.type.field.user:
-        class: RK\DownLoadModule\Form\Type\Field\UserType
-        arguments:
-            - "@zikula_users_module.user_repository"
-        tags:
-            - { name: form.type }
