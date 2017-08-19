@@ -222,7 +222,7 @@ abstract class AbstractEditHandler
      * @param RequestStack              $requestStack     RequestStack service instance
      * @param RouterInterface           $router           Router service instance
      * @param LoggerInterface           $logger           Logger service instance
-     * @param PermissionApiInterface             $permissionApi    PermissionApi service instance
+     * @param PermissionApiInterface    $permissionApi    PermissionApi service instance
      * @param CurrentUserApiInterface   $currentUserApi   CurrentUserApi service instance
      * @param EntityFactory             $entityFactory    EntityFactory service instance
      * @param ControllerHelper          $controllerHelper ControllerHelper service instance
@@ -335,7 +335,7 @@ abstract class AbstractEditHandler
             if (null !== $entity) {
                 if (true === $this->hasPageLockSupport && $this->kernel->isBundle('ZikulaPageLockModule') && null !== $this->lockingApi) {
                     // try to guarantee that only one person at a time can be editing this entity
-                    $lockName = 'RKDownLoadModule' . $this->objectTypeCapital . $this->entityRef->getKey();
+                    $lockName = 'RKDownLoadModule' . $this->objectTypeCapital . $entity->getKey();
                     $this->lockingApi->addLock($lockName, $this->getRedirectUrl(null));
                     // reload entity as the addLock call above has triggered the preUpdate event
                     $this->entityFactory->getObjectManager()->refresh($entity);
@@ -554,7 +554,7 @@ abstract class AbstractEditHandler
         }
     
         if (true === $this->hasPageLockSupport && $this->templateParameters['mode'] == 'edit' && $this->kernel->isBundle('ZikulaPageLockModule') && null !== $this->lockingApi) {
-            $lockName = 'RKDownLoadModule' . $this->objectTypeCapital . $this->entityRef->getKey();
+            $lockName = 'RKDownLoadModule' . $this->objectTypeCapital . $entity->getKey();
             $this->lockingApi->releaseLock($lockName);
         }
     

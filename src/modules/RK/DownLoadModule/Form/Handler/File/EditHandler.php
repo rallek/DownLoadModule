@@ -15,7 +15,7 @@ namespace RK\DownLoadModule\Form\Handler\File;
 use RK\DownLoadModule\Form\Handler\File\Base\AbstractEditHandler;
 
 /**
- * This handler class handles the page events of the Form called by the rKDownLoadModule_file_edit() function.
+ * This handler class handles the page events of editing forms.
  * It aims on the file object type.
  */
 class EditHandler extends AbstractEditHandler

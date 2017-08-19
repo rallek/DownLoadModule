@@ -116,10 +116,10 @@ abstract class AbstractFileRepository extends EntityRepository
     /**
      * Updates the creator of all objects created by a certain user.
      *
-     * @param integer             $userId         The userid of the creator to be replaced
-     * @param integer             $newUserId      The new userid of the creator as replacement
-     * @param TranslatorInterface $translator     Translator service instance
-     * @param LoggerInterface     $logger         Logger service instance
+     * @param integer                 $userId         The userid of the creator to be replaced
+     * @param integer                 $newUserId      The new userid of the creator as replacement
+     * @param TranslatorInterface     $translator     Translator service instance
+     * @param LoggerInterface         $logger         Logger service instance
      * @param CurrentUserApiInterface $currentUserApi CurrentUserApi service instance
      *
      * @return void
@@ -149,10 +149,10 @@ abstract class AbstractFileRepository extends EntityRepository
     /**
      * Updates the last editor of all objects updated by a certain user.
      *
-     * @param integer             $userId         The userid of the last editor to be replaced
-     * @param integer             $newUserId      The new userid of the last editor as replacement
-     * @param TranslatorInterface $translator     Translator service instance
-     * @param LoggerInterface     $logger         Logger service instance
+     * @param integer                 $userId         The userid of the last editor to be replaced
+     * @param integer                 $newUserId      The new userid of the last editor as replacement
+     * @param TranslatorInterface     $translator     Translator service instance
+     * @param LoggerInterface         $logger         Logger service instance
      * @param CurrentUserApiInterface $currentUserApi CurrentUserApi service instance
      *
      * @return void
@@ -182,9 +182,9 @@ abstract class AbstractFileRepository extends EntityRepository
     /**
      * Deletes all objects created by a certain user.
      *
-     * @param integer             $userId         The userid of the creator to be removed
-     * @param TranslatorInterface $translator     Translator service instance
-     * @param LoggerInterface     $logger         Logger service instance
+     * @param integer                 $userId         The userid of the creator to be removed
+     * @param TranslatorInterface     $translator     Translator service instance
+     * @param LoggerInterface         $logger         Logger service instance
      * @param CurrentUserApiInterface $currentUserApi CurrentUserApi service instance
      *
      * @return void
@@ -212,9 +212,9 @@ abstract class AbstractFileRepository extends EntityRepository
     /**
      * Deletes all objects updated by a certain user.
      *
-     * @param integer             $userId         The userid of the last editor to be removed
-     * @param TranslatorInterface $translator     Translator service instance
-     * @param LoggerInterface     $logger         Logger service instance
+     * @param integer                 $userId         The userid of the last editor to be removed
+     * @param TranslatorInterface     $translator     Translator service instance
+     * @param LoggerInterface         $logger         Logger service instance
      * @param CurrentUserApiInterface $currentUserApi CurrentUserApi service instance
      *
      * @return void

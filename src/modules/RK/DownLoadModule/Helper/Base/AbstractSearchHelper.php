@@ -83,7 +83,7 @@ abstract class AbstractSearchHelper implements SearchableInterface
      * SearchHelper constructor.
      *
      * @param TranslatorInterface $translator          Translator service instance
-     * @param PermissionApiInterface    $permissionApi   PermissionApi service instance
+     * @param PermissionApiInterface $permissionApi    PermissionApi service instance
      * @param SessionInterface    $session             Session service instance
      * @param RequestStack        $requestStack        RequestStack service instance
      * @param EntityFactory       $entityFactory       EntityFactory service instance
@@ -170,7 +170,12 @@ abstract class AbstractSearchHelper implements SearchableInterface
             if ($this->request->isMethod('GET')) {
                 $isActivated = $this->request->query->get('active_' . $searchTypeCode, false);
             } elseif ($this->request->isMethod('POST')) {
-                $isActivated = $this->request->request->get('active_' . $searchTypeCode, false);
+                $searchSettings = $this->request->request->get('zikulasearchmodule_search', []);
+                $moduleActivationInfo = $searchSettings['modules'];
+                if (isset($moduleActivationInfo['RKDownLoadModule'])) {
+                    $moduleActivationInfo = $moduleActivationInfo['RKDownLoadModule'];
+                    $isActivated = isset($moduleActivationInfo['active_' . $searchTypeCode]);
+                }
             }
             if (!$isActivated) {
                 continue;

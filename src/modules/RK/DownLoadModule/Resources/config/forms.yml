@@ -10,8 +10,8 @@ services:
         tags:
             - { name: form.type }
     
-    rk_download_module.form.handler.file:
-        class: RK\DownLoadModule\Form\Handler\File\EditHandler
+    rk_download_module.form.handler.common:
+        abstract: true
         arguments:
             - "@kernel"
             - "@translator.default"
@@ -29,8 +29,11 @@ services:
             - "@rk_download_module.feature_activation_helper"
         calls:
             - [setLockingApi, ["@?zikula_pagelock_module.api.locking"]]
-        tags:
-            - { name: form.type }
+    
+    
+    rk_download_module.form.handler.file:
+        class: RK\DownLoadModule\Form\Handler\File\EditHandler
+        parent: rk_download_module.form.handler.common
     
     rk_download_module.form.type.file:
         class: RK\DownLoadModule\Form\Type\FileType

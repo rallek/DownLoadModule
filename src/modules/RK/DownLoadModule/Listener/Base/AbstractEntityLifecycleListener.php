@@ -54,8 +54,8 @@ abstract class AbstractEntityLifecycleListener implements EventSubscriber, Conta
     public function __construct(
         ContainerInterface $container,
         EventDispatcherInterface $eventDispatcher,
-        LoggerInterface $logger)
-    {
+        LoggerInterface $logger
+    ) {
         $this->setContainer($container);
         $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;

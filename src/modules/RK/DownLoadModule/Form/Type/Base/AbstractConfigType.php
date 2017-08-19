@@ -16,7 +16,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Zikula\Common\Translator\TranslatorInterface;
@@ -63,7 +62,6 @@ abstract class AbstractConfigType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $this->addMySettingsFields($builder, $options);
         $this->addListViewsFields($builder, $options);
         $this->addIntegrationFields($builder, $options);
 
@@ -82,49 +80,6 @@ abstract class AbstractConfigType extends AbstractType
                     'class' => 'btn btn-default',
                     'formnovalidate' => 'formnovalidate'
                 ]
-            ])
-        ;
-    }
-
-    /**
-     * Adds fields for my settings fields.
-     *
-     * @param FormBuilderInterface $builder The form builder
-     * @param array                $options The options
-     */
-    public function addMySettingsFields(FormBuilderInterface $builder, array $options)
-    {
-        $builder
-            ->add('myDirectory', TextType::class, [
-                'label' => $this->__('My directory') . ':',
-                'required' => false,
-                'data' => isset($this->moduleVars['myDirectory']) ? $this->moduleVars['myDirectory'] : '',
-                'empty_data' => '',
-                'attr' => [
-                    'maxlength' => 255,
-                    'title' => $this->__('Enter the my directory.')
-                ],
-            ])
-            ->add('myOptions', ChoiceType::class, [
-                'label' => $this->__('My options') . ':',
-                'data' => isset($this->moduleVars['myOptions']) ? $this->moduleVars['myOptions'] : '',
-                'empty_data' => '',
-                'attr' => [
-                    'title' => $this->__('Choose the my options.')
-                ],'choices' => [
-                ],
-                'choices_as_values' => true,
-                'multiple' => false
-            ])
-            ->add('myText', TextType::class, [
-                'label' => $this->__('My text') . ':',
-                'required' => false,
-                'data' => isset($this->moduleVars['myText']) ? $this->moduleVars['myText'] : '',
-                'empty_data' => '',
-                'attr' => [
-                    'maxlength' => 255,
-                    'title' => $this->__('Enter the my text.')
-                ],
             ])
         ;
     }

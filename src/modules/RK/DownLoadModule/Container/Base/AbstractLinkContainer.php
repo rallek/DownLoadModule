@@ -51,11 +51,11 @@ abstract class AbstractLinkContainer implements LinkContainerInterface
     /**
      * LinkContainer constructor.
      *
-     * @param TranslatorInterface $translator       Translator service instance
-     * @param Routerinterface     $router           Router service instance
-     * @param PermissionApiInterface       $permissionApi    PermissionApi service instance
-     * @param VariableApiInterface         $variableApi      VariableApi service instance
-     * @param ControllerHelper    $controllerHelper ControllerHelper service instance
+     * @param TranslatorInterface    $translator       Translator service instance
+     * @param Routerinterface        $router           Router service instance
+     * @param PermissionApiInterface $permissionApi    PermissionApi service instance
+     * @param VariableApiInterface   $variableApi      VariableApi service instance
+     * @param ControllerHelper       $controllerHelper ControllerHelper service instance
      */
     public function __construct(
         TranslatorInterface $translator,
@@ -152,7 +152,7 @@ abstract class AbstractLinkContainer implements LinkContainerInterface
             $links[] = [
                 'url' => $this->router->generate('rkdownloadmodule_file_' . $routeArea . 'view'),
                 'text' => $this->__('Files', 'rkdownloadmodule'),
-                'title' => $this->__('File list', 'rkdownloadmodule')
+                'title' => $this->__('Files list', 'rkdownloadmodule')
             ];
         }
         if ($routeArea == 'admin' && $this->permissionApi->hasPermission($this->getBundleName() . '::', '::', ACCESS_ADMIN)) {

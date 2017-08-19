@@ -46,8 +46,8 @@ abstract class AbstractImageHelper
     /**
      * ImageHelper constructor.
      *
-     * @param TranslatorInterface $translator  Translator service instance
-     * @param SessionInterface    $session     Session service instance
+     * @param TranslatorInterface  $translator  Translator service instance
+     * @param SessionInterface     $session     Session service instance
      * @param VariableApiInterface $variableApi VariableApi service instance
      */
     public function __construct(

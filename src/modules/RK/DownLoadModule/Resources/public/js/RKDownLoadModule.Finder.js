@@ -39,6 +39,9 @@ rKDownLoadModule.finder = {};
 
 rKDownLoadModule.finder.onLoad = function (baseId, selectedId)
 {
+    if (jQuery('#rKDownLoadModuleSelectorForm').length < 1) {
+        return;
+    }
     jQuery('select').not("[id$='pasteAs']").change(rKDownLoadModule.finder.onParamChanged);
     
     jQuery('.btn-default').click(rKDownLoadModule.finder.handleCancel);

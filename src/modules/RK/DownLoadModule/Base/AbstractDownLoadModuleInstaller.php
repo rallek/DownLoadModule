@@ -56,9 +56,6 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
         }
     
         // set up all our vars with initial values
-        $this->setVar('myDirectory', '');
-        $this->setVar('myOptions', '');
-        $this->setVar('myText', '');
         $this->setVar('fileEntriesPerPage', '10');
         $this->setVar('linkOwnFilesOnAccountPage', true);
         $this->setVar('enabledFinderTypes', [ 'file' ]);
@@ -172,14 +169,8 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
      */
     protected function updateModVarsTo14()
     {
-        $dbName = $this->getDbName();
         $conn = $this->getConnection();
-    
-        $conn->executeQuery("
-            UPDATE $dbName.module_vars
-            SET modname = 'RKDownLoadModule'
-            WHERE modname = 'DownLoad';
-        ");
+        $conn->update('module_vars', ['modname' => 'RKDownLoadModule'], ['modname' => 'DownLoad']);
     }
     
     /**
@@ -188,14 +179,7 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
     protected function updateExtensionInfoFor14()
     {
         $conn = $this->getConnection();
-        $dbName = $this->getDbName();
-    
-        $conn->executeQuery("
-            UPDATE $dbName.modules
-            SET name = 'RKDownLoadModule',
-                directory = 'RK/DownLoadModule'
-            WHERE name = 'DownLoad';
-        ");
+        $conn->update('modules', ['name' => 'RKDownLoadModule', 'directory' => 'RK/DownLoadModule'], ['name' => 'DownLoad']);
     }
     
     /**
@@ -204,12 +188,10 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
     protected function renamePermissionsFor14()
     {
         $conn = $this->getConnection();
-        $dbName = $this->getDbName();
-    
         $componentLength = strlen('DownLoad') + 1;
     
         $conn->executeQuery("
-            UPDATE $dbName.group_perms
+            UPDATE group_perms
             SET component = CONCAT('RKDownLoadModule', SUBSTRING(component, $componentLength))
             WHERE component LIKE 'DownLoad%';
         ");
@@ -221,12 +203,10 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
     protected function renameCategoryRegistriesFor14()
     {
         $conn = $this->getConnection();
-        $dbName = $this->getDbName();
-    
         $componentLength = strlen('DownLoad') + 1;
     
         $conn->executeQuery("
-            UPDATE $dbName.categories_registry
+            UPDATE categories_registry
             SET modname = CONCAT('RKDownLoadModule', SUBSTRING(modname, $componentLength))
             WHERE modname LIKE 'DownLoad%';
         ");
@@ -238,7 +218,6 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
     protected function renameTablesFor14()
     {
         $conn = $this->getConnection();
-        $dbName = $this->getDbName();
     
         $oldPrefix = 'downlo_';
         $oldPrefixLength = strlen($oldPrefix);
@@ -255,8 +234,8 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
             $newTableName = str_replace($oldPrefix, $newPrefix, $tableName);
     
             $conn->executeQuery("
-                RENAME TABLE $dbName.$tableName
-                TO $dbName.$newTableName;
+                RENAME TABLE $tableName
+                TO $newTableName;
             ");
         }
     }
@@ -275,49 +254,32 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
     protected function updateHookNamesFor14()
     {
         $conn = $this->getConnection();
-        $dbName = $this->getDbName();
     
-        $conn->executeQuery("
-            UPDATE $dbName.hook_area
-            SET owner = 'RKDownLoadModule'
-            WHERE owner = 'DownLoad';
-        ");
+        $conn->update('hook_area', ['owner' => 'RKDownLoadModule'], ['owner' => 'DownLoad']);
     
         $componentLength = strlen('subscriber.download') + 1;
         $conn->executeQuery("
-            UPDATE $dbName.hook_area
+            UPDATE hook_area
             SET areaname = CONCAT('subscriber.rkdownloadmodule', SUBSTRING(areaname, $componentLength))
             WHERE areaname LIKE 'subscriber.download%';
         ");
     
-        $conn->executeQuery("
-            UPDATE $dbName.hook_binding
-            SET sowner = 'RKDownLoadModule'
-            WHERE sowner = 'DownLoad';
-        ");
+        $conn->update('hook_binding', ['sowner' => 'RKDownLoadModule'], ['sowner' => 'DownLoad']);
     
-        $conn->executeQuery("
-            UPDATE $dbName.hook_runtime
-            SET sowner = 'RKDownLoadModule'
-            WHERE sowner = 'DownLoad';
-        ");
+        $conn->update('hook_runtime', ['sowner' => 'RKDownLoadModule'], ['sowner' => 'DownLoad']);
     
         $componentLength = strlen('download') + 1;
         $conn->executeQuery("
-            UPDATE $dbName.hook_runtime
+            UPDATE hook_runtime
             SET eventname = CONCAT('rkdownloadmodule', SUBSTRING(eventname, $componentLength))
             WHERE eventname LIKE 'download%';
         ");
     
-        $conn->executeQuery("
-            UPDATE $dbName.hook_subscriber
-            SET owner = 'RKDownLoadModule'
-            WHERE owner = 'DownLoad';
-        ");
+        $conn->update('hook_subscriber', ['owner' => 'RKDownLoadModule'], ['owner' => 'DownLoad']);
     
         $componentLength = strlen('download') + 1;
         $conn->executeQuery("
-            UPDATE $dbName.hook_subscriber
+            UPDATE hook_subscriber
             SET eventname = CONCAT('rkdownloadmodule', SUBSTRING(eventname, $componentLength))
             WHERE eventname LIKE 'download%';
         ");
@@ -329,13 +291,8 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
     protected function updateWorkflowsFor14()
     {
         $conn = $this->getConnection();
-        $dbName = $this->getDbName();
-    
-        $conn->executeQuery("
-            UPDATE $dbName.workflows
-            SET module = 'RKDownLoadModule'
-            WHERE module = 'DownLoad';
-        ");
+        $conn->update('workflows', ['module' => 'RKDownLoadModule'], ['module' => 'DownLoad']);
+        $conn->update('workflows', ['obj_table' => 'FileEntity'], ['module' => 'RKDownLoadModule', 'obj_table' => 'file']);
     }
     
     /**

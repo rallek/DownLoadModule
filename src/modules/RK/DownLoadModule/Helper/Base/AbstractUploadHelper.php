@@ -74,12 +74,12 @@ abstract class AbstractUploadHelper
     /**
      * UploadHelper constructor.
      *
-     * @param TranslatorInterface $translator     Translator service instance
-     * @param SessionInterface    $session        Session service instance
-     * @param LoggerInterface     $logger         Logger service instance
+     * @param TranslatorInterface     $translator     Translator service instance
+     * @param SessionInterface        $session        Session service instance
+     * @param LoggerInterface         $logger         Logger service instance
      * @param CurrentUserApiInterface $currentUserApi CurrentUserApi service instance
-     * @param object              $moduleVars     Existing module vars
-     * @param String              $dataDirectory  The data directory name
+     * @param object                  $moduleVars     Existing module vars
+     * @param String                  $dataDirectory  The data directory name
      */
     public function __construct(
         TranslatorInterface $translator,

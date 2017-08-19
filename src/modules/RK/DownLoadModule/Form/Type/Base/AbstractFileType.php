@@ -63,8 +63,8 @@ abstract class AbstractFileType extends AbstractType
      * FileType constructor.
      *
      * @param TranslatorInterface $translator    Translator service instance
-     * @param EntityFactory       $entityFactory EntityFactory service instance
-     * @param ListEntriesHelper   $listHelper    ListEntriesHelper service instance
+     * @param EntityFactory $entityFactory EntityFactory service instance
+     * @param ListEntriesHelper $listHelper ListEntriesHelper service instance
      * @param FeatureActivationHelper $featureActivationHelper FeatureActivationHelper service instance
      */
     public function __construct(

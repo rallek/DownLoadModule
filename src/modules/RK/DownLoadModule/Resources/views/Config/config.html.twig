@@ -11,39 +11,23 @@
         {{ form_start(form) }}
         <div class="zikula-bootstrap-tab-container">
             <ul class="nav nav-tabs">
-            {% set tabTitle = __('My settings') %}
-            <li role="presentation" class="active">
-                <a id="vars1Tab" href="#tab1" title="{{ tabTitle|e('html_attr') }}" role="tab" data-toggle="tab">{{ tabTitle }}</a>
-            </li>
-            {% set tabTitle = __('List views') %}
-            <li role="presentation">
-                <a id="vars2Tab" href="#tab2" title="{{ tabTitle|e('html_attr') }}" role="tab" data-toggle="tab">{{ tabTitle }}</a>
-            </li>
-            {% set tabTitle = __('Integration') %}
-            <li role="presentation">
-                <a id="vars3Tab" href="#tab3" title="{{ tabTitle|e('html_attr') }}" role="tab" data-toggle="tab">{{ tabTitle }}</a>
-            </li>
-            {% set tabTitle = __('Workflows') %}
-            <li role="presentation">
-                <a id="workflowsTab" href="#tabWorkflows" title="{{ tabTitle|e('html_attr') }}" role="tab" data-toggle="tab">{{ tabTitle }}</a>
-            </li>
+                {% set tabTitle = __('List views') %}
+                <li role="presentation" class="active">
+                    <a id="vars1Tab" href="#tab1" title="{{ tabTitle|e('html_attr') }}" role="tab" data-toggle="tab">{{ tabTitle }}</a>
+                </li>
+                {% set tabTitle = __('Integration') %}
+                <li role="presentation">
+                    <a id="vars2Tab" href="#tab2" title="{{ tabTitle|e('html_attr') }}" role="tab" data-toggle="tab">{{ tabTitle }}</a>
+                </li>
+                {% set tabTitle = __('Workflows') %}
+                <li role="presentation">
+                    <a id="workflowsTab" href="#tabWorkflows" title="{{ tabTitle|e('html_attr') }}" role="tab" data-toggle="tab">{{ tabTitle }}</a>
+                </li>
             </ul>
 
             {{ form_errors(form) }}
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane fade in active" id="tab1" aria-labelledby="vars1Tab">
-                    {% set tabTitle = __('My settings') %}
-                    <fieldset>
-                        <legend>{{ tabTitle }}</legend>
-                    
-                        <p class="alert alert-info">{{ __('Here you can manage all basic settings for this application.') }}</p>
-                    
-                        {{ form_row(form.myDirectory) }}
-                        {{ form_row(form.myOptions) }}
-                        {{ form_row(form.myText) }}
-                    </fieldset>
-                </div>
-                <div role="tabpanel" class="tab-pane fade" id="tab2" aria-labelledby="vars2Tab">
                     {% set tabTitle = __('List views') %}
                     <fieldset>
                         <legend>{{ tabTitle }}</legend>
@@ -54,7 +38,7 @@
                         {{ form_row(form.linkOwnFilesOnAccountPage) }}
                     </fieldset>
                 </div>
-                <div role="tabpanel" class="tab-pane fade" id="tab3" aria-labelledby="vars3Tab">
+                <div role="tabpanel" class="tab-pane fade" id="tab2" aria-labelledby="vars2Tab">
                     {% set tabTitle = __('Integration') %}
                     <fieldset>
                         <legend>{{ tabTitle }}</legend>

@@ -60,12 +60,12 @@ abstract class AbstractCategoryHelper
     /**
      * CategoryHelper constructor.
      *
-     * @param TranslatorInterface   $translator            Translator service instance
-     * @param RequestStack          $requestStack          RequestStack service instance
-     * @param LoggerInterface       $logger                Logger service instance
-     * @param CurrentUserApiInterface $currentUserApi        CurrentUserApi service instance
+     * @param TranslatorInterface                 $translator                 Translator service instance
+     * @param RequestStack                        $requestStack               RequestStack service instance
+     * @param LoggerInterface                     $logger                     Logger service instance
+     * @param CurrentUserApiInterface             $currentUserApi             CurrentUserApi service instance
      * @param CategoryRegistryRepositoryInterface $categoryRegistryRepository CategoryRegistryRepository service instance
-     * @param CategoryPermissionApiInterface $categoryPermissionApi CategoryPermissionApi service instance
+     * @param CategoryPermissionApiInterface      $categoryPermissionApi      CategoryPermissionApi service instance
      */
     public function __construct(
         TranslatorInterface $translator,

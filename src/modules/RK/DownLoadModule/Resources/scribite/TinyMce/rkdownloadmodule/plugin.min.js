@@ -79,7 +79,7 @@
                 author: 'Ralf Koester',
                 authorurl: 'http://oldtimer-ig-osnabrueck.de',
                 infourl: 'http://oldtimer-ig-osnabrueck.de',
-                version: '0.4.0'
+                version: '0.5.0'
             };
         }
     });

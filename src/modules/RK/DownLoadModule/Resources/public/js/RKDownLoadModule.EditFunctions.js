@@ -1,6 +1,5 @@
 'use strict';
 
-
 /**
  * Resets the value of an upload / file input field.
  */

@@ -94,7 +94,7 @@
                     {% endif %}
                 </td>
                 <td headers="hMyDescription" class="text-left">
-                    {{ file.myDescription|safeHtml|truncate(50) }}
+                    {{ file.myDescription|striptags|truncate(50) }}
                 </td>
                 <td headers="hStartDate" class="text-left">
                     {{ file.startDate|localizeddate('medium', 'none') }}

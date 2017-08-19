@@ -67,13 +67,13 @@ abstract class AbstractArchiveHelper
     /**
      * ArchiveHelper constructor.
      *
-     * @param TranslatorInterface $translator     Translator service instance
-     * @param RequestStack        $requestStack   RequestStack service instance
-     * @param LoggerInterface     $logger         Logger service instance
-     * @param PermissionApiInterface       $permissionApi  PermissionApi service instance
-     * @param EntityFactory       $entityFactory  EntityFactory service instance
-     * @param WorkflowHelper      $workflowHelper WorkflowHelper service instance
-     * @param HookHelper          $hookHelper     HookHelper service instance
+     * @param TranslatorInterface    $translator     Translator service instance
+     * @param RequestStack           $requestStack   RequestStack service instance
+     * @param LoggerInterface        $logger         Logger service instance
+     * @param PermissionApiInterface $permissionApi  PermissionApi service instance
+     * @param EntityFactory          $entityFactory  EntityFactory service instance
+     * @param WorkflowHelper         $workflowHelper WorkflowHelper service instance
+     * @param HookHelper             $hookHelper     HookHelper service instance
      */
     public function __construct(
         TranslatorInterface $translator,
