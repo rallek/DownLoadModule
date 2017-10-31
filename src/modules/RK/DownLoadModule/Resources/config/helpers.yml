@@ -35,7 +35,6 @@ services:
             - "@translator.default"
             - "@request_stack"
             - "@rk_download_module.archive_helper"
-            - "@logger"
             - "@form.factory"
             - "@zikula_extensions_module.api.variable"
             - "@rk_download_module.entity_factory"
@@ -95,6 +94,7 @@ services:
         class: RK\DownLoadModule\Helper\UploadHelper
         arguments:
             - "@translator.default"
+            - "@filesystem"
             - "@session"
             - "@logger"
             - "@zikula_users_module.current_user"

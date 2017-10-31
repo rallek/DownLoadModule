@@ -14,22 +14,26 @@ function getRKDownLoadModulePopupAttributes()
     pWidth = screen.width * 0.75;
     pHeight = screen.height * 0.66;
 
-    return 'width=' + pWidth + ',height=' + pHeight + ',scrollbars,resizable';
+    return 'width=' + pWidth + ',height=' + pHeight + ',location=no,menubar=no,toolbar=no,dependent=yes,minimizable=no,modal=yes,alwaysRaised=yes,resizable=yes,scrollbars=yes';
 }
 
 /**
- * Open a popup window with the finder triggered by a CKEditor button.
+ * Open a popup window with the finder triggered by an editor button.
  */
-function RKDownLoadModuleFinderCKEditor(editor, downloUrl)
+function RKDownLoadModuleFinderOpenPopup(editor, editorName)
 {
+    var popupUrl;
+
     // Save editor for access in selector window
     currentRKDownLoadModuleEditor = editor;
 
-    editor.popup(
-        Routing.generate('rkdownloadmodule_external_finder', { objectType: 'file', editor: 'ckeditor' }),
-        /*width*/ '80%', /*height*/ '70%',
-        'location=no,menubar=no,toolbar=no,dependent=yes,minimizable=no,modal=yes,alwaysRaised=yes,resizable=yes,scrollbars=yes'
-    );
+    popupUrl = Routing.generate('rkdownloadmodule_external_finder', { objectType: 'file', editor: editorName });
+
+    if (editorName == 'ckeditor') {
+        editor.popup(popupUrl, /*width*/ '80%', /*height*/ '70%', getRKDownLoadModulePopupAttributes());
+    } else {
+        window.open(popupUrl, '_blank', getRKDownLoadModulePopupAttributes());
+    }
 }
 
 
@@ -64,9 +68,13 @@ rKDownLoadModule.finder.handleCancel = function (event)
 
     event.preventDefault();
     editor = jQuery("[id$='editor']").first().val();
-    if ('tinymce' === editor) {
+    if ('ckeditor' === editor) {
         rKDownLoadClosePopup();
-    } else if ('ckeditor' === editor) {
+    } else if ('quill' === editor) {
+        rKDownLoadClosePopup();
+    } else if ('summernote' === editor) {
+        rKDownLoadClosePopup();
+    } else if ('tinymce' === editor) {
         rKDownLoadClosePopup();
     } else {
         alert('Close Editor: ' + editor);
@@ -113,17 +121,23 @@ rKDownLoadModule.finder.selectItem = function (itemId)
 {
     var editor, html;
 
+    html = rKDownLoadGetPasteSnippet('html', itemId);
     editor = jQuery("[id$='editor']").first().val();
-    if ('tinymce' === editor) {
-        html = rKDownLoadGetPasteSnippet('html', itemId);
-        tinyMCE.activeEditor.execCommand('mceInsertContent', false, html);
-        // other tinymce commands: mceImage, mceInsertLink, mceReplaceContent, see http://www.tinymce.com/wiki.php/Command_identifiers
-    } else if ('ckeditor' === editor) {
+    if ('ckeditor' === editor) {
         if (null !== window.opener.currentRKDownLoadModuleEditor) {
-            html = rKDownLoadGetPasteSnippet('html', itemId);
-
             window.opener.currentRKDownLoadModuleEditor.insertHtml(html);
         }
+    } else if ('quill' === editor) {
+        if (null !== window.opener.currentRKDownLoadModuleEditor) {
+            window.opener.currentRKDownLoadModuleEditor.clipboard.dangerouslyPasteHTML(window.opener.currentRKDownLoadModuleEditor.getLength(), html);
+        }
+    } else if ('summernote' === editor) {
+        if (null !== window.opener.currentRKDownLoadModuleEditor) {
+            html = jQuery(html).get(0);
+            window.opener.currentRKDownLoadModuleEditor.invoke('insertNode', html);
+        }
+    } else if ('tinymce' === editor) {
+        window.opener.currentRKDownLoadModuleEditor.insertContent(html);
     } else {
         alert('Insert into Editor: ' + editor);
     }

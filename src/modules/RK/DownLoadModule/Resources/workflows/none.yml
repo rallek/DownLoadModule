@@ -27,6 +27,9 @@ workflow:
                 updatedeferred:
                     from: deferred
                     to: deferred
+                unarchive:
+                    from: archived
+                    to: approved
                 archive:
                     from: approved
                     to: archived

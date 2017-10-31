@@ -22,7 +22,7 @@
         "jakub-onderka/php-parallel-lint": "*",
         "phploc/phploc": "*",
         "pdepend/pdepend": "2.*",
-        "squizlabs/php_codesniffer": "1.*",
+        "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "4.*",
         "theseer/phpdox": "*",
         "phpmd/phpmd": "2.*",
@@ -30,7 +30,7 @@
     },
     "extra": {
         "zikula": {
-            "core-compatibility": ">=1.5.0 <3.0",
+            "core-compatibility": ">=1.5.2 <3.0",
             "class": "RK\\DownLoadModule\\RKDownLoadModule",
             "displayname": "Down load",
             "url": "download",
@@ -49,6 +49,14 @@
                 "RKDownLoadModule:File:": "File ID::",
                 "RKDownLoadModule::Ajax": "::"
             }
+        }
+    },
+    "config": {
+        "vendor-dir": "vendor",
+        "preferred-install": "dist",
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "5.5.9"
         }
     }
 }

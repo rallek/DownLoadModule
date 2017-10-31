@@ -103,7 +103,7 @@ function rKDownLoadInitEditForm(mode, entityId)
         }
     });
     editForm.find('button[type=submit]').bind('click keypress', function (event) {
-        triggerValidation = !jQuery(this).attr('formnovalidate');
+        triggerValidation = !jQuery(this).prop('formnovalidate');
     });
     editForm.submit(rKDownLoadHandleFormSubmit);
 

@@ -87,6 +87,7 @@
     {formlabel for='rKDownLoadModuleFilter' text=$filterLabel cssClass='col-sm-3 control-label'}
     <div class="col-sm-9">
         {formtextinput id='rKDownLoadModuleFilter' dataField='filter' group='data' mandatory=false maxLength=255 cssClass='form-control'}
+        <span class="help-block">{gt text='Example' domain='rkdownloadmodule'}: <em>tbl.age >= 18</em></span>
     </div>
 </div>
 

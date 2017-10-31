@@ -52,6 +52,15 @@ services:
         tags:
             - { name: form.type }
     
+    rk_download_module.form.type.block.item:
+        class: RK\DownLoadModule\Block\Form\Type\ItemBlockType
+        arguments:
+            - "@translator.default"
+            - "@rk_download_module.entity_factory"
+            - "@rk_download_module.entity_display_helper"
+        tags:
+            - { name: form.type }
+    
     rk_download_module.form.type.filefinder:
         class: RK\DownLoadModule\Form\Type\Finder\FileFinderType
         arguments:

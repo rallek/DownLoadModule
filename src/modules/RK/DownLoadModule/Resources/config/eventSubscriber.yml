@@ -71,6 +71,9 @@ services:
     
     rk_download_module.thirdparty_listener:
         class: RK\DownLoadModule\Listener\ThirdPartyListener
+        arguments:
+            - "@filesystem"
+            - "@request_stack"
         tags:
             - { name: kernel.event_subscriber }
     

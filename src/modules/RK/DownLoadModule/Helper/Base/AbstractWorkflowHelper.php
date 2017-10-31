@@ -201,6 +201,9 @@ abstract class AbstractWorkflowHelper
             case 'archive':
                 $title = $this->translator->__('Archive');
                 break;
+            case 'unarchive':
+                $title = $this->translator->__('Unarchive');
+                break;
             case 'delete':
                 $title = $this->translator->__('Delete');
                 break;
@@ -230,19 +233,23 @@ abstract class AbstractWorkflowHelper
             case 'submit':
                 $buttonClass = 'success';
                 break;
-            case 'update':
-                $buttonClass = 'success';
-                break;
             case 'reject':
                 $buttonClass = '';
                 break;
             case 'archive':
                 $buttonClass = '';
                 break;
+            case 'unarchive':
+                $buttonClass = '';
+                break;
             case 'delete':
                 $buttonClass = 'danger';
                 break;
         }
+    
+        if ($buttonClass == '' && substr($actionId, 0, 6) == 'update') {
+            $buttonClass = 'success';
+    	}
     
         if (empty($buttonClass)) {
             $buttonClass = 'default';
@@ -276,14 +283,13 @@ abstract class AbstractWorkflowHelper
         try {
             $workflow->apply($entity, $actionId);
     
-            //$entityManager->transactional(function($entityManager) {
             if ($actionId == 'delete') {
                 $entityManager->remove($entity);
             } else {
                 $entityManager->persist($entity);
             }
             $entityManager->flush();
-            //});
+    
             $result = true;
             if ($actionId == 'delete') {
                 $this->logger->notice('{app}: User {user} deleted an entity.', $logArgs);

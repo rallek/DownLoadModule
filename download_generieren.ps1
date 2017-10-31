@@ -6,7 +6,7 @@
 # Der Author übernimmt keinerleich Verantwortung!
 
 # In welchem Verzeichnis liegt der Zielordner? \ am Ende nicht vergessen!
-$zielpfad="D:\Users\Ralf\_Entwicklung\github\download\src\"
+$zielpfad="C:\Users\Ralf\Enwicklung\download\src\"
 
 # Wie soll der Zielordner heißen? Bei mir immer genauso, wie er in Zikula heißt
 $zielordner="modules"

@@ -2,7 +2,7 @@
 
 A simple way to share some downloads. Categories are available
 
-This module is intended for being used with Zikula 1.5.0 and later.
+This module is intended for being used with Zikula 1.5.2 and later.
 
 For questions and other remarks visit our homepage http://oldtimer-ig-osnabrueck.de.
 
