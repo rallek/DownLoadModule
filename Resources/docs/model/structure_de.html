@@ -72,7 +72,7 @@
             </tr>
             <tr>
                 <th id="hVersion" scope="row" headers="hBasicField">Version</th>
-                <td headers="hBasicValue hVersion">0.5.0</td>
+                <td headers="hBasicValue hVersion">0.6.0</td>
             </tr>
             <tr>
                 <th id="hLicense" scope="row" headers="hBasicField">Lizenz</th>
@@ -110,15 +110,15 @@
         </thead>
         <tbody>
             <tr>
-                <th id="hFileSettingsLeading" scope="row" headers="hFileSettingsName">Führend</th>
+                <th id="hFileSettingsLeading" scope="row" headers="hFileSettingsName">FÃ¼hrend</th>
                 <td headers="hFileSettingsLeading hFileSettingsValue" class="text-center"><i class="fa fa-check"></i>
                 </td>
-                <td headers="hFileSettingsLeading hFileSettingsDescription">Ob dies die primäre Entität der Anwendung darstellt</td>
+                <td headers="hFileSettingsLeading hFileSettingsDescription">Ob dies die primÃ¤re EntitÃ¤t der Anwendung darstellt</td>
             </tr>
             <tr>
                 <th id="hFileSettingsDisplayPattern" scope="row" headers="hFileSettingsName">Anzeigemuster</th>
                 <td headers="hFileSettingsDisplayPattern hFileSettingsValue">#fileName#</td>
-                <td headers="hFileSettingsDisplayPattern hFileSettingsDescription">Muster zur Anzeige von Instanzen dieser Entität</td>
+                <td headers="hFileSettingsDisplayPattern hFileSettingsDescription">Muster zur Anzeige von Instanzen dieser EntitÃ¤t</td>
             </tr>
             <tr>
                 <th id="hFileSettingsIdentifierStrategy" scope="row" headers="hFileSettingsName">ID-Strategie</th>
@@ -126,9 +126,9 @@
                 <td headers="hFileSettingsIdentifierStrategy hFileSettingsDescription">Ob und welche Strategie zur Generierung von IDs angewendet wird</td>
             </tr>
             <tr>
-                <th id="hFileSettingsChangeTrackingPolicy" scope="row" headers="hFileSettingsName">Methode zur Erkennung von Änderungen</th>
-                <td headers="hFileSettingsChangeTrackingPolicy hFileSettingsValue">DEFERRED_IMPLICIT &ndash; Änderungen werden durch Vergleich der Eigenschaften während des Commits ermittelt.</td>
-                <td headers="hFileSettingsChangeTrackingPolicy hFileSettingsDescription">Wie die Erkennung von Änderungen durchgeführt wird</td>
+                <th id="hFileSettingsChangeTrackingPolicy" scope="row" headers="hFileSettingsName">Methode zur Erkennung von Ã„nderungen</th>
+                <td headers="hFileSettingsChangeTrackingPolicy hFileSettingsValue">DEFERRED_IMPLICIT &ndash; Ã„nderungen werden durch Vergleich der Eigenschaften wÃ¤hrend des Commits ermittelt.</td>
+                <td headers="hFileSettingsChangeTrackingPolicy hFileSettingsDescription">Wie die Erkennung von Ã„nderungen durchgefÃ¼hrt wird</td>
             </tr>
             <tr>
                 <th id="hFileSettingsLockType" scope="row" headers="hFileSettingsName">Sperrstrategie</th>
@@ -139,7 +139,7 @@
                 <th id="hFileSettingsReadOnly" scope="row" headers="hFileSettingsName">Nur Lesen</th>
                 <td headers="hFileSettingsReadOnly hFileSettingsValue" class="text-center"><i class="fa fa-times"></i>
                 </td>
-                <td headers="hFileSettingsReadOnly hFileSettingsDescription">Ob diese Entität nur gelesen werden darf oder nicht. Falls ja, ist das Bearbeiten nicht möglich.</td>
+                <td headers="hFileSettingsReadOnly hFileSettingsDescription">Ob diese EntitÃ¤t nur gelesen werden darf oder nicht. Falls ja, ist das Bearbeiten nicht mÃ¶glich.</td>
             </tr>
         </tbody>
     </table>
@@ -163,7 +163,7 @@
                 <th id="hEntityFileFieldMandatory" scope="col">Pflicht</th>
                 <th id="hEntityFileFieldDefault" scope="col">Standardwert</th>
                 <th id="hEntityFileFieldDisplayType" scope="col">Anzeige</th>
-                <th id="hEntityFileFieldConstraints" scope="col">Beschränkungen</th>
+                <th id="hEntityFileFieldConstraints" scope="col">BeschrÃ¤nkungen</th>
                 <th id="hEntityFileFieldRemarks" scope="col">Anmerkungen</th>
             </tr>
         </thead>
@@ -176,13 +176,13 @@
                 <td headers="hEntityFileFieldId hEntityFileFieldDisplayType">ALL</td>
                 <td headers="hEntityFileFieldId hEntityFileFieldConstraints">
                     <ul>
-                        <li>Hat eine Länge von 9.</li>
+                        <li>Hat eine LÃ¤nge von 9.</li>
                     </ul>
                 </td>
                 <td headers="hEntityFileFieldId hEntityFileFieldRemarks">
                     <ul>
                         <li>Dieses Feld ist eindeutig und erlaubt keine Null-Werte.</li>
-                        <li>Fungiert als Primärschlüssel.</li>
+                        <li>Fungiert als PrimÃ¤rschlÃ¼ssel.</li>
                     </ul>
                 </td>
             </tr>
@@ -194,15 +194,15 @@
                 <td headers="hEntityFileFieldWorkflowState hEntityFileFieldDisplayType">ALL</td>
                 <td headers="hEntityFileFieldWorkflowState hEntityFileFieldConstraints">
                     <ul>
-                        <li>Hat eine Länge von 20 Zeichen.</li>
+                        <li>Hat eine LÃ¤nge von 20 Zeichen.</li>
                     </ul>
                 </td>
                 <td headers="hEntityFileFieldWorkflowState hEntityFileFieldRemarks">
                     <ul>
                         <li>the current workflow state </li>
                         <li>Dieses Feld ist nicht eindeutig und erlaubt keine Null-Werte.</li>
-                        <li>Die Liste wird durch eine einwertige Dropdownliste repräsentiert.</li>
-                        <li>Verfügbare Einträge: <ul><li>Initial (initial)</li><li>Deferred (deferred)</li><li>Approved (approved)</li><li>Archived (archived)</li><li>Trashed (trashed)</li><li>Deleted (deleted)</li></ul></li>
+                        <li>Die Liste wird durch eine einwertige Dropdownliste reprÃ¤sentiert.</li>
+                        <li>VerfÃ¼gbare EintrÃ¤ge: <ul><li>Initial (initial)</li><li>Deferred (deferred)</li><li>Approved (approved)</li><li>Archived (archived)</li><li>Trashed (trashed)</li><li>Deleted (deleted)</li></ul></li>
                     </ul>
                 </td>
             </tr>
@@ -214,7 +214,7 @@
                 <td headers="hEntityFileFieldFileName hEntityFileFieldDisplayType">ALL</td>
                 <td headers="hEntityFileFieldFileName hEntityFileFieldConstraints">
                     <ul>
-                        <li>Hat eine Länge von 255 Zeichen.</li>
+                        <li>Hat eine LÃ¤nge von 255 Zeichen.</li>
                     </ul>
                 </td>
                 <td headers="hEntityFileFieldFileName hEntityFileFieldRemarks">
@@ -231,7 +231,7 @@
                 <td headers="hEntityFileFieldMyDescription hEntityFileFieldDisplayType">VIEW_DISPLAY</td>
                 <td headers="hEntityFileFieldMyDescription hEntityFileFieldConstraints">
                     <ul>
-                        <li>Hat eine Länge von 2000 Zeichen.</li>
+                        <li>Hat eine LÃ¤nge von 2000 Zeichen.</li>
                     </ul>
                 </td>
                 <td headers="hEntityFileFieldMyDescription hEntityFileFieldRemarks">
@@ -281,7 +281,7 @@
                 <td headers="hEntityFileFieldMyLink hEntityFileFieldDisplayType">ALL</td>
                 <td headers="hEntityFileFieldMyLink hEntityFileFieldConstraints">
                     <ul>
-                        <li>Hat eine Länge von 255 Zeichen.</li>
+                        <li>Hat eine LÃ¤nge von 255 Zeichen.</li>
                     </ul>
                 </td>
                 <td headers="hEntityFileFieldMyLink hEntityFileFieldRemarks">
@@ -305,7 +305,7 @@
             <tr>
                 <th id="hFileIndexName" scope="col">Name</th>
                 <th id="hFileIndexType" scope="col">Typ</th>
-                <th id="hFileIndexSize" scope="col">Größe</th>
+                <th id="hFileIndexSize" scope="col">GrÃ¶ÃŸe</th>
                 <th id="hFileIndexDescription" scope="col">Beschreibung</th>
             </tr>
         </thead>
@@ -375,28 +375,28 @@
                 <td headers="hFileWorkflowType hFileWorkflowDescription">NONE &ndash; keine Freigabe.</td>
             </tr>
             <tr>
-                <th id="hFileWorkflowStates" scope="row" headers="hFileWorkflowName">Zustände</th>
+                <th id="hFileWorkflowStates" scope="row" headers="hFileWorkflowName">ZustÃ¤nde</th>
                 <td headers="hFileWorkflowStates hFileWorkflowDescription">
                     <ul>
                         <li><strong>Initial:</strong> Inhalt wurde soeben erstellt und noch nicht persistiert.</li>
-                        <li><strong>Zurückgestellt:</strong> Inhalt wurde noch nicht eingereicht oder wartete und wurde zurückgewiesen. Erlaubt es Benutzern, ihre Einreichungen zu verwalten, ansonsten würden zurückgewiesene Inhalte gelöscht.</li>
-                        <li><strong>Freigegeben:</strong> Inhalt wurde freigegeben und ist online verfügbar.</li>
+                        <li><strong>ZurÃ¼ckgestellt:</strong> Inhalt wurde noch nicht eingereicht oder wartete und wurde zurÃ¼ckgewiesen. Erlaubt es Benutzern, ihre Einreichungen zu verwalten, ansonsten wÃ¼rden zurÃ¼ckgewiesene Inhalte gelÃ¶scht.</li>
+                        <li><strong>Freigegeben:</strong> Inhalt wurde freigegeben und ist online verfÃ¼gbar.</li>
                         <li><strong>Archiviert:</strong> Inhalt hat sein Ende erreicht und wurde archiviert.</li>
-                        <li><strong>Gelöscht:</strong> Inhalt wurde aus der Datenbank gelöscht.</li>
+                        <li><strong>GelÃ¶scht:</strong> Inhalt wurde aus der Datenbank gelÃ¶scht.</li>
                     </ul>
                 </td>
             </tr>
             <tr>
-                <th id="hFileWorkflowOwnerPermission" scope="row" headers="hFileWorkflowName">Benutzer können ihre eigenen Daten verwalten und bearbeiten</th>
+                <th id="hFileWorkflowOwnerPermission" scope="row" headers="hFileWorkflowName">Benutzer kÃ¶nnen ihre eigenen Daten verwalten und bearbeiten</th>
                 <td headers="hFileWorkflowOwnerPermission hFileWorkflowDescription" class="text-center"><i class="fa fa-check"></i>
                 </td>
             </tr>
             <tr>
-                <th id="hFileWorkflowAccountDeletionCreator" scope="row" headers="hFileWorkflowName">Wenn Ersteller gelöscht wird</th>
+                <th id="hFileWorkflowAccountDeletionCreator" scope="row" headers="hFileWorkflowName">Wenn Ersteller gelÃ¶scht wird</th>
                 <td headers="hFileWorkflowAccountDeletionCreator hFileWorkflowDescription">wird als Nutzer "Admin" zugewiesen.</td>
             </tr>
             <tr>
-                <th id="hFileWorkflowAccountDeletionLastEditor" scope="row" headers="hFileWorkflowName">Wenn letzter Bearbeiter gelöscht wird</th>
+                <th id="hFileWorkflowAccountDeletionLastEditor" scope="row" headers="hFileWorkflowName">Wenn letzter Bearbeiter gelÃ¶scht wird</th>
                 <td headers="hFileWorkflowAccountDeletionLastEditor hFileWorkflowDescription">wird als Nutzer "Admin" zugewiesen.</td>
             </tr>
         </tbody>
@@ -459,10 +459,10 @@
                 </td>
             </tr>
             <tr>
-                <th id="hFileBehaviourFormAwareHookProvider" scope="row" headers="hFileBehaviourName1">Anbieter für Formular-Hooks</th>
-                <td headers="hFileBehaviourFormAwareHookProvider hFileBehaviourValue1" class="text-center">DISABLED &ndash; kein Hook-Anbieter verfügbar</td>
-                <th id="hFileBehaviourUiHooksProvider" scope="row" headers="hFileBehaviourName2">Anbieter für UI-Hooks</th>
-                <td headers="hFileBehaviourUiHooksProvider hFileBehaviourValue2" class="text-center">DISABLED &ndash; kein Hook-Anbieter verfügbar</td>
+                <th id="hFileBehaviourFormAwareHookProvider" scope="row" headers="hFileBehaviourName1">Anbieter fÃ¼r Formular-Hooks</th>
+                <td headers="hFileBehaviourFormAwareHookProvider hFileBehaviourValue1" class="text-center">DISABLED &ndash; kein Hook-Anbieter verfÃ¼gbar</td>
+                <th id="hFileBehaviourUiHooksProvider" scope="row" headers="hFileBehaviourName2">Anbieter fÃ¼r UI-Hooks</th>
+                <td headers="hFileBehaviourUiHooksProvider hFileBehaviourValue2" class="text-center">DISABLED &ndash; kein Hook-Anbieter verfÃ¼gbar</td>
             </tr>
         </tbody>
     </table>
@@ -492,7 +492,7 @@
                 <th id="hVariablesListViewsFieldMandatory" scope="col">Pflicht</th>
                 <th id="hVariablesListViewsFieldDefault" scope="col">Standardwert</th>
                 <th id="hVariablesListViewsFieldDisplayType" scope="col">Anzeige</th>
-                <th id="hVariablesListViewsFieldConstraints" scope="col">Beschränkungen</th>
+                <th id="hVariablesListViewsFieldConstraints" scope="col">BeschrÃ¤nkungen</th>
                 <th id="hVariablesListViewsFieldRemarks" scope="col">Anmerkungen</th>
             </tr>
         </thead>
@@ -505,7 +505,7 @@
                 <td headers="hVariablesListViewsFieldFileEntriesPerPage hVariablesListViewsFieldDisplayType">ALL</td>
                 <td headers="hVariablesListViewsFieldFileEntriesPerPage hVariablesListViewsFieldConstraints">
                     <ul>
-                        <li>Hat eine Länge von 11.</li>
+                        <li>Hat eine LÃ¤nge von 11.</li>
                     </ul>
                 </td>
                 <td headers="hVariablesListViewsFieldFileEntriesPerPage hVariablesListViewsFieldRemarks">
@@ -559,7 +559,7 @@
                 <th id="hVariablesIntegrationFieldMandatory" scope="col">Pflicht</th>
                 <th id="hVariablesIntegrationFieldDefault" scope="col">Standardwert</th>
                 <th id="hVariablesIntegrationFieldDisplayType" scope="col">Anzeige</th>
-                <th id="hVariablesIntegrationFieldConstraints" scope="col">Beschränkungen</th>
+                <th id="hVariablesIntegrationFieldConstraints" scope="col">BeschrÃ¤nkungen</th>
                 <th id="hVariablesIntegrationFieldRemarks" scope="col">Anmerkungen</th>
             </tr>
         </thead>
@@ -572,7 +572,7 @@
                 <td headers="hVariablesIntegrationFieldEnabledFinderTypes hVariablesIntegrationFieldDisplayType">ALL</td>
                 <td headers="hVariablesIntegrationFieldEnabledFinderTypes hVariablesIntegrationFieldConstraints">
                     <ul>
-                        <li>Hat eine Länge von 255 Zeichen.</li>
+                        <li>Hat eine LÃ¤nge von 255 Zeichen.</li>
                     </ul>
                 </td>
                 <td headers="hVariablesIntegrationFieldEnabledFinderTypes hVariablesIntegrationFieldRemarks">
@@ -580,7 +580,7 @@
                         <li>Which sections are supported in the Finder component (used by Scribite plug-ins). </li>
                         <li>Dieses Feld ist nicht eindeutig und erlaubt keine Null-Werte.</li>
                         <li>Die Liste wird durch eine mehrwertige Dropdownliste</li>
-                        <li>Verfügbare Einträge: <ul><li>File (file)</li></ul></li>
+                        <li>VerfÃ¼gbare EintrÃ¤ge: <ul><li>File (file)</li></ul></li>
                     </ul>
                 </td>
             </tr>
@@ -609,7 +609,7 @@
                 <td headers="hSettingName1">Systemmodul</td>
                 <td headers="hSettingValue1" class="text-center"><i class="fa fa-times"></i>
                 </td>
-                <td headers="hSettingName2">Anzahl Beispielsätze</td>
+                <td headers="hSettingName2">Anzahl BeispielsÃ¤tze</td>
                 <td headers="hSettingValue2" class="text-center">0</td>
             </tr>
             <tr>
@@ -621,23 +621,23 @@
                 </td>
             </tr>
             <tr>
-                <td headers="hSettingName1">Block für Listenansichten</td>
+                <td headers="hSettingName1">Block fÃ¼r Listenansichten</td>
                 <td headers="hSettingValue1" class="text-center"><i class="fa fa-check"></i>
                 </td>
-                <td headers="hSettingName2">Block für Detailansichten</td>
+                <td headers="hSettingName2">Block fÃ¼r Detailansichten</td>
                 <td headers="hSettingValue2" class="text-center"><i class="fa fa-check"></i>
                 </td>
             </tr>
             <tr>
-                <td headers="hSettingName1">ContentType für Listenansichten</td>
+                <td headers="hSettingName1">ContentType fÃ¼r Listenansichten</td>
                 <td headers="hSettingValue1" class="text-center"><i class="fa fa-check"></i>
                 </td>
-                <td headers="hSettingName2">ContentType für Detailansichten</td>
+                <td headers="hSettingName2">ContentType fÃ¼r Detailansichten</td>
                 <td headers="hSettingValue2" class="text-center"><i class="fa fa-check"></i>
                 </td>
             </tr>
             <tr>
-                <td headers="hSettingName1">Support für Mailz</td>
+                <td headers="hSettingName1">Support fÃ¼r Mailz</td>
                 <td headers="hSettingValue1" class="text-center"><i class="fa fa-times"></i>
                 </td>
                 <td headers="hSettingName2">Newsletter Plugin</td>
@@ -653,7 +653,7 @@
                 </td>
             </tr>
             <tr>
-                <td headers="hSettingName1">Support für wartende Inhalte</td>
+                <td headers="hSettingName1">Support fÃ¼r wartende Inhalte</td>
                 <td headers="hSettingValue1" class="text-center"><i class="fa fa-times"></i>
                 </td>
                 <td headers="hSettingName2">MultiHook Needles</td>
@@ -670,14 +670,14 @@
             </tr>
             <tr>
                 <td headers="hSettingName1">Authentifizierungsmethode</td>
-                <td headers="hSettingValue1" class="text-center">NONE &ndash; keine Authentifizierungsmethode verfügbar.</td>
-                <td headers="hSettingName2">Support für Tagging</td>
+                <td headers="hSettingValue1" class="text-center">NONE &ndash; keine Authentifizierungsmethode verfÃ¼gbar.</td>
+                <td headers="hSettingName2">Support fÃ¼r Tagging</td>
                 <td headers="hSettingValue2" class="text-center"><i class="fa fa-times"></i>
                 </td>
             </tr>
             <tr>
-                <td headers="hSettingName1">Anbieter für Filter-Hooks</td>
-                <td headers="hSettingValue1" class="text-center">DISABLED &ndash; kein Hook-Anbieter verfügbar</td>
+                <td headers="hSettingName1">Anbieter fÃ¼r Filter-Hooks</td>
+                <td headers="hSettingValue1" class="text-center">DISABLED &ndash; kein Hook-Anbieter verfÃ¼gbar</td>
                 <td headers="hSettingName2">Separate Admin-Templates</td>
                 <td headers="hSettingValue2" class="text-center"><i class="fa fa-times"></i>
                 </td>
@@ -710,7 +710,7 @@
                 <td headers="hSettingName1">ICS-Templates</td>
                 <td headers="hSettingValue1" class="text-center"><i class="fa fa-times"></i>
                 </td>
-                <td headers="hSettingName2">PDF-Unterstützung</td>
+                <td headers="hSettingName2">PDF-UnterstÃ¼tzung</td>
                 <td headers="hSettingValue2" class="text-center"><i class="fa fa-times"></i>
                 </td>
             </tr>
