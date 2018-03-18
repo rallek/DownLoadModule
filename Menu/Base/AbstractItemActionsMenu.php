@@ -42,11 +42,11 @@ class AbstractItemActionsMenu implements ContainerAwareInterface
      * Builds the menu.
      *
      * @param FactoryInterface $factory Menu factory
-     * @param array            $options List of additional options
+     * @param array            $options Additional options
      *
      * @return MenuItem The assembled menu
      */
-    public function menu(FactoryInterface $factory, array $options = [])
+    public function menu(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('itemActions');
         if (!isset($options['entity']) || !isset($options['area']) || !isset($options['context'])) {
@@ -62,7 +62,7 @@ class AbstractItemActionsMenu implements ContainerAwareInterface
         $permissionApi = $this->container->get('zikula_permissions_module.api.permission');
         $currentUserApi = $this->container->get('zikula_users_module.current_user');
         $entityDisplayHelper = $this->container->get('rk_download_module.entity_display_helper');
-        $menu->setChildrenAttribute('class', 'list-inline item-actions');
+        $menu->setChildrenAttribute('class', 'list-inline');
 
         $currentUserId = $currentUserApi->isLoggedIn() ? $currentUserApi->get('uid') : UsersConstant::USER_ID_ANONYMOUS;
         if ($entity instanceof FileEntity) {
@@ -72,59 +72,48 @@ class AbstractItemActionsMenu implements ContainerAwareInterface
             $isOwner = $currentUserId > 0 && null !== $entity->getCreatedBy() && $currentUserId == $entity->getCreatedBy()->getUid();
         
             if ($routeArea == 'admin') {
-                $title = $this->__('Preview', 'rkdownloadmodule');
-                $menu->addChild($title, [
+                $menu->addChild($this->__('Preview'), [
                     'route' => $routePrefix . 'display',
                     'routeParameters' => $entity->createUrlArgs()
-                ]);
-                $menu[$title]->setLinkAttribute('target', '_blank');
-                $menu[$title]->setLinkAttribute('title', $this->__('Open preview page', 'rkdownloadmodule'));
-                $menu[$title]->setAttribute('icon', 'fa fa-search-plus');
+                ])->setAttribute('icon', 'fa fa-search-plus');
+                $menu[$this->__('Preview')]->setLinkAttribute('target', '_blank');
+                $menu[$this->__('Preview')]->setLinkAttribute('title', $this->__('Open preview page'));
             }
             if ($context != 'display') {
-                $title = $this->__('Details', 'rkdownloadmodule');
-                $menu->addChild($title, [
+                $menu->addChild($this->__('Details'), [
                     'route' => $routePrefix . $routeArea . 'display',
                     'routeParameters' => $entity->createUrlArgs()
-                ]);
-                $menu[$title]->setLinkAttribute('title', str_replace('"', '', $entityDisplayHelper->getFormattedTitle($entity)));
-                $menu[$title]->setAttribute('icon', 'fa fa-eye');
+                ])->setAttribute('icon', 'fa fa-eye');
+                $menu[$this->__('Details')]->setLinkAttribute('title', str_replace('"', '', $entityDisplayHelper->getFormattedTitle($entity)));
             }
             if ($permissionApi->hasPermission($component, $instance, ACCESS_EDIT)) {
                 // only allow editing for the owner or people with higher permissions
                 if ($isOwner || $permissionApi->hasPermission($component, $instance, ACCESS_ADD)) {
-                    $title = $this->__('Edit', 'rkdownloadmodule');
-                    $menu->addChild($title, [
+                    $menu->addChild($this->__('Edit'), [
                         'route' => $routePrefix . $routeArea . 'edit',
                         'routeParameters' => $entity->createUrlArgs()
-                    ]);
-                    $menu[$title]->setLinkAttribute('title', $this->__('Edit this file', 'rkdownloadmodule'));
-                    $menu[$title]->setAttribute('icon', 'fa fa-pencil-square-o');
-                    $title = $this->__('Reuse', 'rkdownloadmodule');
-                    $menu->addChild($title, [
+                    ])->setAttribute('icon', 'fa fa-pencil-square-o');
+                    $menu[$this->__('Edit')]->setLinkAttribute('title', $this->__('Edit this file'));
+                    $menu->addChild($this->__('Reuse'), [
                         'route' => $routePrefix . $routeArea . 'edit',
                         'routeParameters' => ['astemplate' => $entity->getKey()]
-                    ]);
-                    $menu[$title]->setLinkAttribute('title', $this->__('Reuse for new file', 'rkdownloadmodule'));
-                    $menu[$title]->setAttribute('icon', 'fa fa-files-o');
+                    ])->setAttribute('icon', 'fa fa-files-o');
+                    $menu[$this->__('Reuse')]->setLinkAttribute('title', $this->__('Reuse for new file'));
                 }
             }
-            if ($permissionApi->hasPermission($component, $instance, ACCESS_DELETE) || ($isOwner && $permissionApi->hasPermission($component, $instance, ACCESS_EDIT))) {
-                $title = $this->__('Delete', 'rkdownloadmodule');
-                $menu->addChild($title, [
+            if ($permissionApi->hasPermission($component, $instance, ACCESS_DELETE)) {
+                $menu->addChild($this->__('Delete'), [
                     'route' => $routePrefix . $routeArea . 'delete',
                     'routeParameters' => $entity->createUrlArgs()
-                ]);
-                $menu[$title]->setLinkAttribute('title', $this->__('Delete this file', 'rkdownloadmodule'));
-                $menu[$title]->setAttribute('icon', 'fa fa-trash-o');
+                ])->setAttribute('icon', 'fa fa-trash-o');
+                $menu[$this->__('Delete')]->setLinkAttribute('title', $this->__('Delete this file'));
             }
             if ($context == 'display') {
-                $title = $this->__('Files list', 'rkdownloadmodule');
+                $title = $this->__('Back to overview');
                 $menu->addChild($title, [
                     'route' => $routePrefix . $routeArea . 'view'
-                ]);
+                ])->setAttribute('icon', 'fa fa-reply');
                 $menu[$title]->setLinkAttribute('title', $title);
-                $menu[$title]->setAttribute('icon', 'fa fa-reply');
             }
         }
 

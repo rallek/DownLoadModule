@@ -1,13 +1,11 @@
 {# purpose of this template: general base layout #}
 {% block header %}
-	{{ pageAddAsset('javascript', zasset('@RKDownLoadModule:js/RKDownLoadModule.js')) }}
+    {{ pageAddAsset('javascript', zasset('@RKDownLoadModule:js/RKDownLoadModule.js')) }}
 {% endblock %}
 
-{% if routeArea|default('') == 'admin' %}
 {% block appTitle %}
     {{ moduleHeader('user', '', '', false, true, false, true) }}
 {% endblock %}
-{% endif %}
 
 {% block titleArea %}
     <h2>{% block title %}{% endblock %}</h2>

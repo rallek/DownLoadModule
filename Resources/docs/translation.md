@@ -6,7 +6,7 @@ To create a new translation follow the steps below:
 2. Open a console and navigate to the Zikula root directory.
 3. Execute this command replacing `en` by your desired locale code:
 
-`php -dmemory_limit=2G app/console translation:extract en --bundle=RKDownLoadModule --enable-extractor=jms_i18n_routing --output-format=po`
+`php app/console translation:extract en --bundle=RKDownLoadModule --enable-extractor=jms_i18n_routing --output-format=po`
 
 You can also use multiple locales at once, for example `de fr es`.
 
@@ -14,7 +14,7 @@ You can also use multiple locales at once, for example `de fr es`.
 
 Note you can even include custom views in `app/Resources/RKDownLoadModule/views/` and JavaScript files in `app/Resources/RKDownLoadModule/public/js/` like this:
 
-`php -dmemory_limit=2G app/console translation:extract en --bundle=RKDownLoadModule --enable-extractor=jms_i18n_routing --output-format=po --dir=./modules/RK/DownLoadModule --dir=./app/Resources/RKDownLoadModule`
+`php app/console translation:extract en --bundle=RKDownLoadModule --enable-extractor=jms_i18n_routing --output-format=po --dir=./modules/RK/DownLoadModule --dir=./app/Resources/RKDownLoadModule`
 
 For questions and other remarks visit our homepage http://oldtimer-ig-osnabrueck.de.
 

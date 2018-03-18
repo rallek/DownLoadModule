@@ -91,7 +91,7 @@
     </div>
 </div>
 
-<script>
+<script type="text/javascript">
     (function($) {
     	$('#rKDownLoadModuleTemplate').change(function() {
     	    $('#customTemplateArea').toggleClass('hidden', $(this).val() != 'custom');

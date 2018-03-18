@@ -94,13 +94,11 @@ abstract class AbstractArchiveHelper
 
     /**
      * Moves obsolete data into the archive.
-     *
-     * @param integer $probabilityPercent Execution probability
      */
-    public function archiveObsoleteObjects($probabilityPercent = 75)
+    public function archiveObsoleteObjects()
     {
-        $randProbability = mt_rand(1, 100);
-        if ($randProbability < $probabilityPercent) {
+        $randProbability = mt_rand(1, 1000);
+        if ($randProbability < 750) {
             return;
         }
     
@@ -163,7 +161,7 @@ abstract class AbstractArchiveHelper
      *
      * @param object $entity The given entity instance
      *
-     * @return boolean True if everything worked successfully, false otherwise
+     * @return bool True if everything worked successfully, false otherwise
      */
     protected function archiveSingleObject($entity)
     {

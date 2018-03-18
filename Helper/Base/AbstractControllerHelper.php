@@ -24,6 +24,7 @@ use RK\DownLoadModule\Entity\Factory\EntityFactory;
 use RK\DownLoadModule\Helper\ArchiveHelper;
 use RK\DownLoadModule\Helper\CollectionFilterHelper;
 use RK\DownLoadModule\Helper\FeatureActivationHelper;
+use RK\DownLoadModule\Helper\ImageHelper;
 use RK\DownLoadModule\Helper\ModelHelper;
 
 /**
@@ -64,6 +65,11 @@ abstract class AbstractControllerHelper
     protected $modelHelper;
 
     /**
+     * @var ImageHelper
+     */
+    protected $imageHelper;
+
+    /**
      * @var FeatureActivationHelper
      */
     protected $featureActivationHelper;
@@ -79,6 +85,7 @@ abstract class AbstractControllerHelper
      * @param EntityFactory       $entityFactory   EntityFactory service instance
      * @param CollectionFilterHelper $collectionFilterHelper CollectionFilterHelper service instance
      * @param ModelHelper         $modelHelper     ModelHelper service instance
+     * @param ImageHelper         $imageHelper     ImageHelper service instance
      * @param FeatureActivationHelper $featureActivationHelper FeatureActivationHelper service instance
      */
     public function __construct(
@@ -90,6 +97,7 @@ abstract class AbstractControllerHelper
         EntityFactory $entityFactory,
         CollectionFilterHelper $collectionFilterHelper,
         ModelHelper $modelHelper,
+        ImageHelper $imageHelper,
         FeatureActivationHelper $featureActivationHelper
     ) {
         $this->setTranslator($translator);
@@ -99,9 +107,10 @@ abstract class AbstractControllerHelper
         $this->entityFactory = $entityFactory;
         $this->collectionFilterHelper = $collectionFilterHelper;
         $this->modelHelper = $modelHelper;
+        $this->imageHelper = $imageHelper;
         $this->featureActivationHelper = $featureActivationHelper;
 
-        $archiveHelper->archiveObsoleteObjects(75);
+        $archiveHelper->archiveObsoleteObjects();
     }
 
     /**
@@ -183,10 +192,6 @@ abstract class AbstractControllerHelper
             $request->attributes->set('_route_params', $routeParams);
         }
         $sortdir = $request->query->get('sortdir', 'ASC');
-        if (false !== strpos($sort, ' DESC')) {
-            $sort = str_replace(' DESC', '', $sort);
-            $sortdir = 'desc';
-        }
         $templateParameters['sort'] = $sort;
         $templateParameters['sortdir'] = strtolower($sortdir);
     
@@ -219,7 +224,7 @@ abstract class AbstractControllerHelper
                     $sort = $fieldValue;
                 } elseif ($fieldName == 'sortdir' && !empty($fieldValue)) {
                     $sortdir = $fieldValue;
-                } elseif (false === stripos($fieldName, 'thumbRuntimeOptions') && false === stripos($fieldName, 'featureActivationHelper')) {
+                } elseif (false === stripos($fieldName, 'thumbRuntimeOptions')) {
                     // set filter as query argument, fetched inside repository
                     $request->query->set($fieldName, $fieldValue);
                 }
@@ -227,13 +232,10 @@ abstract class AbstractControllerHelper
         }
         $sortableColumns->setOrderBy($sortableColumns->getColumn($sort), strtoupper($sortdir));
         $resultsPerPage = $templateParameters['num'];
-        $request->query->set('own', $templateParameters['own']);
     
         $urlParameters = $templateParameters;
         foreach ($urlParameters as $parameterName => $parameterValue) {
-            if (false === stripos($parameterName, 'thumbRuntimeOptions')
-                && false === stripos($parameterName, 'featureActivationHelper')
-            ) {
+            if (false === stripos($parameterName, 'thumbRuntimeOptions')) {
                 continue;
             }
             unset($urlParameters[$parameterName]);
@@ -264,6 +266,7 @@ abstract class AbstractControllerHelper
         $templateParameters['sort'] = $sort;
         $templateParameters['sortdir'] = $sortdir;
         $templateParameters['items'] = $entities;
+    
     
         if (true === $hasHookSubscriber) {
             // build RouteUrl instance for display hooks
@@ -367,6 +370,17 @@ abstract class AbstractControllerHelper
             }
             if (in_array($args['action'], ['index', 'view'])) {
                 $parameters = array_merge($parameters, $this->collectionFilterHelper->getViewQuickNavParameters($objectType, $context, $args));
+            }
+    
+            // initialise Imagine runtime options
+            if ($objectType == 'file') {
+                $thumbRuntimeOptions = [];
+                $thumbRuntimeOptions[$objectType . 'MyFile'] = $this->imageHelper->getRuntimeOptions($objectType, 'myFile', $context, $args);
+                $parameters['thumbRuntimeOptions'] = $thumbRuntimeOptions;
+            }
+            if (in_array($args['action'], ['display', 'edit', 'view'])) {
+                // use separate preset for images in related items
+                $parameters['relationThumbRuntimeOptions'] = $this->imageHelper->getCustomRuntimeOptions('', '', 'RKDownLoadModule_relateditem', $context, $args);
             }
         }
     

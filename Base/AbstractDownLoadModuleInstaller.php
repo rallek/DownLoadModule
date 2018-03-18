@@ -34,6 +34,25 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
         $logger = $this->container->get('logger');
         $userName = $this->container->get('zikula_users_module.current_user')->get('uname');
     
+        // Check if upload directories exist and if needed create them
+        try {
+            $container = $this->container;
+            $uploadHelper = new \RK\DownLoadModule\Helper\UploadHelper(
+                $container->get('translator.default'),
+                $container->get('filesystem'),
+                $container->get('session'),
+                $container->get('logger'),
+                $container->get('zikula_users_module.current_user'),
+                $container->get('zikula_extensions_module.api.variable'),
+                $container->getParameter('datadir')
+            );
+            $uploadHelper->checkAndCreateAllUploadFolders();
+        } catch (\Exception $exception) {
+            $this->addFlash('error', $exception->getMessage());
+            $logger->error('{app}: User {user} could not create upload folders during installation. Error details: {errorMessage}.', ['app' => 'RKDownLoadModule', 'user' => $userName, 'errorMessage' => $exception->getMessage()]);
+        
+            return false;
+        }
         // create all tables from according entity definitions
         try {
             $this->schemaTool->create($this->listEntityClasses());
@@ -45,9 +64,9 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
         }
     
         // set up all our vars with initial values
-        $this->setVar('fileEntriesPerPage', 10);
+        $this->setVar('fileEntriesPerPage', '10');
         $this->setVar('linkOwnFilesOnAccountPage', true);
-        $this->setVar('enabledFinderTypes', 'file');
+        $this->setVar('enabledFinderTypes', [ 'file' ]);
     
         $categoryRegistryIdsPerEntity = [];
     
@@ -327,6 +346,10 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
         }
         $entityManager->flush();
     
+        // remind user about upload folders not being deleted
+        $uploadPath = $this->container->getParameter('datadir') . '/RKDownLoadModule/';
+        $this->addFlash('status', $this->__f('The upload directories at "%path%" can be removed manually.', ['%path%' => $uploadPath]));
+    
         // uninstallation successful
         return true;
     }
@@ -334,7 +357,7 @@ abstract class AbstractDownLoadModuleInstaller extends AbstractExtensionInstalle
     /**
      * Build array with all entity classes for RKDownLoadModule.
      *
-     * @return string[] List of class names
+     * @return array list of class names
      */
     protected function listEntityClasses()
     {

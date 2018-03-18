@@ -13,6 +13,7 @@
 namespace RK\DownLoadModule\Form\Type\Base;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -21,14 +22,17 @@ use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Zikula\CategoriesModule\Form\Type\CategoriesType;
 use Zikula\Common\Translator\TranslatorInterface;
 use Zikula\Common\Translator\TranslatorTrait;
 use RK\DownLoadModule\Entity\Factory\EntityFactory;
+use RK\DownLoadModule\Form\Type\Field\UploadType;
 use Zikula\UsersModule\Form\Type\UserLiveSearchType;
 use RK\DownLoadModule\Helper\FeatureActivationHelper;
 use RK\DownLoadModule\Helper\ListEntriesHelper;
@@ -96,6 +100,23 @@ abstract class AbstractFileType extends AbstractType
         }
         $this->addModerationFields($builder, $options);
         $this->addSubmitButtons($builder, $options);
+
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $entity = $event->getData();
+            foreach (['myFile'] as $uploadFieldName) {
+                $entity[$uploadFieldName] = [
+                    $uploadFieldName => $entity[$uploadFieldName] instanceof File ? $entity[$uploadFieldName]->getPathname() : null
+                ];
+            }
+        });
+        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
+            $entity = $event->getData();
+            foreach (['myFile'] as $uploadFieldName) {
+                if (is_array($entity[$uploadFieldName])) {
+                    $entity[$uploadFieldName] = $entity[$uploadFieldName][$uploadFieldName];
+                }
+            }
+        });
     }
 
     /**
@@ -104,7 +125,7 @@ abstract class AbstractFileType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addEntityFields(FormBuilderInterface $builder, array $options = [])
+    public function addEntityFields(FormBuilderInterface $builder, array $options)
     {
         
         $builder->add('fileName', TextType::class, [
@@ -116,6 +137,18 @@ abstract class AbstractFileType extends AbstractType
                 'title' => $this->__('Enter the file name of the file')
             ],
             'required' => true,
+        ]);
+        
+        $builder->add('myFile', UploadType::class, [
+            'label' => $this->__('My file') . ':',
+            'attr' => [
+                'class' => ' validate-upload',
+                'title' => $this->__('Enter the my file of the file')
+            ],
+            'required' => true && $options['mode'] == 'create',
+            'entity' => $options['entity'],
+            'allowed_extensions' => 'pdf, doc, docx, xls, xlsx, ppt, pptx',
+            'allowed_size' => ''
         ]);
         
         $builder->add('myDescription', TextareaType::class, [
@@ -155,22 +188,6 @@ abstract class AbstractFileType extends AbstractType
             'empty_data' => '2099-12-31',
             'widget' => 'single_text'
         ]);
-        
-        $builder->add('myLink', UrlType::class, [
-            'label' => $this->__('My link') . ':',
-            'label_attr' => [
-                'class' => 'tooltips',
-                'title' => $this->__('Here type the link you want to share')
-            ],
-            'help' => $this->__('Here type the link you want to share'),
-            'empty_data' => '',
-            'attr' => [
-                'maxlength' => 255,
-                'class' => '',
-                'title' => $this->__('Enter the my link of the file')
-            ],
-            'required' => true,
-        ]);
     }
 
     /**
@@ -179,7 +196,7 @@ abstract class AbstractFileType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addCategoriesField(FormBuilderInterface $builder, array $options = [])
+    public function addCategoriesField(FormBuilderInterface $builder, array $options)
     {
         $builder->add('categories', CategoriesType::class, [
             'label' => $this->__('Category') . ':',
@@ -191,8 +208,7 @@ abstract class AbstractFileType extends AbstractType
             'multiple' => false,
             'module' => 'RKDownLoadModule',
             'entity' => 'FileEntity',
-            'entityCategoryClass' => 'RK\DownLoadModule\Entity\FileCategoryEntity',
-            'showRegistryLabels' => true
+            'entityCategoryClass' => 'RK\DownLoadModule\Entity\FileCategoryEntity'
         ]);
     }
 
@@ -202,7 +218,7 @@ abstract class AbstractFileType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addModerationFields(FormBuilderInterface $builder, array $options = [])
+    public function addModerationFields(FormBuilderInterface $builder, array $options)
     {
         if (!$options['has_moderate_permission']) {
             return;
@@ -241,7 +257,7 @@ abstract class AbstractFileType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addSubmitButtons(FormBuilderInterface $builder, array $options = [])
+    public function addSubmitButtons(FormBuilderInterface $builder, array $options)
     {
         foreach ($options['actions'] as $action) {
             $builder->add($action['id'], SubmitType::class, [
@@ -301,13 +317,14 @@ abstract class AbstractFileType extends AbstractType
                     return $this->entityFactory->createFile();
                 },
                 'error_mapping' => [
+                    'myFile' => 'myFile.myFile',
                     'isStartDateBeforeEndDate' => 'startDate',
                 ],
                 'mode' => 'create',
                 'actions' => [],
                 'has_moderate_permission' => false,
             ])
-            ->setRequired(['mode', 'actions'])
+            ->setRequired(['entity', 'mode', 'actions'])
             ->setAllowedTypes('mode', 'string')
             ->setAllowedTypes('actions', 'array')
             ->setAllowedTypes('has_moderate_permission', 'bool')

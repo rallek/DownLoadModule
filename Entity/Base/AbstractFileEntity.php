@@ -15,6 +15,7 @@ namespace RK\DownLoadModule\Entity\Base;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Zikula\Core\Doctrine\EntityAccess;
 use RK\DownLoadModule\Traits\StandardFieldsTrait;
@@ -54,7 +55,6 @@ abstract class AbstractFileEntity extends EntityAccess
     
     /**
      * the current workflow state
-     *
      * @ORM\Column(length=20)
      * @Assert\NotBlank()
      * @DownLoadAssert\ListEntry(entityName="file", propertyName="workflowState", multiple=false)
@@ -71,8 +71,35 @@ abstract class AbstractFileEntity extends EntityAccess
     protected $fileName = '';
     
     /**
-     * the quantity of characters are limited to {{length}}
+     * My file meta data array.
      *
+     * @ORM\Column(type="array")
+     * @Assert\Type(type="array")
+     * @var array $myFileMeta
+     */
+    protected $myFileMeta = [];
+    
+    /**
+     * @ORM\Column(length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(min="0", max="255")
+     * @Assert\File(
+     *    mimeTypes = {"application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation"}
+     * )
+     * @var string $myFile
+     */
+    protected $myFile = null;
+    
+    /**
+     * Full my file path as url.
+     *
+     * @Assert\Type(type="string")
+     * @var string $myFileUrl
+     */
+    protected $myFileUrl = '';
+    
+    /**
+     * the quantity of characters are limited to {{length}}
      * @ORM\Column(type="text", length=2000, nullable=true)
      * @Assert\Length(min="0", max="2000")
      * @var text $myDescription
@@ -95,17 +122,6 @@ abstract class AbstractFileEntity extends EntityAccess
      * @var date $endDate
      */
     protected $endDate;
-    
-    /**
-     * Here type the link you want to share
-     *
-     * @ORM\Column(length=255)
-     * @Assert\NotBlank()
-     * @Assert\Length(min="0", max="255")
-     * @Assert\Url(checkDNS=false)
-     * @var string $myLink
-     */
-    protected $myLink = '';
     
     
     /**
@@ -227,6 +243,78 @@ abstract class AbstractFileEntity extends EntityAccess
     }
     
     /**
+     * Returns the my file.
+     *
+     * @return string
+     */
+    public function getMyFile()
+    {
+        return $this->myFile;
+    }
+    
+    /**
+     * Sets the my file.
+     *
+     * @param string $myFile
+     *
+     * @return void
+     */
+    public function setMyFile($myFile)
+    {
+        if ($this->myFile !== $myFile) {
+            $this->myFile = isset($myFile) ? $myFile : '';
+        }
+    }
+    
+    /**
+     * Returns the my file url.
+     *
+     * @return string
+     */
+    public function getMyFileUrl()
+    {
+        return $this->myFileUrl;
+    }
+    
+    /**
+     * Sets the my file url.
+     *
+     * @param string $myFileUrl
+     *
+     * @return void
+     */
+    public function setMyFileUrl($myFileUrl)
+    {
+        if ($this->myFileUrl !== $myFileUrl) {
+            $this->myFileUrl = isset($myFileUrl) ? $myFileUrl : '';
+        }
+    }
+    
+    /**
+     * Returns the my file meta.
+     *
+     * @return array
+     */
+    public function getMyFileMeta()
+    {
+        return $this->myFileMeta;
+    }
+    
+    /**
+     * Sets the my file meta.
+     *
+     * @param array $myFileMeta
+     *
+     * @return void
+     */
+    public function setMyFileMeta($myFileMeta = [])
+    {
+        if ($this->myFileMeta !== $myFileMeta) {
+            $this->myFileMeta = isset($myFileMeta) ? $myFileMeta : '';
+        }
+    }
+    
+    /**
      * Returns the my description.
      *
      * @return text
@@ -270,16 +358,10 @@ abstract class AbstractFileEntity extends EntityAccess
     public function setStartDate($startDate)
     {
         if ($this->startDate !== $startDate) {
-            if (!(null == $startDate && empty($startDate)) && !(is_object($startDate) && $startDate instanceOf \DateTimeInterface)) {
-                $startDate = new \DateTime($startDate);
-            }
-            
-            if (null === $startDate || empty($startDate)) {
-                $startDate = new \DateTime();
-            }
-            
-            if ($this->startDate != $startDate) {
+            if (is_object($startDate) && $startDate instanceOf \DateTime) {
                 $this->startDate = $startDate;
+            } else {
+                $this->startDate = new \DateTime($startDate);
             }
         }
     }
@@ -304,41 +386,11 @@ abstract class AbstractFileEntity extends EntityAccess
     public function setEndDate($endDate)
     {
         if ($this->endDate !== $endDate) {
-            if (!(null == $endDate && empty($endDate)) && !(is_object($endDate) && $endDate instanceOf \DateTimeInterface)) {
-                $endDate = new \DateTime($endDate);
-            }
-            
-            if (null === $endDate || empty($endDate)) {
-                $endDate = new \DateTime();
-            }
-            
-            if ($this->endDate != $endDate) {
+            if (is_object($endDate) && $endDate instanceOf \DateTime) {
                 $this->endDate = $endDate;
+            } else {
+                $this->endDate = new \DateTime($endDate);
             }
-        }
-    }
-    
-    /**
-     * Returns the my link.
-     *
-     * @return string
-     */
-    public function getMyLink()
-    {
-        return $this->myLink;
-    }
-    
-    /**
-     * Sets the my link.
-     *
-     * @param string $myLink
-     *
-     * @return void
-     */
-    public function setMyLink($myLink)
-    {
-        if ($this->myLink !== $myLink) {
-            $this->myLink = isset($myLink) ? $myLink : '';
         }
     }
     
@@ -356,7 +408,7 @@ abstract class AbstractFileEntity extends EntityAccess
     /**
      * Sets the categories.
      *
-     * @param ArrayCollection $categories List of categories
+     * @param ArrayCollection $categories
      *
      * @return void
      */
@@ -377,8 +429,8 @@ abstract class AbstractFileEntity extends EntityAccess
     /**
      * Checks if a collection contains an element based only on two criteria (categoryRegistryId, category).
      *
-     * @param ArrayCollection $collection Given collection
-     * @param \RK\DownLoadModule\Entity\FileCategoryEntity $element Element to search for
+     * @param ArrayCollection $collection
+     * @param \RK\DownLoadModule\Entity\FileCategoryEntity $element
      *
      * @return bool|int
      */
@@ -401,7 +453,7 @@ abstract class AbstractFileEntity extends EntityAccess
     /**
      * Creates url arguments array for easy creation of display urls.
      *
-     * @return array List of resulting arguments
+     * @return array The resulting arguments list
      */
     public function createUrlArgs()
     {
@@ -443,11 +495,11 @@ abstract class AbstractFileEntity extends EntityAccess
     /**
      * Returns an array of all related objects that need to be persisted after clone.
      * 
-     * @param array $objects Objects that are added to this array
+     * @param array $objects The objects are added to this array. Default: []
      * 
-     * @return array List of entity objects
+     * @return array of entity objects
      */
-    public function getRelatedObjectsToPersist(&$objects = [])
+    public function getRelatedObjectsToPersist(&$objects = []) 
     {
         return [];
     }
@@ -487,6 +539,11 @@ abstract class AbstractFileEntity extends EntityAccess
     
         // reset workflow
         $this->setWorkflowState('initial');
+    
+        // reset upload fields
+        $this->setMyFile(null);
+        $this->setMyFileMeta([]);
+        $this->setMyFileUrl('');
     
         $this->setCreatedBy(null);
         $this->setCreatedDate(null);

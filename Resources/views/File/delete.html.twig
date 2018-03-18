@@ -38,7 +38,7 @@
     {% set hooks = notifyDisplayHooks(eventName='rkdownloadmodule.ui_hooks.files.form_delete', id=file.getKey(), outputAsArray=true) %}
     {% if hooks is iterable and hooks|length > 0 %}
         {% for area, hook in hooks %}
-            <div class="z-displayhook" data-area="{{ area|e('html_attr') }}">{{ hook|raw }}</div>
+            <div class="z-displayhook" data-area="{{ area|e('html_attr') }}">{{ hook }}</div>
         {% endfor %}
     {% endif %}
 {% endblock %}

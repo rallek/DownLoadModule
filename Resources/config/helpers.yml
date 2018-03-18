@@ -40,6 +40,7 @@ services:
             - "@rk_download_module.entity_factory"
             - "@rk_download_module.collection_filter_helper"
             - "@rk_download_module.model_helper"
+            - "@rk_download_module.image_helper"
             - "@rk_download_module.feature_activation_helper"
     
     rk_download_module.entity_display_helper:
@@ -56,6 +57,13 @@ services:
         class: RK\DownLoadModule\Helper\HookHelper
         arguments:
             - "@hook_dispatcher"
+    
+    rk_download_module.image_helper:
+        class: RK\DownLoadModule\Helper\ImageHelper
+        arguments:
+            - "@translator.default"
+            - "@session"
+            - "@zikula_extensions_module.api.variable"
     
     rk_download_module.listentries_helper:
         class: RK\DownLoadModule\Helper\ListEntriesHelper
@@ -81,6 +89,17 @@ services:
             - "@rk_download_module.category_helper"
         tags:
             - { name: zikula.searchable_module, bundleName: RKDownLoadModule }
+    
+    rk_download_module.upload_helper:
+        class: RK\DownLoadModule\Helper\UploadHelper
+        arguments:
+            - "@translator.default"
+            - "@filesystem"
+            - "@session"
+            - "@logger"
+            - "@zikula_users_module.current_user"
+            - "@=service('zikula_extensions_module.api.variable').getAll('RKDownLoadModule')"
+            - "%datadir%"
     
     rk_download_module.view_helper:
         class: RK\DownLoadModule\Helper\ViewHelper

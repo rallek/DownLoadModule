@@ -1,5 +1,0 @@
-services:
-    rk_download_module.app_settings:
-        class: RK\DownLoadModule\AppSettings
-        arguments:
-            - "@zikula_extensions_module.api.variable"

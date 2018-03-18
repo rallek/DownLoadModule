@@ -1,5 +1,4 @@
 imports:
-  - { resource: 'appSettings.yml' }
   - { resource: 'linkContainer.yml' }
   - { resource: 'entityFactory.yml' }
   - { resource: 'eventSubscriber.yml' }

@@ -106,7 +106,7 @@ abstract class AbstractFileFinderType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addCategoriesField(FormBuilderInterface $builder, array $options = [])
+    public function addCategoriesField(FormBuilderInterface $builder, array $options)
     {
         $builder->add('categories', CategoriesType::class, [
             'label' => $this->__('Category') . ':',
@@ -120,8 +120,7 @@ abstract class AbstractFileFinderType extends AbstractType
             'multiple' => false,
             'module' => 'RKDownLoadModule',
             'entity' => ucfirst($options['object_type']) . 'Entity',
-            'entityCategoryClass' => 'RK\DownLoadModule\Entity\\' . ucfirst($options['object_type']) . 'CategoryEntity',
-            'showRegistryLabels' => true
+            'entityCategoryClass' => 'RK\DownLoadModule\Entity\\' . ucfirst($options['object_type']) . 'CategoryEntity'
         ]);
     }
 
@@ -131,7 +130,7 @@ abstract class AbstractFileFinderType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addPasteAsField(FormBuilderInterface $builder, array $options = [])
+    public function addPasteAsField(FormBuilderInterface $builder, array $options)
     {
         $builder->add('pasteAs', ChoiceType::class, [
             'label' => $this->__('Paste as') . ':',
@@ -153,7 +152,7 @@ abstract class AbstractFileFinderType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addSortingFields(FormBuilderInterface $builder, array $options = [])
+    public function addSortingFields(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('sort', ChoiceType::class, [
@@ -161,7 +160,6 @@ abstract class AbstractFileFinderType extends AbstractType
                 'empty_data' => '',
                 'choices' => [
                     $this->__('File name') => 'fileName',
-                    $this->__('My link') => 'myLink',
                     $this->__('Creation date') => 'createdDate',
                     $this->__('Creator') => 'createdBy',
                     $this->__('Update date') => 'updatedDate',
@@ -191,7 +189,7 @@ abstract class AbstractFileFinderType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addAmountField(FormBuilderInterface $builder, array $options = [])
+    public function addAmountField(FormBuilderInterface $builder, array $options)
     {
         $builder->add('num', ChoiceType::class, [
             'label' => $this->__('Page size') . ':',
@@ -220,7 +218,7 @@ abstract class AbstractFileFinderType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addSearchField(FormBuilderInterface $builder, array $options = [])
+    public function addSearchField(FormBuilderInterface $builder, array $options)
     {
         $builder->add('q', SearchType::class, [
             'label' => $this->__('Search for') . ':',

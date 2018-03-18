@@ -1,13 +1,15 @@
 'use strict';
 
-function rKDownLoadCapitaliseFirstLetter(string) {
+function rKDownLoadCapitaliseFirstLetter(string)
+{
     return string.charAt(0).toUpperCase() + string.substring(1);
 }
 
 /**
  * Initialise the quick navigation form in list views.
  */
-function rKDownLoadInitQuickNavigation() {
+function rKDownLoadInitQuickNavigation()
+{
     var quickNavForm;
     var objectType;
 
@@ -32,7 +34,8 @@ function rKDownLoadInitQuickNavigation() {
 /**
  * Simulates a simple alert using bootstrap.
  */
-function rKDownLoadSimpleAlert(anchorElement, title, content, alertId, cssClass) {
+function rKDownLoadSimpleAlert(anchorElement, title, content, alertId, cssClass)
+{
     var alertBox;
 
     alertBox = ' \
@@ -53,43 +56,94 @@ function rKDownLoadSimpleAlert(anchorElement, title, content, alertId, cssClass)
 /**
  * Initialises the mass toggle functionality for admin view pages.
  */
-function rKDownLoadInitMassToggle() {
+function rKDownLoadInitMassToggle()
+{
     if (jQuery('.rkdownload-mass-toggle').length > 0) {
         jQuery('.rkdownload-mass-toggle').unbind('click').click(function (event) {
-            jQuery('.rkdownload-toggle-checkbox').prop('checked', jQuery(this).prop('checked'));
+            if (jQuery('.table.fixed-columns').length > 0) {
+                jQuery('.rkdownload-toggle-checkbox').prop('checked', false);
+                jQuery('.table.fixed-columns .rkdownload-toggle-checkbox').prop('checked', jQuery(this).prop('checked'));
+            } else {
+                jQuery('.rkdownload-toggle-checkbox').prop('checked', jQuery(this).prop('checked'));
+            }
         });
     }
 }
 
 /**
+ * Initialises fixed table columns.
+ */
+function rKDownLoadInitFixedColumns()
+{
+    jQuery('.table.fixed-columns').remove();
+    jQuery('.table').each(function() {
+        var originalTable, fixedColumnsTable, fixedTableWidth;
+
+        originalTable = jQuery(this);
+        fixedTableWidth = 0;
+        if (originalTable.find('.fixed-column').length > 0) {
+            fixedColumnsTable = originalTable.clone().insertBefore(originalTable).addClass('fixed-columns').removeAttr('id');
+            originalTable.find('.dropdown').addClass('hidden');
+            fixedColumnsTable.find('.dropdown').removeClass('hidden');
+            fixedColumnsTable.css('left', originalTable.parent().position().left);
+
+            fixedColumnsTable.find('th, td').not('.fixed-column').remove();
+            fixedColumnsTable.find('th').each(function (i, elem) {
+                jQuery(this).css('width', originalTable.find('th').eq(i).css('width'));
+                fixedTableWidth += originalTable.find('th').eq(i).width();
+            });
+            fixedColumnsTable.css('width', fixedTableWidth + 'px');
+
+            fixedColumnsTable.find('tr').each(function (i, elem) {
+                jQuery(this).height(originalTable.find('tr:eq(' + i + ')').height());
+            });
+        }
+    });
+    rKDownLoadInitMassToggle();
+}
+
+/**
  * Creates a dropdown menu for the item actions.
  */
-function rKDownLoadInitItemActions(context) {
+function rKDownLoadInitItemActions(context)
+{
     var containerSelector;
     var containers;
-    
+    var listClasses;
+
     containerSelector = '';
     if (context == 'view') {
         containerSelector = '.rkdownloadmodule-view';
+        listClasses = 'list-unstyled dropdown-menu';
     } else if (context == 'display') {
         containerSelector = 'h2, h3';
+        listClasses = 'list-unstyled dropdown-menu';
     }
-    
+
     if (containerSelector == '') {
         return;
     }
-    
+
     containers = jQuery(containerSelector);
     if (containers.length < 1) {
         return;
     }
-    
-    containers.find('.dropdown > ul').removeClass('list-inline').addClass('list-unstyled dropdown-menu');
+
+    containers.find('.dropdown > ul').removeClass('list-inline').addClass(listClasses);
+    containers.find('.dropdown > ul a').each(function (index) {
+        var title;
+
+        title = jQuery(this).find('i').first().attr('title');
+        if (title == '') {
+            title = jQuery(this).find('i').first().data('original-title');
+        }
+        jQuery(this).html(jQuery(this).html() + title);
+    });
     containers.find('.dropdown > ul a i').addClass('fa-fw');
     containers.find('.dropdown-toggle').removeClass('hidden').dropdown();
 }
 
-jQuery(document).ready(function () {
+jQuery(document).ready(function() {
     var isViewPage;
     var isDisplayPage;
 
@@ -99,6 +153,9 @@ jQuery(document).ready(function () {
     if (isViewPage) {
         rKDownLoadInitQuickNavigation();
         rKDownLoadInitMassToggle();
+        jQuery(window).resize(rKDownLoadInitFixedColumns);
+        rKDownLoadInitFixedColumns();
+        window.setTimeout(rKDownLoadInitFixedColumns, 1000);
         rKDownLoadInitItemActions('view');
     } else if (isDisplayPage) {
         rKDownLoadInitItemActions('display');

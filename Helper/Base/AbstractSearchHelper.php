@@ -47,22 +47,22 @@ abstract class AbstractSearchHelper implements SearchableInterface
     /**
      * @var SessionInterface
      */
-    protected $session;
+    private $session;
     
     /**
      * @var Request
      */
-    protected $request;
+    private $request;
     
     /**
      * @var EntityFactory
      */
-    protected $entityFactory;
+    private $entityFactory;
     
     /**
      * @var ControllerHelper
      */
-    protected $controllerHelper;
+    private $controllerHelper;
     
     /**
      * @var EntityDisplayHelper
@@ -72,12 +72,12 @@ abstract class AbstractSearchHelper implements SearchableInterface
     /**
      * @var FeatureActivationHelper
      */
-    protected $featureActivationHelper;
+    private $featureActivationHelper;
     
     /**
      * @var CategoryHelper
      */
-    protected $categoryHelper;
+    private $categoryHelper;
     
     /**
      * SearchHelper constructor.
@@ -184,8 +184,8 @@ abstract class AbstractSearchHelper implements SearchableInterface
                 case 'file':
                     $whereArray[] = 'tbl.workflowState';
                     $whereArray[] = 'tbl.fileName';
+                    $whereArray[] = 'tbl.myFile';
                     $whereArray[] = 'tbl.myDescription';
-                    $whereArray[] = 'tbl.myLink';
                     break;
             }
     
@@ -256,7 +256,7 @@ abstract class AbstractSearchHelper implements SearchableInterface
     /**
      * Returns list of supported search types.
      *
-     * @return array List of search types
+     * @return array
      */
     protected function getSearchTypes()
     {
@@ -291,13 +291,13 @@ abstract class AbstractSearchHelper implements SearchableInterface
      * Construct a QueryBuilder Where orX|andX Expr instance.
      *
      * @param QueryBuilder $qb
-     * @param string[] $words  List of words to query for
-     * @param string[] $fields List of fields to include into query
+     * @param array $words the words to query for
+     * @param array $fields
      * @param string $searchtype AND|OR|EXACT
      *
      * @return null|Composite
      */
-    protected function formatWhere(QueryBuilder $qb, array $words = [], array $fields = [], $searchtype = 'AND')
+    protected function formatWhere(QueryBuilder $qb, array $words, array $fields, $searchtype = 'AND')
     {
         if (empty($words) || empty($fields)) {
             return null;

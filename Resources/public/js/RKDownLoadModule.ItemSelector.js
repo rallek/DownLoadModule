@@ -7,7 +7,8 @@ rKDownLoadModule.itemSelector.items = {};
 rKDownLoadModule.itemSelector.baseId = 0;
 rKDownLoadModule.itemSelector.selectedId = 0;
 
-rKDownLoadModule.itemSelector.onLoad = function (baseId, selectedId) {
+rKDownLoadModule.itemSelector.onLoad = function (baseId, selectedId)
+{
     rKDownLoadModule.itemSelector.baseId = baseId;
     rKDownLoadModule.itemSelector.selectedId = selectedId;
 
@@ -25,13 +26,15 @@ rKDownLoadModule.itemSelector.onLoad = function (baseId, selectedId) {
     rKDownLoadModule.itemSelector.getItemList();
 };
 
-rKDownLoadModule.itemSelector.onParamChanged = function () {
+rKDownLoadModule.itemSelector.onParamChanged = function ()
+{
     jQuery('#ajaxIndicator').removeClass('hidden');
 
     rKDownLoadModule.itemSelector.getItemList();
 };
 
-rKDownLoadModule.itemSelector.getItemList = function () {
+rKDownLoadModule.itemSelector.getItemList = function ()
+{
     var baseId;
     var params;
 
@@ -48,7 +51,7 @@ rKDownLoadModule.itemSelector.getItemList = function () {
         params[catidsMain] = jQuery('#' + baseId + '_catidsMain').val();
     }
 
-    jQuery.getJSON(Routing.generate('rkdownloadmodule_ajax_getitemlistfinder'), params, function (data) {
+    jQuery.getJSON(Routing.generate('rkdownloadmodule_ajax_getitemlistfinder'), params, function( data ) {
         var baseId;
 
         baseId = rKDownLoadModule.itemSelector.baseId;
@@ -59,7 +62,8 @@ rKDownLoadModule.itemSelector.getItemList = function () {
     });
 };
 
-rKDownLoadModule.itemSelector.updateItemDropdownEntries = function () {
+rKDownLoadModule.itemSelector.updateItemDropdownEntries = function ()
+{
     var baseId, itemSelector, items, i, item;
 
     baseId = rKDownLoadModule.itemSelector.baseId;
@@ -77,7 +81,8 @@ rKDownLoadModule.itemSelector.updateItemDropdownEntries = function () {
     }
 };
 
-rKDownLoadModule.itemSelector.updatePreview = function () {
+rKDownLoadModule.itemSelector.updatePreview = function ()
+{
     var baseId, items, selectedElement, i;
 
     baseId = rKDownLoadModule.itemSelector.baseId;
@@ -106,7 +111,8 @@ rKDownLoadModule.itemSelector.updatePreview = function () {
     }
 };
 
-rKDownLoadModule.itemSelector.onItemChanged = function () {
+rKDownLoadModule.itemSelector.onItemChanged = function ()
+{
     var baseId, itemSelector, preview;
 
     baseId = rKDownLoadModule.itemSelector.baseId;
@@ -117,7 +123,7 @@ rKDownLoadModule.itemSelector.onItemChanged = function () {
     rKDownLoadModule.itemSelector.selectedId = jQuery('#' + baseId + 'Id').val();
 };
 
-jQuery(document).ready(function () {
+jQuery(document).ready(function() {
     var infoElem;
 
     infoElem = jQuery('#itemSelectorInfo');

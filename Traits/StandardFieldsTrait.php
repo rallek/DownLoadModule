@@ -34,7 +34,7 @@ trait StandardFieldsTrait
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      * @Assert\DateTime()
-     * @var \DateTimeInterface $createdDate
+     * @var \DateTime $createdDate
      */
     protected $createdDate;
     
@@ -50,7 +50,7 @@ trait StandardFieldsTrait
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
      * @Assert\DateTime()
-     * @var \DateTimeInterface $updatedDate
+     * @var \DateTime $updatedDate
      */
     protected $updatedDate;
     
@@ -81,7 +81,7 @@ trait StandardFieldsTrait
     /**
      * Returns the created date.
      *
-     * @return \DateTimeInterface
+     * @return \DateTime
      */
     public function getCreatedDate()
     {
@@ -91,7 +91,7 @@ trait StandardFieldsTrait
     /**
      * Sets the created date.
      *
-     * @param \DateTimeInterface $createdDate
+     * @param \DateTime $createdDate
      *
      * @return void
      */
@@ -129,7 +129,7 @@ trait StandardFieldsTrait
     /**
      * Returns the updated date.
      *
-     * @return \DateTimeInterface
+     * @return \DateTime
      */
     public function getUpdatedDate()
     {
@@ -139,7 +139,7 @@ trait StandardFieldsTrait
     /**
      * Sets the updated date.
      *
-     * @param \DateTimeInterface $updatedDate
+     * @param \DateTime $updatedDate
      *
      * @return void
      */

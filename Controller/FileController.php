@@ -15,7 +15,7 @@ namespace RK\DownLoadModule\Controller;
 use RK\DownLoadModule\Controller\Base\AbstractFileController;
 
 use RuntimeException;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,6 +35,7 @@ class FileController extends AbstractFileController
      * @Route("/admin/files",
      *        methods = {"GET"}
      * )
+     * @Cache(expires="+7 days", public=true)
      * @Theme("admin")
      *
      * @param Request $request Current request instance
@@ -54,6 +55,7 @@ class FileController extends AbstractFileController
      * @Route("/files",
      *        methods = {"GET"}
      * )
+     * @Cache(expires="+7 days", public=true)
      *
      * @param Request $request Current request instance
      *
@@ -73,6 +75,7 @@ class FileController extends AbstractFileController
      *        defaults = {"sort" = "", "sortdir" = "asc", "pos" = 1, "num" = 10, "_format" = "html"},
      *        methods = {"GET"}
      * )
+     * @Cache(expires="+2 hours", public=false)
      * @Theme("admin")
      *
      * @param Request $request Current request instance
@@ -98,6 +101,7 @@ class FileController extends AbstractFileController
      *        defaults = {"sort" = "", "sortdir" = "asc", "pos" = 1, "num" = 10, "_format" = "html"},
      *        methods = {"GET"}
      * )
+     * @Cache(expires="+2 hours", public=false)
      *
      * @param Request $request Current request instance
      * @param string $sort         Sorting field
@@ -122,6 +126,7 @@ class FileController extends AbstractFileController
      *        methods = {"GET"}
      * )
      * @ParamConverter("file", class="RKDownLoadModule:FileEntity", options = {"repository_method" = "selectById", "mapping": {"id": "id"}, "map_method_signature" = true})
+     * @Cache(lastModified="file.getUpdatedDate()", ETag="'File' ~ file.getid() ~ file.getUpdatedDate().format('U')")
      * @Theme("admin")
      *
      * @param Request $request Current request instance
@@ -146,6 +151,7 @@ class FileController extends AbstractFileController
      *        methods = {"GET"}
      * )
      * @ParamConverter("file", class="RKDownLoadModule:FileEntity", options = {"repository_method" = "selectById", "mapping": {"id": "id"}, "map_method_signature" = true})
+     * @Cache(lastModified="file.getUpdatedDate()", ETag="'File' ~ file.getid() ~ file.getUpdatedDate().format('U')")
      *
      * @param Request $request Current request instance
      * @param FileEntity $file Treated file instance
@@ -167,6 +173,7 @@ class FileController extends AbstractFileController
      *        defaults = {"id" = "0", "_format" = "html"},
      *        methods = {"GET", "POST"}
      * )
+     * @Cache(expires="+30 minutes", public=false)
      * @Theme("admin")
      *
      * @param Request $request Current request instance
@@ -190,6 +197,7 @@ class FileController extends AbstractFileController
      *        defaults = {"id" = "0", "_format" = "html"},
      *        methods = {"GET", "POST"}
      * )
+     * @Cache(expires="+30 minutes", public=false)
      *
      * @param Request $request Current request instance
      *
@@ -212,6 +220,7 @@ class FileController extends AbstractFileController
      *        methods = {"GET", "POST"}
      * )
      * @ParamConverter("file", class="RKDownLoadModule:FileEntity", options = {"repository_method" = "selectById", "mapping": {"id": "id"}, "map_method_signature" = true})
+     * @Cache(lastModified="file.getUpdatedDate()", ETag="'File' ~ file.getid() ~ file.getUpdatedDate().format('U')")
      * @Theme("admin")
      *
      * @param Request $request Current request instance
@@ -237,6 +246,7 @@ class FileController extends AbstractFileController
      *        methods = {"GET", "POST"}
      * )
      * @ParamConverter("file", class="RKDownLoadModule:FileEntity", options = {"repository_method" = "selectById", "mapping": {"id": "id"}, "map_method_signature" = true})
+     * @Cache(lastModified="file.getUpdatedDate()", ETag="'File' ~ file.getid() ~ file.getUpdatedDate().format('U')")
      *
      * @param Request $request Current request instance
      * @param FileEntity $file Treated file instance

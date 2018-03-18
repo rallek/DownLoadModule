@@ -24,15 +24,15 @@ abstract class AbstractItemBlock extends AbstractBlockHandler
     /**
      * Display the block content.
      *
-     * @param array $properties The block properties
+     * @param array $properties The block properties array
      *
-     * @return string
+     * @return array|string
      */
-    public function display(array $properties = [])
+    public function display(array $properties)
     {
         // only show block content if the user has the required permissions
         if (!$this->hasPermission('RKDownLoadModule:ItemBlock:', "$properties[title]::", ACCESS_OVERVIEW)) {
-            return '';
+            return false;
         }
     
         // set default values for all params which are not properly set
@@ -51,17 +51,17 @@ abstract class AbstractItemBlock extends AbstractBlockHandler
     
         $controllerReference = new ControllerReference('RKDownLoadModule:External:display', $this->getDisplayArguments($properties), ['template' => $properties['customTemplate']]);
     
-        return $this->get('fragment.handler')->render($controllerReference, 'inline', []);
+        return $this->container->get('fragment.handler')->render($controllerReference, 'inline', []);
     }
     
     /**
      * Returns common arguments for displaying the selected object using the external controller.
      *
-     * @param array $properties The block properties
+     * @param array $properties The block properties array
      *
      * @return array Display arguments
      */
-    protected function getDisplayArguments(array $properties = [])
+    protected function getDisplayArguments(array $properties)
     {
         return [
             'objectType' => $properties['objectType'],
