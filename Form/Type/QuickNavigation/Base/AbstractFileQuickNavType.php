@@ -187,7 +187,6 @@ abstract class AbstractFileQuickNavType extends AbstractType
                 ],
                 'choices' =>             [
                     $this->__('File name') => 'fileName',
-                    $this->__('My link') => 'myLink',
                     $this->__('Creation date') => 'createdDate',
                     $this->__('Creator') => 'createdBy',
                     $this->__('Update date') => 'updatedDate',

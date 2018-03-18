@@ -161,7 +161,6 @@ abstract class AbstractFileFinderType extends AbstractType
                 'empty_data' => '',
                 'choices' => [
                     $this->__('File name') => 'fileName',
-                    $this->__('My link') => 'myLink',
                     $this->__('Creation date') => 'createdDate',
                     $this->__('Creator') => 'createdBy',
                     $this->__('Update date') => 'updatedDate',

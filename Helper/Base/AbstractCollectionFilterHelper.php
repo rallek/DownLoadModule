@@ -301,8 +301,6 @@ abstract class AbstractCollectionFilterHelper
             $parameters['searchStartDate'] = $fragment;
             $filters[] = 'tbl.endDate = :searchEndDate';
             $parameters['searchEndDate'] = $fragment;
-            $filters[] = 'tbl.myLink = :searchMyLink';
-            $parameters['searchMyLink'] = $fragment;
         }
     
         $qb->andWhere('(' . implode(' OR ', $filters) . ')');

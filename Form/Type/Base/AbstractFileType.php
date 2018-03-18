@@ -21,7 +21,6 @@ use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -154,22 +153,6 @@ abstract class AbstractFileType extends AbstractType
             'required' => true,
             'empty_data' => '2099-12-31',
             'widget' => 'single_text'
-        ]);
-        
-        $builder->add('myLink', UrlType::class, [
-            'label' => $this->__('My link') . ':',
-            'label_attr' => [
-                'class' => 'tooltips',
-                'title' => $this->__('Here type the link you want to share')
-            ],
-            'help' => $this->__('Here type the link you want to share'),
-            'empty_data' => '',
-            'attr' => [
-                'maxlength' => 255,
-                'class' => '',
-                'title' => $this->__('Enter the my link of the file')
-            ],
-            'required' => true,
         ]);
     }
 

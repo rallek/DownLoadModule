@@ -139,7 +139,6 @@ abstract class AbstractFileController extends AbstractController
         $sortableColumns->addColumns([
             new Column('workflowState'),
             new Column('fileName'),
-            new Column('myLink'),
             new Column('createdBy'),
             new Column('createdDate'),
             new Column('updatedBy'),

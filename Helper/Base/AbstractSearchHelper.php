@@ -185,7 +185,6 @@ abstract class AbstractSearchHelper implements SearchableInterface
                     $whereArray[] = 'tbl.workflowState';
                     $whereArray[] = 'tbl.fileName';
                     $whereArray[] = 'tbl.myDescription';
-                    $whereArray[] = 'tbl.myLink';
                     break;
             }
     

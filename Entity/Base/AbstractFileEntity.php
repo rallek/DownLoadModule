@@ -96,17 +96,6 @@ abstract class AbstractFileEntity extends EntityAccess
      */
     protected $endDate;
     
-    /**
-     * Here type the link you want to share
-     *
-     * @ORM\Column(length=255)
-     * @Assert\NotBlank()
-     * @Assert\Length(min="0", max="255")
-     * @Assert\Url(checkDNS=false)
-     * @var string $myLink
-     */
-    protected $myLink = '';
-    
     
     /**
      * @ORM\OneToMany(targetEntity="\RK\DownLoadModule\Entity\FileCategoryEntity", 
@@ -315,30 +304,6 @@ abstract class AbstractFileEntity extends EntityAccess
             if ($this->endDate != $endDate) {
                 $this->endDate = $endDate;
             }
-        }
-    }
-    
-    /**
-     * Returns the my link.
-     *
-     * @return string
-     */
-    public function getMyLink()
-    {
-        return $this->myLink;
-    }
-    
-    /**
-     * Sets the my link.
-     *
-     * @param string $myLink
-     *
-     * @return void
-     */
-    public function setMyLink($myLink)
-    {
-        if ($this->myLink !== $myLink) {
-            $this->myLink = isset($myLink) ? $myLink : '';
         }
     }
     

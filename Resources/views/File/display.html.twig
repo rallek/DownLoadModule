@@ -37,15 +37,6 @@
             <dt>{{ __('End date') }}</dt>
             <dd>{{ file.endDate|localizeddate('medium', 'none') }}</dd>
         {% endif %}
-        {% if file.myLink is not empty %}
-            <dt>{{ __('My link') }}</dt>
-            <dd>{% if not isQuickView %}
-            <a href="{{ file.myLink }}" title="{{ __('Visit this page') }}"><i class="fa fa-external-link-square"></i></a>
-            {% else %}
-                {{ file.myLink }}
-            {% endif %}
-            </dd>
-        {% endif %}
         
     </dl>
 

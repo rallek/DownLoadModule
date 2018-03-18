@@ -18,7 +18,7 @@ application "DownLoad" targets ZK15 {
     generateIcsTemplates false
     versionAllGeneratedFiles false
     generateTests false
-    markFiles "Resources/views/base.html.twig,\r\nResources/views/adminBase.html.twig,\r\nResources/views/File/view.html.twig,\r\nResources/views/File/viewQuickNav.html.twig\r\n.gitignore"
+    markFiles "Resources/views/base.html.twig,\r\nResources/views/adminBase.html.twig,\r\nResources/views/File/view.html.twig,\r\nResources/views/File/viewQuickNav.html.twig,\r\n.gitignore"
     entities {
         entity "file" leading categorisable {
             nameMultiple "files"
@@ -42,10 +42,6 @@ application "DownLoad" targets ZK15 {
                     defaultValue "2099-12-31"
                     displayType VIEW_DISPLAY
                     components DATE
-                }
-            ,
-                url "myLink" {
-                    documentation "Here type the link you want to share"
                 }
             }
             actions {

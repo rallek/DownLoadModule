@@ -57,7 +57,6 @@ abstract class AbstractFileRepository extends EntityRepository
         return [
             'workflowState',
             'fileName',
-            'myLink',
             'createdBy',
             'createdDate',
             'updatedBy',
