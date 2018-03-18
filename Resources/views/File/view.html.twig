@@ -1,13 +1,17 @@
 {# purpose of this template: files list view #}
 {% extends routeArea == 'admin' ? 'RKDownLoadModule::adminBase.html.twig' : 'RKDownLoadModule::base.html.twig' %}
-{% block title own ? __('My files') : __('Files list') %}
+{% block title own ? __('My files') : __('File list') %}
 {% block admin_page_icon 'list-alt' %}
 {% block content %}
 <div class="rkdownloadmodule-file rkdownloadmodule-view">
 
     {{ block('page_nav_links') }}
-
-    {{ include('@RKDownLoadModule/File/viewQuickNav.html.twig') }}{# see template file for available options #}
+	
+	{% if routeArea == 'admin' %}
+	{{ include('@RKDownLoadModule/File/viewQuickNav.html.twig') }}{# see template file for available options #}
+	{% else %}
+    {{ include('@RKDownLoadModule/File/viewQuickNav.html.twig', {searchFilter:false, workflowStateFilter:false}) }}{# see template file for available options #}
+	{% endif %}
 
     {% if routeArea == 'admin' %}
     <form action="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'handleselectedentries') }}" method="post" id="filesViewForm" class="form-horizontal" role="form">
@@ -19,24 +23,26 @@
                 {% if routeArea == 'admin' %}
                     <col id="cSelect" />
                 {% endif %}
-                <col id="cItemActionsStart" />
+                <col id="cItemActions" />
                 {% if routeArea == 'admin' %}
                 <col id="cWorkflowState" />
                 {% endif %}
                 <col id="cFileName" />
+                <col id="cMyFile" />
                 <col id="cMyDescription" />
+				{% if routeArea == 'admin' %}
                 <col id="cStartDate" />
                 <col id="cEndDate" />
-                <col id="cMyLink" />
+				{% endif %}
             </colgroup>
             <thead>
             <tr>
                 {% if routeArea == 'admin' %}
-                    <th id="hSelect" scope="col" class="text-center z-w02">
+                    <th id="hSelect" scope="col" class="{% if items|length > 0 %}fixed-column {% endif %}text-center z-w02">
                         <input type="checkbox" class="rkdownload-mass-toggle" />
                     </th>
                 {% endif %}
-                <th id="hItemActionsStart" scope="col" class="z-order-unsorted z-w02">{{ __('Actions') }}</th>
+                <th id="hItemActions" scope="col" class="{% if items|length > 0 %}fixed-column {% endif %}z-order-unsorted z-w02">{{ __('Actions') }}</th>
                 {% if routeArea == 'admin' %}
                 <th id="hWorkflowState" scope="col" class="text-left">
                     <a href="{{ sort.workflowState.url }}" title="{{ __f('Sort by %s', {'%s': 'state'}) }}" class="{{ sort.workflowState.class }}">{{ __('State') }}</a>
@@ -45,18 +51,20 @@
                 <th id="hFileName" scope="col" class="text-left">
                     <a href="{{ sort.fileName.url }}" title="{{ __f('Sort by %s', {'%s': 'file name'}) }}" class="{{ sort.fileName.class }}">{{ __('File name') }}</a>
                 </th>
+                <th id="hMyFile" scope="col" class="text-left z-order-unsorted">
+                    {{ __('My file') }}
+                </th>
                 <th id="hMyDescription" scope="col" class="text-left z-order-unsorted">
                     {{ __('My description') }}
                 </th>
+				{% if routeArea == 'admin' %}
                 <th id="hStartDate" scope="col" class="text-left z-order-unsorted">
                     {{ __('Start date') }}
                 </th>
                 <th id="hEndDate" scope="col" class="text-left z-order-unsorted">
                     {{ __('End date') }}
                 </th>
-                <th id="hMyLink" scope="col" class="text-center">
-                    <a href="{{ sort.myLink.url }}" title="{{ __f('Sort by %s', {'%s': 'my link'}) }}" class="{{ sort.myLink.class }}">{{ __('My link') }}</a>
-                </th>
+				{% endif %}
             </tr>
             </thead>
             <tbody>
@@ -64,35 +72,47 @@
         {% for file in items %}
             <tr>
                 {% if routeArea == 'admin' %}
-                    <td headers="hSelect" class="text-center z-w02">
+                    <td headers="hSelect" class="fixed-column text-center z-w02">
                         <input type="checkbox" name="items[]" value="{{ file.getKey() }}" class="rkdownload-toggle-checkbox" />
                     </td>
                 {% endif %}
-                <td id="itemActions{{ file.getKey() }}Start" headers="hItemActionsStart" class="actions nowrap z-w02">
-                    {% set itemActions = knp_menu_get('RKDownLoadModule:ItemActionsMenu:menu', [], {entity: file, area: routeArea, context: 'view'}) %}
+                <td id="itemActions{{ file.getKey() }}" headers="hItemActions" class="fixed-column actions nowrap z-w02">
+                    {% set itemActions = knp_menu_get('RKDownLoadModule:ItemActionsMenu:menu', [], { entity: file, area: routeArea, context: 'view' }) %}
                     <div class="dropdown">
-                        <a id="itemActions{{ file.getKey() }}DropDownToggleStart" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> <span class="caret"></span></a>
-                        {{ knp_menu_render(itemActions, {template: 'ZikulaMenuModule:Override:bootstrap_fontawesome.html.twig'}) }}
+                        <a id="itemActions{{ file.getKey() }}DropDownToggle" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> <span class="caret"></span></a>
+                        {{ knp_menu_render(itemActions, { template: 'ZikulaMenuModule:Override:actions.html.twig' }) }}
                     </div>
                 </td>
-                {% if routeArea == 'admin' %}<td headers="hWorkflowState" class="text-left nowrap">
+                {% if routeArea == 'admin' %}
+				<td headers="hWorkflowState" class="text-left nowrap">
                     {{ file.workflowState|rkdownloadmodule_objectState }}
                 </td>
                 {% endif %}<td headers="hFileName" class="text-left">
                     {{ file.fileName }}
                 </td>
-                <td headers="hMyDescription" class="text-left">
-                    {{ file.myDescription|striptags|truncate(50) }}
+                <td headers="hMyFile" class="text-left">
+                    {% if file.myFileMeta|default %}
+                    <a href="{{ file.myFileUrl }}" title="{{ file|rkdownloadmodule_formattedTitle|e('html_attr') }}"{% if file.myFileMeta.isImage %} class="image-link"{% endif %}>
+                    {% if file.myFileMeta.isImage %}
+                        {% set thumbOptions = attribute(thumbRuntimeOptions, 'fileMyFile') %}
+                        <img src="{{ file.myFile.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ file|rkdownloadmodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
+                    {% else %}
+                        {{ __('Download') }} ({{ file.myFileMeta.size|rkdownloadmodule_fileSize(file.myFile.getPathname(), false, false) }})
+                    {% endif %}
+                    </a>
+                    {% endif %}
                 </td>
+                <td headers="hMyDescription" class="text-left">
+                    {{ file.myDescription|safeHtml|truncate(50) }}
+                </td>
+				{% if routeArea == 'admin' %}
                 <td headers="hStartDate" class="text-left">
                     {{ file.startDate|localizeddate('medium', 'none') }}
                 </td>
                 <td headers="hEndDate" class="text-left">
                     {{ file.endDate|localizeddate('medium', 'none') }}
                 </td>
-                <td headers="hMyLink" class="text-center">
-                    <a href="{{ file.myLink }}" title="{{ __('Visit this page') }}"><i class="fa fa-external-link-square"></i></a>
-                </td>
+				{% endif %}
             </tr>
         {% else %}
             <tr class="z-{{ routeArea == 'admin' ? 'admin' : 'data' }}tableempty">
@@ -107,7 +127,7 @@
         </div>
         
         {% if all != 1 and pager|default %}
-            {{ pager({rowcount: pager.amountOfItems, limit: pager.itemsPerPage, display: 'page', route: 'rkdownloadmodule_file_' ~ routeArea ~ 'view'}) }}
+            {{ pager({ rowcount: pager.amountOfItems, limit: pager.itemsPerPage, display: 'page', route: 'rkdownloadmodule_file_' ~ routeArea ~ 'view'}) }}
         {% endif %}
     {% if routeArea == 'admin' %}
             <fieldset>
@@ -116,7 +136,6 @@
                     <select id="rKDownLoadModuleAction" name="action" class="form-control input-sm">
                         <option value="">{{ __('Choose action') }}</option>
                         <option value="archive" title="{{ __('Move content into the archive.') }}">{{ __('Archive') }}</option>
-                        <option value="unarchive" title="{{ __('Move content out of the archive.') }}">{{ __('Unarchive') }}</option>
                         <option value="delete" title="{{ __('Delete content permanently.') }}">{{ __('Delete') }}</option>
                     </select>
                 </div>
@@ -136,26 +155,15 @@
         {% if canBeCreated %}
             {% if hasPermission('RKDownLoadModule:File:', '::', 'ACCESS_EDIT') %}
                 {% set createTitle = __('Create file') %}
-                <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'edit') }}" title="{{ createTitle|e('html_attr') }}"><i class="fa fa-plus"></i> {{ createTitle }}</a>
+                <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'edit') }}" title="{{ createTitle|e('html_attr') }}" class="fa fa-plus">{{ createTitle }}</a>
             {% endif %}
         {% endif %}
         {% if all == 1 %}
             {% set linkTitle = __('Back to paginated view') %}
-            {% set routeArgs = own ? {own: 1} : {} %}
-            <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view', routeArgs) }}" title="{{ linkTitle|e('html_attr') }}"><i class="fa fa-table"></i> {{ linkTitle }}</a>
+            <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view') }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
         {% else %}
             {% set linkTitle = __('Show all entries') %}
-            {% set routeArgs = own ? {all: 1, own: 1} : {all: 1} %}
-            <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view', routeArgs) }}" title="{{ linkTitle|e('html_attr') }}"><i class="fa fa-table"></i> {{ linkTitle }}</a>
-        {% endif %}
-        {% if own == 1 %}
-            {% set linkTitle = __('Show also entries from other users') %}
-            {% set routeArgs = all ? {all: 1} : {} %}
-            <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view', routeArgs) }}" title="{{ linkTitle|e('html_attr') }}"><i class="fa fa-users"></i> {{ linkTitle }}</a>
-        {% else %}
-            {% set linkTitle = __('Show only own entries') %}
-            {% set routeArgs = all ? {all: 1, own: 1} : {own: 1} %}
-            <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view', routeArgs) }}" title="{{ linkTitle|e('html_attr') }}"><i class="fa fa-user"></i> {{ linkTitle }}</a>
+            <a href="{{ path('rkdownloadmodule_file_' ~ routeArea ~ 'view', { all: 1 }) }}" title="{{ linkTitle|e('html_attr') }}" class="fa fa-table">{{ linkTitle }}</a>
         {% endif %}
     </p>
 {% endblock %}
@@ -163,11 +171,9 @@
     
     {# here you can activate calling display hooks for the view page if you need it #}
     {# % if routeArea != 'admin' %}
-        {% set hooks = notifyDisplayHooks(eventName='rkdownloadmodule.ui_hooks.files.display_view', urlObject=currentUrlObject, outputAsArray=true) %}
-        {% if hooks is iterable and hooks|length > 0 %}
-            {% for area, hook in hooks %}
-                <div class="z-displayhook" data-area="{{ area|e('html_attr') }}">{{ hook|raw }}</div>
-            {% endfor %}
-        {% endif %}
+        {% set hooks = notifyDisplayHooks(eventName='rkdownloadmodule.ui_hooks.files.display_view', urlObject=currentUrlObject) %}
+        {% for providerArea, hook in hooks %}
+            {{ hook }}
+        {% endfor %}
     {% endif % #}
 {% endblock %}
