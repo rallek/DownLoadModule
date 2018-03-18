@@ -23,6 +23,7 @@ use Zikula\Component\SortableColumns\Column;
 use Zikula\Component\SortableColumns\SortableColumns;
 use Zikula\Core\Controller\AbstractController;
 use Zikula\Core\RouteUrl;
+use Zikula\UsersModule\Constant\UsersConstant;
 use RK\DownLoadModule\Entity\FileEntity;
 use RK\DownLoadModule\Helper\FeatureActivationHelper;
 
@@ -138,6 +139,7 @@ abstract class AbstractFileController extends AbstractController
         $sortableColumns->addColumns([
             new Column('workflowState'),
             new Column('fileName'),
+            new Column('myLink'),
             new Column('createdBy'),
             new Column('createdDate'),
             new Column('updatedBy'),
@@ -146,11 +148,21 @@ abstract class AbstractFileController extends AbstractController
         
         $templateParameters = $controllerHelper->processViewActionParameters($objectType, $sortableColumns, $templateParameters, true);
         
+        // filter by permissions
+        $filteredEntities = [];
+        foreach ($templateParameters['items'] as $file) {
+            if (!$this->hasPermission('RKDownLoadModule:' . ucfirst($objectType) . ':', $file->getKey() . '::', $permLevel)) {
+                continue;
+            }
+            $filteredEntities[] = $file;
+        }
+        $templateParameters['items'] = $filteredEntities;
+        
+        // filter by category permissions
         $featureActivationHelper = $this->get('rk_download_module.feature_activation_helper');
         if ($featureActivationHelper->isEnabled(FeatureActivationHelper::CATEGORIES, $objectType)) {
             $templateParameters['items'] = $this->get('rk_download_module.category_helper')->filterEntitiesByPermission($templateParameters['items']);
         }
-        
         
         // fetch and return the appropriate template
         return $viewHelper->processTemplate($objectType, 'view', $templateParameters);
@@ -204,17 +216,17 @@ abstract class AbstractFileController extends AbstractController
             throw new AccessDeniedException();
         }
         
-        $templateParameters = [
-            'routeArea' => $isAdmin ? 'admin' : '',
-            $objectType => $file
-        ];
-        
         $featureActivationHelper = $this->get('rk_download_module.feature_activation_helper');
         if ($featureActivationHelper->isEnabled(FeatureActivationHelper::CATEGORIES, $objectType)) {
             if (!$this->get('rk_download_module.category_helper')->hasPermission($file)) {
                 throw new AccessDeniedException();
             }
         }
+        
+        $templateParameters = [
+            'routeArea' => $isAdmin ? 'admin' : '',
+            $objectType => $file
+        ];
         
         $controllerHelper = $this->get('rk_download_module.controller_helper');
         $templateParameters = $controllerHelper->processDisplayActionParameters($objectType, $templateParameters, true);
@@ -329,7 +341,15 @@ abstract class AbstractFileController extends AbstractController
         $objectType = 'file';
         $permLevel = $isAdmin ? ACCESS_ADMIN : ACCESS_DELETE;
         if (!$this->hasPermission('RKDownLoadModule:' . ucfirst($objectType) . ':', '::', $permLevel)) {
-            throw new AccessDeniedException();
+            if ($isAdmin) {
+                throw new AccessDeniedException();
+            }
+            $currentUserApi = $this->get('zikula_users_module.current_user');
+            $currentUserId = $currentUserApi->isLoggedIn() ? $currentUserApi->get('uid') : UsersConstant::USER_ID_ANONYMOUS;
+            $isOwner = $currentUserId > 0 && null !== $file->getCreatedBy() && $currentUserId == $file->getCreatedBy()->getUid();
+            if (!$isOwner || !$this->hasPermission('RKDownLoadModule:' . ucfirst($objectType) . ':', '::', ACCESS_EDIT)) {
+                throw new AccessDeniedException();
+            }
         }
         $logger = $this->get('logger');
         $logArgs = ['app' => 'RKDownLoadModule', 'user' => $this->get('zikula_users_module.current_user')->get('uname'), 'entity' => 'file', 'id' => $file->getKey()];
@@ -452,7 +472,7 @@ abstract class AbstractFileController extends AbstractController
      * This method includes the common implementation code for adminHandleSelectedEntriesAction() and handleSelectedEntriesAction().
      *
      * @param Request $request Current request instance
-     * @param Boolean $isAdmin Whether the admin area is used or not
+     * @param boolean $isAdmin Whether the admin area is used or not
      */
     protected function handleSelectedEntriesActionInternal(Request $request, $isAdmin = false)
     {

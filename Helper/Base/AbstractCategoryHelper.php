@@ -179,7 +179,7 @@ abstract class AbstractCategoryHelper
      *
      * @return QueryBuilder The enriched query builder instance
      */
-    public function buildFilterClauses(QueryBuilder $queryBuilder, $objectType = '', $catIds = [])
+    public function buildFilterClauses(QueryBuilder $queryBuilder, $objectType = '', array $catIds = [])
     {
         $qb = $queryBuilder;
     
@@ -320,7 +320,7 @@ abstract class AbstractCategoryHelper
     /**
      * Filters a given list of entities to these the current user has permissions for.
      *
-     * @param array $entities The given list of entities
+     * @param array|ArrayCollection $entities The given list of entities
      *
      * @return array The filtered list of entities
      */
@@ -328,9 +328,10 @@ abstract class AbstractCategoryHelper
     {
         $filteredEntities = [];
         foreach ($entities as $entity) {
-            if ($this->hasPermission($entity)) {
-                $filteredEntities[] = $entity;
+            if (!$this->hasPermission($entity)) {
+                continue;
             }
+            $filteredEntities[] = $entity;
         }
     
         return $filteredEntities;
@@ -345,6 +346,26 @@ abstract class AbstractCategoryHelper
      */
     public function hasPermission($entity)
     {
-        return $this->categoryPermissionApi->hasCategoryAccess($entity->getCategories()->toArray(), ACCESS_OVERVIEW);
+        $requireAccessForAll = $this->requireAccessForAll($entity);
+    
+        return $this->categoryPermissionApi->hasCategoryAccess($entity->getCategories()->toArray(), ACCESS_OVERVIEW, $requireAccessForAll);
+    }
+    
+    /**
+     * Returns whether permissions are required for all categories
+     * of a specific entity or for only one category.
+     *
+     * Returning false allows access if the user has access
+     * to at least one selected category.
+     * Returning true only allows access if the user has access
+     * to all selected categories.
+     *
+     * @param object $entity The entity to check permission for
+     *
+     * @return boolean True if access is required for all categories, false otherwise
+     */
+    protected function requireAccessForAll($entity)
+    {
+        return false;
     }
 }

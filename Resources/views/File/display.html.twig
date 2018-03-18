@@ -7,8 +7,8 @@
     {{ templateTitle|notifyFilters('rkdownloadmodule.filter_hooks.files.filter')|safeHtml }}{% if routeArea == 'admin' %} <small>({{ file.workflowState|rkdownloadmodule_objectState(false)|lower }})</small>{% endif %}
     {% set itemActions = knp_menu_get('RKDownLoadModule:ItemActionsMenu:menu', [], {entity: file, area: routeArea, context: 'display'}) %}
     <div class="dropdown">
-        <a id="itemActions{{ file.getKey() }}DropDownToggle" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> {{ __('Actions') }} <span class="caret"></span></a>
-        {{ knp_menu_render(itemActions, {template: 'ZikulaMenuModule:Override:actions.html.twig'}) }}
+        <a id="itemActions{{ file.getKey() }}DropDownToggleStart" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0);" class="hidden dropdown-toggle"><i class="fa fa-tasks"></i> {{ __('Actions') }} <span class="caret"></span></a>
+        {{ knp_menu_render(itemActions, {template: 'ZikulaMenuModule:Override:bootstrap_fontawesome.html.twig'}) }}
     </div>
 {% endblock %}
 {% block admin_page_icon 'eye' %}
@@ -25,20 +25,6 @@
             <dt>{{ __('File name') }}</dt>
             <dd>{{ file.fileName }}</dd>
         {% endif %}
-        {% if file.myFile is not empty %}
-            <dt>{{ __('My file') }}</dt>
-            <dd>{% if file.myFileMeta|default %}
-            <a href="{{ file.myFileUrl }}" title="{{ file|rkdownloadmodule_formattedTitle|e('html_attr') }}"{% if file.myFileMeta.isImage %} class="image-link"{% endif %}>
-            {% if file.myFileMeta.isImage %}
-                {% set thumbOptions = attribute(thumbRuntimeOptions, 'fileMyFile') %}
-                <img src="{{ file.myFile.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ file|rkdownloadmodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
-            {% else %}
-                {{ __('Download') }} ({{ file.myFileMeta.size|rkdownloadmodule_fileSize(file.myFile.getPathname(), false, false) }})
-            {% endif %}
-            </a>
-            {% endif %}
-            </dd>
-        {% endif %}
         {% if file.myDescription is not empty %}
             <dt>{{ __('My description') }}</dt>
             <dd>{{ file.myDescription|safeHtml }}</dd>
@@ -50,6 +36,15 @@
         {% if file.endDate is not empty %}
             <dt>{{ __('End date') }}</dt>
             <dd>{{ file.endDate|localizeddate('medium', 'none') }}</dd>
+        {% endif %}
+        {% if file.myLink is not empty %}
+            <dt>{{ __('My link') }}</dt>
+            <dd>{% if not isQuickView %}
+            <a href="{{ file.myLink }}" title="{{ __('Visit this page') }}"><i class="fa fa-external-link-square"></i></a>
+            {% else %}
+                {{ file.myLink }}
+            {% endif %}
+            </dd>
         {% endif %}
         
     </dl>

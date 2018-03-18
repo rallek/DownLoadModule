@@ -1,5 +1,5 @@
 {# purpose of this template: files view filter form #}
-{% if hasPermission('RKDownLoadModule:File:', '::', 'ACCESS_READ') %}
+{% if hasPermission('RKDownLoadModule:File:', '::', 'ACCESS_EDIT') %}
     {% form_theme quickNavForm with [
         'bootstrap_3_layout.html.twig'
     ] %}
@@ -12,18 +12,20 @@
         <fieldset>
             <h3>{{ __('Quick navigation') }}</h3>
             {% set categoriesEnabled = featureActivationHelper.isEnabled(constant('RK\\DownLoadModule\\Helper\\FeatureActivationHelper::CATEGORIES'), 'file') %}
-            {% if (categoryFilter is defined and categoryFilter != true) or not categoriesEnabled %}
-                <div class="hidden">
-            {% else %}
-                <div class="row">
-                    <div class="col-sm-3">
-            {% endif %}
-                {{ form_row(quickNavForm.categories) }}
-            {% if (categoryFilter is defined and categoryFilter != true) or not categoriesEnabled %}
-                </div>
-            {% else %}
+            {% if categoriesEnabled %}
+                {% if (categoryFilter is defined and categoryFilter != true) %}
+                    <div class="hidden">
+                {% else %}
+                    <div class="row">
+                        <div class="col-sm-3">
+                {% endif %}
+                    {{ form_row(quickNavForm.categories) }}
+                {% if (categoryFilter is defined and categoryFilter != true) %}
                     </div>
-                    <div class="col-sm-9">
+                {% else %}
+                        </div>
+                        <div class="col-sm-9">
+                {% endif %}
             {% endif %}
             {% if workflowStateFilter is defined and workflowStateFilter != true %}
                 <div class="hidden">
@@ -55,10 +57,12 @@
                 </div>
             {% endif %}
             {{ form_widget(quickNavForm.updateview) }}
-            {% if (categoryFilter is defined and categoryFilter != true) or not categoriesEnabled %}
-            {% else %}
+            {% if categoriesEnabled %}
+                {% if categoryFilter is defined and categoryFilter != true %}
+                {% else %}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             {% endif %}
         </fieldset>
     </div>

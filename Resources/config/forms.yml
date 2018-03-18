@@ -73,6 +73,6 @@ services:
         class: RK\DownLoadModule\Form\Type\ConfigType
         arguments:
             - "@translator.default"
-            - "@=service('zikula_extensions_module.api.variable').getAll('RKDownLoadModule')"
+            - "@rk_download_module.listentries_helper"
         tags:
             - { name: form.type }

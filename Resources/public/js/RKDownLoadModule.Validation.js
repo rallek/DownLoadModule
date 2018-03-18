@@ -1,7 +1,6 @@
 'use strict';
 
-function rKDownLoadToday(format)
-{
+function rKDownLoadToday(format) {
     var timestamp, todayDate, month, day, hours, minutes, seconds;
 
     timestamp = new Date();
@@ -40,8 +39,7 @@ function rKDownLoadToday(format)
 }
 
 // returns YYYY-MM-DD even if date is in DD.MM.YYYY
-function rKDownLoadReadDate(val, includeTime)
-{
+function rKDownLoadReadDate(val, includeTime) {
     // look if we have YYYY-MM-DD
     if (val.substr(4, 1) === '-' && val.substr(7, 1) === '-') {
         return val;
@@ -58,31 +56,14 @@ function rKDownLoadReadDate(val, includeTime)
     }
 }
 
-function rKDownLoadValidateNoSpace(val)
-{
+function rKDownLoadValidateNoSpace(val) {
     var valStr;
     valStr = new String(val);
 
     return (valStr.indexOf(' ') === -1);
 }
 
-function rKDownLoadValidateUploadExtension(val, elem)
-{
-    var fileExtension, allowedExtensions;
-    if (val === '') {
-        return true;
-    }
-
-    fileExtension = '.' + val.substr(val.lastIndexOf('.') + 1);
-    allowedExtensions = jQuery('#' + elem.attr('id') + 'FileExtensions').text();
-    allowedExtensions = '(.' + allowedExtensions.replace(/, /g, '|.').replace(/,/g, '|.') + ')$';
-    allowedExtensions = new RegExp(allowedExtensions, 'i');
-
-    return allowedExtensions.test(val);
-}
-
-function rKDownLoadValidateDateRangeFile(val)
-{
+function rKDownLoadValidateDateRangeFile(val) {
     var cmpVal, cmpVal2, result;
     cmpVal = rKDownLoadReadDate(jQuery("[id$='startDate']").val(), false);
     cmpVal2 = rKDownLoadReadDate(jQuery("[id$='endDate']").val(), false);
@@ -99,23 +80,8 @@ function rKDownLoadValidateDateRangeFile(val)
 /**
  * Runs special validation rules.
  */
-function rKDownLoadExecuteCustomValidationConstraints(objectType, currentEntityId)
-{
-    jQuery('.validate-nospace').each( function() {
-        if (!rKDownLoadValidateNoSpace(jQuery(this).val())) {
-            document.getElementById(jQuery(this).attr('id')).setCustomValidity(Translator.__('This value must not contain spaces.'));
-        } else {
-            document.getElementById(jQuery(this).attr('id')).setCustomValidity('');
-        }
-    });
-    jQuery('.validate-upload').each( function() {
-        if (!rKDownLoadValidateUploadExtension(jQuery(this).val(), jQuery(this))) {
-            document.getElementById(jQuery(this).attr('id')).setCustomValidity(Translator.__('Please select a valid file extension.'));
-        } else {
-            document.getElementById(jQuery(this).attr('id')).setCustomValidity('');
-        }
-    });
-    jQuery('.validate-daterange-file').each( function() {
+function rKDownLoadExecuteCustomValidationConstraints(objectType, currentEntityId) {
+    jQuery('.validate-daterange-file').each(function () {
         if (typeof jQuery(this).attr('id') != 'undefined') {
             if (jQuery(this).prop('tagName') == 'DIV') {
                 if (!rKDownLoadValidateDateRangeFile()) {

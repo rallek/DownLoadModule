@@ -83,7 +83,7 @@ abstract class AbstractTwigExtension extends Twig_Extension
     /**
      * Returns a list of custom Twig functions.
      *
-     * @return \Twig_SimpleFunction[]
+     * @return \Twig_SimpleFunction[] List of functions
      */
     public function getFunctions()
     {
@@ -96,12 +96,11 @@ abstract class AbstractTwigExtension extends Twig_Extension
     /**
      * Returns a list of custom Twig filters.
      *
-     * @return \Twig_SimpleFilter[]
+     * @return \Twig_SimpleFilter[] List of filters
      */
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('rkdownloadmodule_fileSize', [$this, 'getFileSize'], ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('rkdownloadmodule_listEntry', [$this, 'getListEntry']),
             new \Twig_SimpleFilter('rkdownloadmodule_formattedTitle', [$this, 'getFormattedEntityTitle']),
             new \Twig_SimpleFilter('rkdownloadmodule_objectState', [$this, 'getObjectState'], ['is_safe' => ['html']])
@@ -129,81 +128,6 @@ abstract class AbstractTwigExtension extends Twig_Extension
         }
     
         return $result;
-    }
-    
-    
-    /**
-     * The rkdownloadmodule_fileSize filter displays the size of a given file in a readable way.
-     * Example:
-     *     {{ 12345|rkdownloadmodule_fileSize }}
-     *
-     * @param integer $size     File size in bytes
-     * @param string  $filepath The input file path including file name (if file size is not known)
-     * @param boolean $nodesc   If set to true the description will not be appended
-     * @param boolean $onlydesc If set to true only the description will be returned
-     *
-     * @return string File size in a readable form
-     */
-    public function getFileSize($size = 0, $filepath = '', $nodesc = false, $onlydesc = false)
-    {
-        if (!is_numeric($size)) {
-            $size = (int) $size;
-        }
-        if (!$size) {
-            if (empty($filepath) || !file_exists($filepath)) {
-                return '';
-            }
-            $size = filesize($filepath);
-        }
-        if (!$size) {
-            return '';
-        }
-    
-        return $this->getReadableFileSize($size, $nodesc, $onlydesc);
-    }
-    
-    /**
-     * Display a given file size in a readable format
-     *
-     * @param string  $size     File size in bytes
-     * @param boolean $nodesc   If set to true the description will not be appended
-     * @param boolean $onlydesc If set to true only the description will be returned
-     *
-     * @return string File size in a readable form
-     */
-    private function getReadableFileSize($size, $nodesc = false, $onlydesc = false)
-    {
-        $sizeDesc = $this->__('Bytes');
-        if ($size >= 1024) {
-            $size /= 1024;
-            $sizeDesc = $this->__('KB');
-        }
-        if ($size >= 1024) {
-            $size /= 1024;
-            $sizeDesc = $this->__('MB');
-        }
-        if ($size >= 1024) {
-            $size /= 1024;
-            $sizeDesc = $this->__('GB');
-        }
-        $sizeDesc = '&nbsp;' . $sizeDesc;
-    
-        // format number
-        $dec_point = ',';
-        $thousands_separator = '.';
-        if ($size - number_format($size, 0) >= 0.005) {
-            $size = number_format($size, 2, $dec_point, $thousands_separator);
-        } else {
-            $size = number_format($size, 0, '', $thousands_separator);
-        }
-    
-        // append size descriptor if desired
-        if (!$nodesc) {
-            $size .= $sizeDesc;
-        }
-    
-        // return either only the description or the complete string
-        return $onlydesc ? $sizeDesc : $size;
     }
     
     

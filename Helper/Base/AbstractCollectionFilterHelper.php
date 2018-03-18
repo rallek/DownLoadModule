@@ -38,7 +38,7 @@ abstract class AbstractCollectionFilterHelper
     /**
      * @var CategoryHelper
      */
-    private $categoryHelper;
+    protected $categoryHelper;
 
     /**
      * @var bool Fallback value to determine whether only own entries should be selected or not
@@ -51,7 +51,7 @@ abstract class AbstractCollectionFilterHelper
      * @param RequestStack   $requestStack        RequestStack service instance
      * @param CurrentUserApiInterface $currentUserApi CurrentUserApi service instance
      * @param CategoryHelper $categoryHelper      CategoryHelper service instance
-     * @param bool           $showOnlyOwnEntries  Fallback value to determine whether only own entries should be selected or not
+     * @param boolean        $showOnlyOwnEntries  Fallback value to determine whether only own entries should be selected or not
      */
     public function __construct(
         RequestStack $requestStack,
@@ -74,7 +74,7 @@ abstract class AbstractCollectionFilterHelper
      *
      * @return array List of template variables to be assigned
      */
-    public function getViewQuickNavParameters($objectType = '', $context = '', $args = [])
+    public function getViewQuickNavParameters($objectType = '', $context = '', array $args = [])
     {
         if (!in_array($context, ['controllerAction', 'api', 'actionHandler', 'block', 'contentType'])) {
             $context = 'controllerAction';
@@ -113,7 +113,7 @@ abstract class AbstractCollectionFilterHelper
      *
      * @return QueryBuilder Enriched query builder instance
      */
-    public function applyDefaultFilters($objectType, QueryBuilder $qb, $parameters = [])
+    public function applyDefaultFilters($objectType, QueryBuilder $qb, array $parameters = [])
     {
         if ($objectType == 'file') {
             return $this->applyDefaultFiltersForFile($qb, $parameters);
@@ -130,7 +130,7 @@ abstract class AbstractCollectionFilterHelper
      *
      * @return array List of template variables to be assigned
      */
-    protected function getViewQuickNavParametersForFile($context = '', $args = [])
+    protected function getViewQuickNavParametersForFile($context = '', array $args = [])
     {
         $parameters = [];
         if (null === $this->request) {
@@ -165,36 +165,41 @@ abstract class AbstractCollectionFilterHelper
         $parameters = $this->getViewQuickNavParametersForFile();
         foreach ($parameters as $k => $v) {
             if ($k == 'catId') {
-                // single category filter
-                if ($v > 0) {
+                if (intval($v) > 0) {
+                    // single category filter
                     $qb->andWhere('tblCategories.category = :category')
                        ->setParameter('category', $v);
                 }
-            } elseif ($k == 'catIdList') {
+                continue;
+            }
+            if ($k == 'catIdList') {
                 // multi category filter
-                /* old
-                $qb->andWhere('tblCategories.category IN (:categories)')
-                   ->setParameter('categories', $v);
-                 */
                 $qb = $this->categoryHelper->buildFilterClauses($qb, 'file', $v);
-            } elseif (in_array($k, ['q', 'searchterm'])) {
+                continue;
+            }
+            if (in_array($k, ['q', 'searchterm'])) {
                 // quick search
                 if (!empty($v)) {
                     $qb = $this->addSearchFilter('file', $qb, $v);
                 }
-            } else if (!is_array($v)) {
-                // field filter
-                if ((!is_numeric($v) && $v != '') || (is_numeric($v) && $v > 0)) {
-                    if ($k == 'workflowState' && substr($v, 0, 1) == '!') {
-                        $qb->andWhere('tbl.' . $k . ' != :' . $k)
-                           ->setParameter($k, substr($v, 1, strlen($v)-1));
-                    } elseif (substr($v, 0, 1) == '%') {
-                        $qb->andWhere('tbl.' . $k . ' LIKE :' . $k)
-                           ->setParameter($k, '%' . $v . '%');
-                    } else {
-                        $qb->andWhere('tbl.' . $k . ' = :' . $k)
-                           ->setParameter($k, $v);
-                   }
+                continue;
+            }
+    
+            if (is_array($v)) {
+                continue;
+            }
+    
+            // field filter
+            if ((!is_numeric($v) && $v != '') || (is_numeric($v) && $v > 0)) {
+                if ($k == 'workflowState' && substr($v, 0, 1) == '!') {
+                    $qb->andWhere('tbl.' . $k . ' != :' . $k)
+                       ->setParameter($k, substr($v, 1, strlen($v)-1));
+                } elseif (substr($v, 0, 1) == '%') {
+                    $qb->andWhere('tbl.' . $k . ' LIKE :' . $k)
+                       ->setParameter($k, '%' . substr($v, 1) . '%');
+                } else {
+                    $qb->andWhere('tbl.' . $k . ' = :' . $k)
+                       ->setParameter($k, $v);
                 }
             }
         }
@@ -212,7 +217,7 @@ abstract class AbstractCollectionFilterHelper
      *
      * @return QueryBuilder Enriched query builder instance
      */
-    protected function applyDefaultFiltersForFile(QueryBuilder $qb, $parameters = [])
+    protected function applyDefaultFiltersForFile(QueryBuilder $qb, array $parameters = [])
     {
         if (null === $this->request) {
             return $qb;
@@ -229,8 +234,9 @@ abstract class AbstractCollectionFilterHelper
             // per default we show approved files only
             $onlineStates = ['approved'];
             if ($showOnlyOwnEntries) {
-                // allow the owner to see his deferred files
+                // allow the owner to see his files
                 $onlineStates[] = 'deferred';
+                $onlineStates[] = 'trashed';
             }
             $qb->andWhere('tbl.workflowState IN (:onlineStates)')
                ->setParameter('onlineStates', $onlineStates);
@@ -239,13 +245,28 @@ abstract class AbstractCollectionFilterHelper
         if ($showOnlyOwnEntries) {
             $qb = $this->addCreatorFilter($qb);
         }
-        
+    
+        $qb = $this->applyDateRangeFilterForFile($qb);
+    
+        return $qb;
+    }
+    
+    /**
+     * Applies start and end date filters for selecting files.
+     *
+     * @param QueryBuilder $qb    Query builder to be enhanced
+     * @param string       $alias Table alias
+     *
+     * @return QueryBuilder Enriched query builder instance
+     */
+    protected function applyDateRangeFilterForFile(QueryBuilder $qb, $alias = 'tbl')
+    {
         $startDate = $this->request->query->get('startDate', date('Y-m-d'));
-        $qb->andWhere('(tbl.startDate <= :startDate OR tbl.startDate IS NULL)')
+        $qb->andWhere('(' . $alias . '.startDate <= :startDate OR ' . $alias . '.startDate IS NULL)')
            ->setParameter('startDate', $startDate);
-        
+    
         $endDate = $this->request->query->get('endDate', date('Y-m-d'));
-        $qb->andWhere('tbl.endDate >= :endDate')
+        $qb->andWhere($alias . '.endDate >= :endDate')
            ->setParameter('endDate', $endDate);
     
         return $qb;
@@ -274,14 +295,14 @@ abstract class AbstractCollectionFilterHelper
             $parameters['searchWorkflowState'] = $fragment;
             $filters[] = 'tbl.fileName LIKE :searchFileName';
             $parameters['searchFileName'] = '%' . $fragment . '%';
-            $filters[] = 'tbl.myFile = :searchMyFile';
-            $parameters['searchMyFile'] = $fragment;
             $filters[] = 'tbl.myDescription LIKE :searchMyDescription';
             $parameters['searchMyDescription'] = '%' . $fragment . '%';
             $filters[] = 'tbl.startDate = :searchStartDate';
             $parameters['searchStartDate'] = $fragment;
             $filters[] = 'tbl.endDate = :searchEndDate';
             $parameters['searchEndDate'] = $fragment;
+            $filters[] = 'tbl.myLink = :searchMyLink';
+            $parameters['searchMyLink'] = $fragment;
         }
     
         $qb->andWhere('(' . implode(' OR ', $filters) . ')');

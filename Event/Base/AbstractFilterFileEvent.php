@@ -36,7 +36,7 @@ class AbstractFilterFileEvent extends Event
      * @param FileEntity $file Processed entity
      * @param array $entityChangeSet Change set for preUpdate events
      */
-    public function __construct(FileEntity $file, $entityChangeSet = [])
+    public function __construct(FileEntity $file, array $entityChangeSet = [])
     {
         $this->file = $file;
         $this->entityChangeSet = $entityChangeSet;
@@ -55,7 +55,7 @@ class AbstractFilterFileEvent extends Event
     /**
      * Returns the change set.
      *
-     * @return array
+     * @return array Entity change set
      */
     public function getEntityChangeSet()
     {

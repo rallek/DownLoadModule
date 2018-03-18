@@ -62,7 +62,7 @@ class AbstractItemSelector extends Zikula_Form_Plugin_TextInput implements Conta
      * Create event handler.
      *
      * @param Zikula_Form_View $view    Reference to Zikula_Form_View object
-     * @param array            &$params Parameters passed from the Smarty plugin function
+     * @param array            &$params List of parameters passed from the Smarty plugin function
      *
      * @see    Zikula_Form_AbstractPlugin
      *
@@ -110,6 +110,7 @@ class AbstractItemSelector extends Zikula_Form_Plugin_TextInput implements Conta
             $jsAssetBag->add($assetHelper->resolve('@RKDownLoadModule:js/RKDownLoadModule.js'));
             $jsAssetBag->add($assetHelper->resolve('@RKDownLoadModule:js/RKDownLoadModule.ItemSelector.js'));
             $cssAssetBag->add($assetHelper->resolve('@RKDownLoadModule:css/style.css'));
+            $cssAssetBag->add([$assetHelper->resolve('@RKDownLoadModule:css/custom.css') => 120]);
         }
         $firstTime = false;
 

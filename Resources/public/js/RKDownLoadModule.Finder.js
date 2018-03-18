@@ -7,8 +7,7 @@ var currentRKDownLoadModuleInput = null;
  * Returns the attributes used for the popup window. 
  * @return {String}
  */
-function getRKDownLoadModulePopupAttributes()
-{
+function getRKDownLoadModulePopupAttributes() {
     var pWidth, pHeight;
 
     pWidth = screen.width * 0.75;
@@ -20,8 +19,7 @@ function getRKDownLoadModulePopupAttributes()
 /**
  * Open a popup window with the finder triggered by an editor button.
  */
-function RKDownLoadModuleFinderOpenPopup(editor, editorName)
-{
+function RKDownLoadModuleFinderOpenPopup(editor, editorName) {
     var popupUrl;
 
     // Save editor for access in selector window
@@ -41,8 +39,7 @@ var rKDownLoadModule = {};
 
 rKDownLoadModule.finder = {};
 
-rKDownLoadModule.finder.onLoad = function (baseId, selectedId)
-{
+rKDownLoadModule.finder.onLoad = function (baseId, selectedId) {
     if (jQuery('#rKDownLoadModuleSelectorForm').length < 1) {
         return;
     }
@@ -57,13 +54,11 @@ rKDownLoadModule.finder.onLoad = function (baseId, selectedId)
     });
 };
 
-rKDownLoadModule.finder.onParamChanged = function ()
-{
+rKDownLoadModule.finder.onParamChanged = function () {
     jQuery('#rKDownLoadModuleSelectorForm').submit();
 };
 
-rKDownLoadModule.finder.handleCancel = function (event)
-{
+rKDownLoadModule.finder.handleCancel = function (event) {
     var editor;
 
     event.preventDefault();
@@ -82,8 +77,7 @@ rKDownLoadModule.finder.handleCancel = function (event)
 };
 
 
-function rKDownLoadGetPasteSnippet(mode, itemId)
-{
+function rKDownLoadGetPasteSnippet(mode, itemId) {
     var quoteFinder;
     var itemPath;
     var itemUrl;
@@ -117,8 +111,7 @@ function rKDownLoadGetPasteSnippet(mode, itemId)
 
 
 // User clicks on "select item" button
-rKDownLoadModule.finder.selectItem = function (itemId)
-{
+rKDownLoadModule.finder.selectItem = function (itemId) {
     var editor, html;
 
     html = rKDownLoadGetPasteSnippet('html', itemId);
@@ -144,12 +137,11 @@ rKDownLoadModule.finder.selectItem = function (itemId)
     rKDownLoadClosePopup();
 };
 
-function rKDownLoadClosePopup()
-{
+function rKDownLoadClosePopup() {
     window.opener.focus();
     window.close();
 }
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
     rKDownLoadModule.finder.onLoad();
 });

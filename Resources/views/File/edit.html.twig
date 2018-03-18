@@ -2,11 +2,6 @@
 {% set baseTemplate = app.request.query.getBoolean('raw', false) ? 'raw' : (routeArea == 'admin' ? 'adminBase' : 'base') %}
 {% extends 'RKDownLoadModule::' ~ baseTemplate ~ '.html.twig' %}
 
-{% block header %}
-    {{ parent() }}
-    {{ pageAddAsset('javascript', zasset('@RKDownLoadModule:js/RKDownLoadModule.Validation.js'), 98) }}
-    {{ pageAddAsset('javascript', zasset('@RKDownLoadModule:js/RKDownLoadModule.EditFunctions.js'), 99) }}
-{% endblock %}
 {% block title mode == 'create' ? __('Create file') : __('Edit file') %}
 {% block admin_page_icon mode == 'create' ? 'plus' : 'pencil-square-o' %}
 {% block content %}
@@ -20,10 +15,10 @@
         <fieldset>
             <legend>{{ __('Content') }}</legend>
             {{ form_row(form.fileName) }}
-            {{ form_row(form.myFile) }}
             {{ form_row(form.myDescription) }}
             {{ form_row(form.startDate) }}
             {{ form_row(form.endDate) }}
+            {{ form_row(form.myLink) }}
         </fieldset>
         
         {% if featureActivationHelper.isEnabled(constant('RK\\DownLoadModule\\Helper\\FeatureActivationHelper::CATEGORIES'), 'file') %}
@@ -78,19 +73,19 @@
 {% endblock %}
 {% block footer %}
     {{ parent() }}
+    {{ pageAddAsset('javascript', zasset('@RKDownLoadModule:js/RKDownLoadModule.Validation.js'), 98) }}
+    {{ pageAddAsset('javascript', zasset('@RKDownLoadModule:js/RKDownLoadModule.EditFunctions.js'), 99) }}
     {% set formInitScript %}
-        <script type="text/javascript">
+        <script>
         /* <![CDATA[ */
             
             ( function($) {
                 $(document).ready(function() {
-                    // initialise auto completion for user fields
+                    rKDownLoadInitEditForm('{{ mode }}', '{% if mode != 'create' %}{{ file.id }}{% endif %}');
+                    rKDownLoadInitDateField('rkdownloadmodule_file_startDate');
                     {% if form.moderationSpecificCreator is defined %}
                         initUserLiveSearch('rkdownloadmodule_file_moderationSpecificCreator');
                     {% endif %}
-                    rKDownLoadInitEditForm('{{ mode }}', '{% if mode != 'create' %}{{ file.id }}{% endif %}');
-                    rKDownLoadInitUploadField('rkdownloadmodule_file_myFile_myFile');
-                    rKDownLoadInitDateField('rkdownloadmodule_file_startDate');
                 });
             })(jQuery);
         /* ]]> */

@@ -101,7 +101,7 @@ abstract class AbstractFileQuickNavType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addCategoriesField(FormBuilderInterface $builder, array $options)
+    public function addCategoriesField(FormBuilderInterface $builder, array $options = [])
     {
         $objectType = 'file';
     
@@ -117,7 +117,8 @@ abstract class AbstractFileQuickNavType extends AbstractType
             'multiple' => false,
             'module' => 'RKDownLoadModule',
             'entity' => ucfirst($objectType) . 'Entity',
-            'entityCategoryClass' => 'RK\DownLoadModule\Entity\\' . ucfirst($objectType) . 'CategoryEntity'
+            'entityCategoryClass' => 'RK\DownLoadModule\Entity\\' . ucfirst($objectType) . 'CategoryEntity',
+            'showRegistryLabels' => true
         ]);
     }
 
@@ -127,7 +128,7 @@ abstract class AbstractFileQuickNavType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addListFields(FormBuilderInterface $builder, array $options)
+    public function addListFields(FormBuilderInterface $builder, array $options = [])
     {
         $listEntries = $this->listHelper->getEntries('file', 'workflowState');
         $choices = [];
@@ -157,7 +158,7 @@ abstract class AbstractFileQuickNavType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addSearchField(FormBuilderInterface $builder, array $options)
+    public function addSearchField(FormBuilderInterface $builder, array $options = [])
     {
         $builder->add('q', SearchType::class, [
             'label' => $this->__('Search'),
@@ -176,7 +177,7 @@ abstract class AbstractFileQuickNavType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addSortingFields(FormBuilderInterface $builder, array $options)
+    public function addSortingFields(FormBuilderInterface $builder, array $options = [])
     {
         $builder
             ->add('sort', ChoiceType::class, [
@@ -186,6 +187,7 @@ abstract class AbstractFileQuickNavType extends AbstractType
                 ],
                 'choices' =>             [
                     $this->__('File name') => 'fileName',
+                    $this->__('My link') => 'myLink',
                     $this->__('Creation date') => 'createdDate',
                     $this->__('Creator') => 'createdBy',
                     $this->__('Update date') => 'updatedDate',
@@ -218,7 +220,7 @@ abstract class AbstractFileQuickNavType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function addAmountField(FormBuilderInterface $builder, array $options)
+    public function addAmountField(FormBuilderInterface $builder, array $options = [])
     {
         $builder->add('num', ChoiceType::class, [
             'label' => $this->__('Page size'),

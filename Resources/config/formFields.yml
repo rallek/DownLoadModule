@@ -1,12 +1,9 @@
 services:
     # Form field types
     
-    rk_download_module.form.type.field.upload:
-        class: RK\DownLoadModule\Form\Type\Field\UploadType
+    rk_download_module.form.type.field.multilist:
+        class: RK\DownLoadModule\Form\Type\Field\MultiListType
         arguments:
-            - "@translator.default"
-            - "@request_stack"
-            - "@rk_download_module.image_helper"
-            - "@rk_download_module.upload_helper"
+            - "@rk_download_module.listentries_helper"
         tags:
             - { name: form.type }

@@ -128,7 +128,7 @@ abstract class AbstractWorkflowEventsListener implements EventSubscriberInterfac
                 $permissionLevel = ACCESS_ADD;
                 break;
             case 'delete':
-                $permissionLevel = ACCESS_DELETE;
+                $permissionLevel = in_array($objectType, ['file']) ? ACCESS_EDIT : ACCESS_DELETE;
                 break;
         }
     
