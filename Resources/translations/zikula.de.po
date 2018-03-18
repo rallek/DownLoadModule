@@ -1,0 +1,115 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"X-Generator: Poedit 2.0.4\n"
+"Last-Translator: Ralf Köster <ralf@familie-koester.de>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: de_DE\n"
+
+msgid "Actions"
+msgstr "Aktionen"
+
+msgid "Archive"
+msgstr "Archiv"
+
+msgid "Back to paginated view"
+msgstr "Zurück zur Seitenansicht"
+
+msgid "Choose action"
+msgstr "Aktion wählen"
+
+msgid "Confirmation prompt"
+msgstr "Bestätigungsabfrage"
+
+msgid "Content"
+msgstr "Inhalt"
+
+msgid "Create file"
+msgstr "Datei erstellen"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Delete content permanently."
+msgstr "Inhalt dauerhaft löschen."
+
+msgid "Delete file"
+msgstr "Datei löschen"
+
+msgid "Do you really want to delete this file: \"%name%\" ?"
+msgstr "Möchten Sie wirklich diese Datei löschen: \"%name%\"?"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Edit file"
+msgstr "Datei bearbeiten"
+
+msgid "End date"
+msgstr "Enddatum"
+
+msgid "File"
+msgstr "Datei"
+
+msgid "File list"
+msgstr "Dateiliste"
+
+msgid "File name"
+msgstr "Dateiname"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "Moderation"
+msgstr "Moderation"
+
+msgid "Move content into the archive."
+msgstr "Inhalt ins Archiv verschieben"
+
+msgid "My description"
+msgstr "Meine Beschreibung"
+
+msgid "My file"
+msgstr "Meine Datei"
+
+msgid "My files"
+msgstr "Meine Dateien"
+
+msgid "No files found."
+msgstr "Keine Dateien gefunden."
+
+msgid "Quick navigation"
+msgstr "Schnellnavigation"
+
+msgid "Return control"
+msgstr "Nächster Schritt"
+
+msgid "Show all entries"
+msgstr "Zeige alle Einträge"
+
+msgid "Sort by %s"
+msgstr "Sortieren nach %s"
+
+msgid "Start date"
+msgstr "Anfangsdatum"
+
+msgid "State"
+msgstr "Status"
+
+msgid "Submit"
+msgstr "Bestätigen"
+
+msgid "Welcome to the file section of the Down load application."
+msgstr "Willkommen in der Datei Sektion vom Downloadmodule."
+
+msgid "With selected files"
+msgstr "Mit ausgewählten Dateien"
+
+msgid "files"
+msgstr "Dateien"
