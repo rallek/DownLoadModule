@@ -63,6 +63,20 @@ function rKDownLoadValidateNoSpace(val) {
     return (valStr.indexOf(' ') === -1);
 }
 
+function rKDownLoadValidateUploadExtension(val, elem) {
+    var fileExtension, allowedExtensions;
+    if (val === '') {
+        return true;
+    }
+
+    fileExtension = '.' + val.substr(val.lastIndexOf('.') + 1);
+    allowedExtensions = jQuery('#' + elem.attr('id') + 'FileExtensions').text();
+    allowedExtensions = '(.' + allowedExtensions.replace(/, /g, '|.').replace(/,/g, '|.') + ')$';
+    allowedExtensions = new RegExp(allowedExtensions, 'i');
+
+    return allowedExtensions.test(val);
+}
+
 function rKDownLoadValidateDateRangeFile(val) {
     var cmpVal, cmpVal2, result;
     cmpVal = rKDownLoadReadDate(jQuery("[id$='startDate']").val(), false);
@@ -81,6 +95,13 @@ function rKDownLoadValidateDateRangeFile(val) {
  * Runs special validation rules.
  */
 function rKDownLoadExecuteCustomValidationConstraints(objectType, currentEntityId) {
+    jQuery('.validate-upload').each(function () {
+        if (!rKDownLoadValidateUploadExtension(jQuery(this).val(), jQuery(this))) {
+            document.getElementById(jQuery(this).attr('id')).setCustomValidity(Translator.__('Please select a valid file extension.'));
+        } else {
+            document.getElementById(jQuery(this).attr('id')).setCustomValidity('');
+        }
+    });
     jQuery('.validate-daterange-file').each(function () {
         if (typeof jQuery(this).attr('id') != 'undefined') {
             if (jQuery(this).prop('tagName') == 'DIV') {

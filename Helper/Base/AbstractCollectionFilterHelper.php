@@ -295,6 +295,8 @@ abstract class AbstractCollectionFilterHelper
             $parameters['searchWorkflowState'] = $fragment;
             $filters[] = 'tbl.fileName LIKE :searchFileName';
             $parameters['searchFileName'] = '%' . $fragment . '%';
+            $filters[] = 'tbl.myFile = :searchMyFile';
+            $parameters['searchMyFile'] = $fragment;
             $filters[] = 'tbl.myDescription LIKE :searchMyDescription';
             $parameters['searchMyDescription'] = '%' . $fragment . '%';
             $filters[] = 'tbl.startDate = :searchStartDate';

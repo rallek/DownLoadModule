@@ -1,10 +1,10 @@
 application "DownLoad" targets ZK15 {
-    documentation "A simple way to share some downloads. Categories are available"
+    documentation "a simple Download App"
     vendor "RK"
     author "Ralf Koester"
     email "ralf@familie-koester.de"
     url "http://oldtimer-ig-osnabrueck.de"
-    version "0.6.0"
+    version "0.7.0"
     prefix "downlo"
     generateModerationBlock false
     generateModerationPanel false
@@ -18,7 +18,7 @@ application "DownLoad" targets ZK15 {
     generateIcsTemplates false
     versionAllGeneratedFiles false
     generateTests false
-    markFiles "Resources/views/base.html.twig,\r\nResources/views/adminBase.html.twig,\r\nResources/views/File/view.html.twig,\r\nResources/views/File/viewQuickNav.html.twig,\r\n.gitignore"
+    generateTechnicalDocumentation false
     entities {
         entity "file" leading categorisable {
             nameMultiple "files"
@@ -26,10 +26,13 @@ application "DownLoad" targets ZK15 {
             hasArchive true
             ownerPermission true
             fields {
-                
                 string "fileName",
+                upload "myFile" {
+                    displayType VIEW_DISPLAY
+                    allowedExtensions "pdf, doc, docx, xls, xlsx, ppt, pptx"
+                    mimeTypes "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                },
                 text "myDescription" nullable {
-                    documentation "the quantity of characters are limited to {{length}}"
                     mandatory false
                     displayType VIEW_DISPLAY
                 },

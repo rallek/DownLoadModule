@@ -15,6 +15,7 @@ namespace RK\DownLoadModule\Entity\Base;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Zikula\Core\Doctrine\EntityAccess;
 use RK\DownLoadModule\Traits\StandardFieldsTrait;
@@ -71,8 +72,34 @@ abstract class AbstractFileEntity extends EntityAccess
     protected $fileName = '';
     
     /**
-     * the quantity of characters are limited to {{length}}
+     * My file meta data array.
      *
+     * @ORM\Column(type="array")
+     * @Assert\Type(type="array")
+     * @var array $myFileMeta
+     */
+    protected $myFileMeta = [];
+    
+    /**
+     * @ORM\Column(length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(min="0", max="255")
+     * @Assert\File(
+     *    mimeTypes = {"application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation"}
+     * )
+     * @var string $myFile
+     */
+    protected $myFile = null;
+    
+    /**
+     * Full my file path as url.
+     *
+     * @Assert\Type(type="string")
+     * @var string $myFileUrl
+     */
+    protected $myFileUrl = '';
+    
+    /**
      * @ORM\Column(type="text", length=2000, nullable=true)
      * @Assert\Length(min="0", max="2000")
      * @var text $myDescription
@@ -212,6 +239,78 @@ abstract class AbstractFileEntity extends EntityAccess
     {
         if ($this->fileName !== $fileName) {
             $this->fileName = isset($fileName) ? $fileName : '';
+        }
+    }
+    
+    /**
+     * Returns the my file.
+     *
+     * @return string
+     */
+    public function getMyFile()
+    {
+        return $this->myFile;
+    }
+    
+    /**
+     * Sets the my file.
+     *
+     * @param string $myFile
+     *
+     * @return void
+     */
+    public function setMyFile($myFile)
+    {
+        if ($this->myFile !== $myFile) {
+            $this->myFile = isset($myFile) ? $myFile : '';
+        }
+    }
+    
+    /**
+     * Returns the my file url.
+     *
+     * @return string
+     */
+    public function getMyFileUrl()
+    {
+        return $this->myFileUrl;
+    }
+    
+    /**
+     * Sets the my file url.
+     *
+     * @param string $myFileUrl
+     *
+     * @return void
+     */
+    public function setMyFileUrl($myFileUrl)
+    {
+        if ($this->myFileUrl !== $myFileUrl) {
+            $this->myFileUrl = isset($myFileUrl) ? $myFileUrl : '';
+        }
+    }
+    
+    /**
+     * Returns the my file meta.
+     *
+     * @return array
+     */
+    public function getMyFileMeta()
+    {
+        return $this->myFileMeta;
+    }
+    
+    /**
+     * Sets the my file meta.
+     *
+     * @param array $myFileMeta
+     *
+     * @return void
+     */
+    public function setMyFileMeta($myFileMeta = [])
+    {
+        if ($this->myFileMeta !== $myFileMeta) {
+            $this->myFileMeta = isset($myFileMeta) ? $myFileMeta : '';
         }
     }
     
@@ -452,6 +551,11 @@ abstract class AbstractFileEntity extends EntityAccess
     
         // reset workflow
         $this->setWorkflowState('initial');
+    
+        // reset upload fields
+        $this->setMyFile(null);
+        $this->setMyFileMeta([]);
+        $this->setMyFileUrl('');
     
         $this->setCreatedBy(null);
         $this->setCreatedDate(null);

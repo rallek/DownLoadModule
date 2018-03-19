@@ -24,6 +24,7 @@ use RK\DownLoadModule\Entity\Factory\EntityFactory;
 use RK\DownLoadModule\Helper\ArchiveHelper;
 use RK\DownLoadModule\Helper\CollectionFilterHelper;
 use RK\DownLoadModule\Helper\FeatureActivationHelper;
+use RK\DownLoadModule\Helper\ImageHelper;
 use RK\DownLoadModule\Helper\ModelHelper;
 
 /**
@@ -64,6 +65,11 @@ abstract class AbstractControllerHelper
     protected $modelHelper;
 
     /**
+     * @var ImageHelper
+     */
+    protected $imageHelper;
+
+    /**
      * @var FeatureActivationHelper
      */
     protected $featureActivationHelper;
@@ -79,6 +85,7 @@ abstract class AbstractControllerHelper
      * @param EntityFactory       $entityFactory   EntityFactory service instance
      * @param CollectionFilterHelper $collectionFilterHelper CollectionFilterHelper service instance
      * @param ModelHelper         $modelHelper     ModelHelper service instance
+     * @param ImageHelper         $imageHelper     ImageHelper service instance
      * @param FeatureActivationHelper $featureActivationHelper FeatureActivationHelper service instance
      */
     public function __construct(
@@ -90,6 +97,7 @@ abstract class AbstractControllerHelper
         EntityFactory $entityFactory,
         CollectionFilterHelper $collectionFilterHelper,
         ModelHelper $modelHelper,
+        ImageHelper $imageHelper,
         FeatureActivationHelper $featureActivationHelper
     ) {
         $this->setTranslator($translator);
@@ -99,6 +107,7 @@ abstract class AbstractControllerHelper
         $this->entityFactory = $entityFactory;
         $this->collectionFilterHelper = $collectionFilterHelper;
         $this->modelHelper = $modelHelper;
+        $this->imageHelper = $imageHelper;
         $this->featureActivationHelper = $featureActivationHelper;
 
         $archiveHelper->archiveObsoleteObjects(75);
@@ -367,6 +376,17 @@ abstract class AbstractControllerHelper
             }
             if (in_array($args['action'], ['index', 'view'])) {
                 $parameters = array_merge($parameters, $this->collectionFilterHelper->getViewQuickNavParameters($objectType, $context, $args));
+            }
+    
+            // initialise Imagine runtime options
+            if ($objectType == 'file') {
+                $thumbRuntimeOptions = [];
+                $thumbRuntimeOptions[$objectType . 'MyFile'] = $this->imageHelper->getRuntimeOptions($objectType, 'myFile', $context, $args);
+                $parameters['thumbRuntimeOptions'] = $thumbRuntimeOptions;
+            }
+            if (in_array($args['action'], ['display', 'edit', 'view'])) {
+                // use separate preset for images in related items
+                $parameters['relationThumbRuntimeOptions'] = $this->imageHelper->getCustomRuntimeOptions('', '', 'RKDownLoadModule_relateditem', $context, $args);
             }
         }
     

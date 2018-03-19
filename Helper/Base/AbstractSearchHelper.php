@@ -184,6 +184,7 @@ abstract class AbstractSearchHelper implements SearchableInterface
                 case 'file':
                     $whereArray[] = 'tbl.workflowState';
                     $whereArray[] = 'tbl.fileName';
+                    $whereArray[] = 'tbl.myFile';
                     $whereArray[] = 'tbl.myDescription';
                     break;
             }

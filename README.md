@@ -1,6 +1,6 @@
-# RKDownLoadModule 0.6.0
+# RKDownLoadModule 0.7.0
 
-A simple way to share some downloads. Categories are available
+a simple Download App
 
 This module is intended for being used with Zikula 1.5.5 and later.
 

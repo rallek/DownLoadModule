@@ -25,6 +25,20 @@
             <dt>{{ __('File name') }}</dt>
             <dd>{{ file.fileName }}</dd>
         {% endif %}
+        {% if file.myFile is not empty %}
+            <dt>{{ __('My file') }}</dt>
+            <dd>{% if file.myFileMeta|default %}
+            <a href="{{ file.myFileUrl }}" title="{{ file|rkdownloadmodule_formattedTitle|e('html_attr') }}"{% if file.myFileMeta.isImage %} class="image-link"{% endif %}>
+            {% if file.myFileMeta.isImage %}
+                {% set thumbOptions = attribute(thumbRuntimeOptions, 'fileMyFile') %}
+                <img src="{{ file.myFile.getPathname()|imagine_filter('zkroot', thumbOptions) }}" alt="{{ file|rkdownloadmodule_formattedTitle|e('html_attr') }}" width="{{ thumbOptions.thumbnail.size[0] }}" height="{{ thumbOptions.thumbnail.size[1] }}" class="img-thumbnail" />
+            {% else %}
+                {{ __('Download') }} ({{ file.myFileMeta.size|rkdownloadmodule_fileSize(file.myFile.getPathname(), false, false) }})
+            {% endif %}
+            </a>
+            {% endif %}
+            </dd>
+        {% endif %}
         {% if file.myDescription is not empty %}
             <dt>{{ __('My description') }}</dt>
             <dd>{{ file.myDescription|safeHtml }}</dd>

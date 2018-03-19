@@ -15,6 +15,7 @@
         <fieldset>
             <legend>{{ __('Content') }}</legend>
             {{ form_row(form.fileName) }}
+            {{ form_row(form.myFile) }}
             {{ form_row(form.myDescription) }}
             {{ form_row(form.startDate) }}
             {{ form_row(form.endDate) }}
@@ -81,6 +82,7 @@
             ( function($) {
                 $(document).ready(function() {
                     rKDownLoadInitEditForm('{{ mode }}', '{% if mode != 'create' %}{{ file.id }}{% endif %}');
+                    rKDownLoadInitUploadField('rkdownloadmodule_file_myFile_myFile');
                     rKDownLoadInitDateField('rkdownloadmodule_file_startDate');
                     {% if form.moderationSpecificCreator is defined %}
                         initUserLiveSearch('rkdownloadmodule_file_moderationSpecificCreator');

@@ -1,6 +1,24 @@
 'use strict';
 
 /**
+ * Resets the value of an upload / file input field.
+ */
+function rKDownLoadResetUploadField(fieldName) {
+    jQuery('#' + fieldName).attr('type', 'input');
+    jQuery('#' + fieldName).attr('type', 'file');
+}
+
+/**
+ * Initialises the reset button for a certain upload input.
+ */
+function rKDownLoadInitUploadField(fieldName) {
+    jQuery('#' + fieldName + 'ResetVal').click(function (event) {
+        event.preventDefault();
+        rKDownLoadResetUploadField(fieldName);
+    }).removeClass('hidden');
+}
+
+/**
  * Initialises the reset button for a certain date input.
  */
 function rKDownLoadInitDateField(fieldName) {

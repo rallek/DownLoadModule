@@ -336,6 +336,8 @@ abstract class AbstractEditHandler
                     // try to guarantee that only one person at a time can be editing this entity
                     $lockName = 'RKDownLoadModule' . $this->objectTypeCapital . $entity->getKey();
                     $this->lockingApi->addLock($lockName, $this->getRedirectUrl(['commandName' => '']));
+                    // reload entity as the addLock call above has triggered the preUpdate event
+                    $this->entityFactory->getObjectManager()->refresh($entity);
                 }
             }
         } else {

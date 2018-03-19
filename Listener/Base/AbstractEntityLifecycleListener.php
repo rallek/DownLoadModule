@@ -22,6 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Zikula\Core\Doctrine\EntityAccess;
 use RK\DownLoadModule\DownLoadEvents;
 use RK\DownLoadModule\Event\FilterFileEvent;
@@ -118,6 +119,19 @@ abstract class AbstractEntityLifecycleListener implements EventSubscriber, Conta
         
         $objectType = $entity->get_objectType();
         
+        $uploadFields = $this->getUploadFields($objectType);
+        if (count($uploadFields) > 0) {
+            $uploadHelper = $this->container->get('rk_download_module.upload_helper');
+            foreach ($uploadFields as $uploadField) {
+                if (empty($entity[$uploadField])) {
+                    continue;
+                }
+        
+                // remove upload file
+                $uploadHelper->deleteUploadFile($entity, $uploadField);
+            }
+        }
+        
         $currentUserApi = $this->container->get('zikula_users_module.current_user');
         $logArgs = ['app' => 'RKDownLoadModule', 'user' => $currentUserApi->get('uname'), 'entity' => $objectType, 'id' => $entity->getKey()];
         $this->logger->debug('{app}: User {user} removed the {entity} with id {id}.', $logArgs);
@@ -142,6 +156,20 @@ abstract class AbstractEntityLifecycleListener implements EventSubscriber, Conta
         $entity = $args->getObject();
         if (!$this->isEntityManagedByThisBundle($entity) || !method_exists($entity, 'get_objectType')) {
             return;
+        }
+        
+        $uploadFields = $this->getUploadFields($entity->get_objectType());
+        foreach ($uploadFields as $uploadField) {
+            if (empty($entity[$uploadField])) {
+                continue;
+            }
+        
+            if ($entity[$uploadField] instanceof File) {
+                $entity[$uploadField] = $entity[$uploadField]->getFilename();
+            } elseif (false !== strpos($entity[$uploadField], '/')) {
+                $fileParts = explode('/', $entity[$uploadField]);
+                $entity[$uploadField] = end($fileParts);
+            }
         }
         
         // create the filter event and dispatch it
@@ -188,6 +216,20 @@ abstract class AbstractEntityLifecycleListener implements EventSubscriber, Conta
         $entity = $args->getObject();
         if (!$this->isEntityManagedByThisBundle($entity) || !method_exists($entity, 'get_objectType')) {
             return;
+        }
+        
+        $uploadFields = $this->getUploadFields($entity->get_objectType());
+        foreach ($uploadFields as $uploadField) {
+            if (empty($entity[$uploadField])) {
+                continue;
+            }
+        
+            if ($entity[$uploadField] instanceof File) {
+                $entity[$uploadField] = $entity[$uploadField]->getFilename();
+            } elseif (false !== strpos($entity[$uploadField], '/')) {
+                $fileParts = explode('/', $entity[$uploadField]);
+                $entity[$uploadField] = end($fileParts);
+            }
         }
         
         // create the filter event and dispatch it
@@ -238,6 +280,17 @@ abstract class AbstractEntityLifecycleListener implements EventSubscriber, Conta
             return;
         }
         
+        // prepare helper fields for uploaded files
+        $uploadFields = $this->getUploadFields($entity->get_objectType());
+        if (count($uploadFields) > 0) {
+            $uploadHelper = $this->container->get('rk_download_module.upload_helper');
+            $request = $this->container->get('request_stack')->getCurrentRequest();
+            $baseUrl = $request->getSchemeAndHttpHost() . $request->getBasePath();
+            foreach ($uploadFields as $fieldName) {
+                $uploadHelper->initialiseUploadField($entity, $fieldName, $baseUrl);
+            }
+        }
+        
         // create the filter event and dispatch it
         $event = $this->createFilterEvent($entity);
         $this->eventDispatcher->dispatch(constant('\\RK\\DownLoadModule\\DownLoadEvents::' . strtoupper($entity->get_objectType()) . '_POST_LOAD'), $event);
@@ -274,5 +327,24 @@ abstract class AbstractEntityLifecycleListener implements EventSubscriber, Conta
         $event = new $filterEventClass($entity);
 
         return $event;
+    }
+
+    /**
+     * Returns list of upload fields for the given object type.
+     *
+     * @param string $objectType The object type
+     *
+     * @return string[] List of upload field names
+     */
+    protected function getUploadFields($objectType = '')
+    {
+        $uploadFields = [];
+        switch ($objectType) {
+            case 'file':
+                $uploadFields = ['myFile'];
+                break;
+        }
+
+        return $uploadFields;
     }
 }
