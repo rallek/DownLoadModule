@@ -1,4 +1,4 @@
-workflow:
+framework:
     workflows:
         rkdownloadmodule_none:
             type: state_machine
@@ -16,45 +16,36 @@ workflow:
                 - trashed
                 - deleted
             transitions:
-                recoverdeferred:
-                    from: trashed
-                    to: deferred
                 defer:
                     from: initial
                     to: deferred
                 submit:
                     from: [initial, deferred]
                     to: approved
-                updateapproved:
+                update:
                     from: approved
                     to: approved
-                updatedeferred:
+                update:
                     from: deferred
                     to: deferred
+                unarchive:
+                    from: archived
+                    to: approved
                 archive:
                     from: approved
+                    to: archived
+                trash:
+                    from: archived
+                    to: trashed
+                trash:
+                    from: deferred
+                    to: trashed
+                update:
+                    from: archived
                     to: archived
                 delete:
                     from: [deferred, approved, archived, trashed]
                     to: deleted
-                recoverapproved:
-                    from: trashed
-                    to: approved
-                unarchive:
-                    from: archived
-                    to: approved
-                trasharchived:
-                    from: archived
-                    to: trashed
-                trashdeferred:
-                    from: deferred
-                    to: trashed
-                updatearchived:
-                    from: archived
-                    to: archived
-                trashapproved:
+                trash:
                     from: approved
                     to: trashed
-                recoverarchived:
-                    from: trashed
-                    to: archived

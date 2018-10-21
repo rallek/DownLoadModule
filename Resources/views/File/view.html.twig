@@ -36,7 +36,7 @@
                         <input type="checkbox" class="rkdownload-mass-toggle" />
                     </th>
                 {% endif %}
-                <th id="hItemActionsStart" scope="col" class="z-order-unsorted z-w02">{{ __('Actions') }}</th>
+                <th id="hItemActionsStart" scope="col" class="unsorted z-w02">{{ __('Actions') }}</th>
                 {% if routeArea == 'admin' %}
                 <th id="hWorkflowState" scope="col" class="text-left">
                     <a href="{{ sort.workflowState.url }}" title="{{ __f('Sort by %s', {'%s': 'state'}) }}" class="{{ sort.workflowState.class }}">{{ __('State') }}</a>
@@ -45,16 +45,16 @@
                 <th id="hFileName" scope="col" class="text-left">
                     <a href="{{ sort.fileName.url }}" title="{{ __f('Sort by %s', {'%s': 'file name'}) }}" class="{{ sort.fileName.class }}">{{ __('File name') }}</a>
                 </th>
-                <th id="hMyFile" scope="col" class="text-left z-order-unsorted">
+                <th id="hMyFile" scope="col" class="text-left unsorted">
                     {{ __('My file') }}
                 </th>
-                <th id="hMyDescription" scope="col" class="text-left z-order-unsorted">
+                <th id="hMyDescription" scope="col" class="text-left unsorted">
                     {{ __('My description') }}
                 </th>
-                <th id="hStartDate" scope="col" class="text-left z-order-unsorted">
+                <th id="hStartDate" scope="col" class="text-left unsorted">
                     {{ __('Start date') }}
                 </th>
-                <th id="hEndDate" scope="col" class="text-left z-order-unsorted">
+                <th id="hEndDate" scope="col" class="text-left unsorted">
                     {{ __('End date') }}
                 </th>
             </tr>

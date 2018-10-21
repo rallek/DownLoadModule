@@ -5,8 +5,7 @@ services:
         class: RK\DownLoadModule\Form\Type\Field\MultiListType
         arguments:
             - "@rk_download_module.listentries_helper"
-        tags:
-            - { name: form.type }
+        tags: ['form.type']
     
     rk_download_module.form.type.field.upload:
         class: RK\DownLoadModule\Form\Type\Field\UploadType
@@ -15,5 +14,4 @@ services:
             - "@request_stack"
             - "@rk_download_module.image_helper"
             - "@rk_download_module.upload_helper"
-        tags:
-            - { name: form.type }
+        tags: ['form.type']

@@ -1,3 +1,3 @@
 # CHANGELOG
 
-Changes in RKDownLoadModule 0.7.0
+Changes in RKDownLoadModule 2.0.0

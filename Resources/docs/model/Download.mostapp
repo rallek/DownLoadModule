@@ -1,10 +1,10 @@
-application "DownLoad" targets ZK15 {
+application "DownLoad" targets ZK20 {
     documentation "a simple Download App"
     vendor "RK"
     author "Ralf Koester"
     email "ralf@familie-koester.de"
     url "http://oldtimer-ig-osnabrueck.de"
-    version "0.7.0"
+    version "2.0.0"
     prefix "downlo"
     generateModerationBlock false
     generateModerationPanel false
@@ -19,6 +19,8 @@ application "DownLoad" targets ZK15 {
     versionAllGeneratedFiles false
     generateTests false
     generateTechnicalDocumentation false
+    skipFiles ".gitignore"
+    markFiles "Resources/views/File/viewQuickNav.html.twig"
     entities {
         entity "file" leading categorisable {
             nameMultiple "files"

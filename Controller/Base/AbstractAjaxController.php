@@ -80,7 +80,7 @@ abstract class AbstractAjaxController extends AbstractController
         }
         
         // return response
-        return new JsonResponse($slimItems);
+        return $this->json($slimItems);
     }
     
     /**

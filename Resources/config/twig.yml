@@ -9,5 +9,4 @@ services:
             - "@rk_download_module.workflow_helper"
             - "@rk_download_module.listentries_helper"
         public: false
-        tags:
-            - { name: twig.extension }
+        tags: ['twig.extension']
