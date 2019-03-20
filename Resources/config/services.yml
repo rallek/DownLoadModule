@@ -1,6 +1,6 @@
 imports:
   - { resource: 'appSettings.yml' }
-  - { resource: 'linkContainer.yml' }
+  - { resource: 'menu.yml' }
   - { resource: 'entityFactory.yml' }
   - { resource: 'eventSubscriber.yml' }
   - { resource: 'validators.yml' }
@@ -8,5 +8,7 @@ imports:
   - { resource: 'forms.yml' }
   - { resource: 'helpers.yml' }
   - { resource: 'hooks.yml' }
+  - { resource: 'needles.yml' }
   - { resource: 'twig.yml' }
   - { resource: 'logger.yml' }
+  - { resource: 'contentTypes.yml' }

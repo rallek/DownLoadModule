@@ -1,14 +1,15 @@
 application "DownLoad" targets ZK20 {
-    documentation "a simple Download App"
+    documentation "a simple Download App generated with Modulestudio"
     vendor "RK"
     author "Ralf Koester"
     email "ralf@familie-koester.de"
-    url "http://oldtimer-ig-osnabrueck.de"
-    version "2.0.0"
+    url "http://k62.de"
+    version "2.0.1"
     prefix "downlo"
-    generateModerationBlock false
-    generateModerationPanel false
+    generateModerationBlock true
+    generateModerationPanel true
     generatePendingContentSupport false
+    generateMultiHookNeedles true
     generateRssTemplates false
     generateAtomTemplates false
     generateCsvTemplates false
@@ -17,6 +18,7 @@ application "DownLoad" targets ZK20 {
     generateKmlTemplates false
     generateIcsTemplates false
     versionAllGeneratedFiles false
+    generatePoweredByBacklinksIntoFooterTemplates false
     generateTests false
     generateTechnicalDocumentation false
     skipFiles ".gitignore"

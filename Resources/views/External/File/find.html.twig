@@ -6,7 +6,6 @@
     <div class="container">
         <div class="zikula-bootstrap-tab-container">
             <ul class="nav nav-tabs">
-            {% set activatedObjectTypes = getModVar('RKDownLoadModule', 'enabledFinderTypes', []) %}
             {% if 'file' in activatedObjectTypes %}
                 <li{{ objectType == 'file' ? ' class="active"' : '' }}><a href="{{ path('rkdownloadmodule_external_finder', {objectType: 'file', editor: editorName}) }}" title="{{ __('Search and select file') }}">{{ __('Files') }}</a></li>
             {% endif %}
@@ -74,4 +73,8 @@
         </fieldset>
     </div>
     #}
+{% endblock %}
+{% block footer %}
+    {{ parent() }}
+    {{ pageAddAsset('javascript', zasset('@RKDownLoadModule:js/RKDownLoadModule.Finder.js')) }}
 {% endblock %}

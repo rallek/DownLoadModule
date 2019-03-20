@@ -67,6 +67,7 @@ services:
     rk_download_module.workflow_events_listener:
         class: RK\DownLoadModule\Listener\WorkflowEventsListener
         arguments:
-            - "@zikula_permissions_module.api.permission"
+            - "@rk_download_module.entity_factory"
+            - "@rk_download_module.permission_helper"
         tags: ['kernel.event_subscriber']
     

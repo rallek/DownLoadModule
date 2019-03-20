@@ -1,19 +1,19 @@
 {
     "vendor": {
         "title": "RK",
-        "url": "http://oldtimer-ig-osnabrueck.de",
+        "url": "http://k62.de",
         "logo": ""
     },
     "extension": {
         "name": "Down load",
-        "url": "http://oldtimer-ig-osnabrueck.de",
+        "url": "http://k62.de",
         "icon": ""
     },
     "version": {
-        "semver": "2.0.0",
-        "compatibility": ">=2.0.5 <3.0.0",
+        "semver": "2.0.1",
+        "compatibility": ">=2.0.12 <3.0.0",
         "composerpath": "composer.json",
-        "description": "a simple Download App",
+        "description": "a simple Download App generated with Modulestudio",
         "keywords": [
         ]
     },

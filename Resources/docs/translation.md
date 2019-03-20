@@ -16,7 +16,7 @@ Note you can even include custom views in `app/Resources/RKDownLoadModule/views/
 
 `php -dmemory_limit=2G bin/console translation:extract en --bundle=RKDownLoadModule --enable-extractor=jms_i18n_routing --output-format=po --dir=./modules/RK/DownLoadModule --dir=./app/Resources/RKDownLoadModule`
 
-For questions and other remarks visit our homepage http://oldtimer-ig-osnabrueck.de.
+For questions and other remarks visit our homepage http://k62.de.
 
 Ralf Koester (ralf@familie-koester.de)
-http://oldtimer-ig-osnabrueck.de
+http://k62.de

@@ -6,7 +6,7 @@
    Note this step is optional as the install process can create these folders, too.
 4. Make the directory `/web/uploads/RKDownLoadModule/` writable including all sub folders.
 
-For questions and other remarks visit our homepage http://oldtimer-ig-osnabrueck.de.
+For questions and other remarks visit our homepage http://k62.de.
 
 Ralf Koester (ralf@familie-koester.de)
-http://oldtimer-ig-osnabrueck.de
+http://k62.de

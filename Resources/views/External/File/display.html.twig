@@ -22,6 +22,13 @@
         &nbsp;
     </div>
 
+    {# you can embed the display template like this: #}
+    {#{ app.request.query.set('raw', 1) }}
+    {% set displayPage = include('@RKDownLoadModule/File/display.html.twig', {file: file, routeArea: '', currentUrlObject: null}) %}
+    {% set displayPage = displayPage|split('<body>') %}
+    {% set displayPage = displayPage[1]|split('</body>') %}
+    {{ displayPage[0]|raw }#}
+
     {# you can distinguish the context like this: #}
     {# % if source == 'block' %}
         ... detail block

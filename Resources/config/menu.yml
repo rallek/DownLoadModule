@@ -1,0 +1,22 @@
+services:
+    rk_download_module.link_container:
+        class: RK\DownLoadModule\Container\LinkContainer
+        arguments:
+            - "@translator.default"
+            - "@router"
+            - "@zikula_extensions_module.api.variable"
+            - "@rk_download_module.controller_helper"
+            - "@rk_download_module.permission_helper"
+        tags: ['zikula.link_container']
+    rk_download_module.menu_builder:
+        class: RK\DownLoadModule\Menu\MenuBuilder
+        arguments:
+            - "@translator.default"
+            - "@knp_menu.factory"
+            - "@event_dispatcher"
+            - "@request_stack"
+            - "@rk_download_module.permission_helper"
+            - "@rk_download_module.entity_display_helper"
+            - "@zikula_users_module.current_user"
+        tags:
+            - { name: knp_menu.menu_builder, method: createItemActionsMenu, alias: rKDownLoadMenuItemActions }

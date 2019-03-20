@@ -18,11 +18,12 @@ services:
             - "@request_stack"
             - "@router"
             - "@logger"
-            - "@zikula_permissions_module.api.permission"
+            - "@zikula_extensions_module.api.variable"
             - "@zikula_users_module.current_user"
             - "@rk_download_module.entity_factory"
             - "@rk_download_module.controller_helper"
             - "@rk_download_module.model_helper"
+            - "@rk_download_module.permission_helper"
             - "@rk_download_module.workflow_helper"
             - "@rk_download_module.hook_helper"
             - "@rk_download_module.feature_activation_helper"
@@ -40,6 +41,7 @@ services:
             - "@translator.default"
             - "@rk_download_module.entity_factory"
             - "@rk_download_module.listentries_helper"
+            - "@rk_download_module.upload_helper"
             - "@rk_download_module.feature_activation_helper"
         tags: ['form.type']
     
@@ -47,6 +49,7 @@ services:
         class: RK\DownLoadModule\Block\Form\Type\ItemListBlockType
         arguments:
             - "@translator.default"
+            - "@zikula_categories_module.category_repository"
         tags: ['form.type']
     
     rk_download_module.form.type.block.item:

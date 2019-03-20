@@ -16,36 +16,39 @@ framework:
                 - trashed
                 - deleted
             transitions:
-                defer:
-                    from: initial
-                    to: deferred
-                submit:
-                    from: [initial, deferred]
-                    to: approved
-                update:
-                    from: approved
-                    to: approved
-                update:
-                    from: deferred
-                    to: deferred
-                unarchive:
-                    from: archived
-                    to: approved
-                archive:
-                    from: approved
-                    to: archived
-                trash:
-                    from: archived
-                    to: trashed
-                trash:
-                    from: deferred
-                    to: trashed
-                update:
-                    from: archived
-                    to: archived
-                delete:
-                    from: [deferred, approved, archived, trashed]
-                    to: deleted
-                trash:
-                    from: approved
-                    to: trashed
+                - name: defer
+                  from: initial
+                  to: deferred
+                - name: submit
+                  from: [initial, deferred]
+                  to: approved
+                - name: update
+                  from: approved
+                  to: approved
+                - name: update
+                  from: deferred
+                  to: deferred
+                - name: unarchive
+                  from: archived
+                  to: approved
+                - name: archive
+                  from: approved
+                  to: archived
+                - name: recover
+                  from: trashed
+                  to: deferred
+                - name: trash
+                  from: archived
+                  to: trashed
+                - name: trash
+                  from: deferred
+                  to: trashed
+                - name: update
+                  from: archived
+                  to: archived
+                - name: delete
+                  from: [deferred, approved, archived, trashed]
+                  to: deleted
+                - name: trash
+                  from: approved
+                  to: trashed

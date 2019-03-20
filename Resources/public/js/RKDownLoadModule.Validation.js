@@ -65,7 +65,7 @@ function rKDownLoadValidateNoSpace(val) {
 
 function rKDownLoadValidateUploadExtension(val, elem) {
     var fileExtension, allowedExtensions;
-    if (val === '') {
+    if ('' == val) {
         return true;
     }
 
@@ -79,10 +79,13 @@ function rKDownLoadValidateUploadExtension(val, elem) {
 
 function rKDownLoadValidateDateRangeFile(val) {
     var cmpVal, cmpVal2, result;
-    cmpVal = rKDownLoadReadDate(jQuery("[id$='startDate']").val(), false);
-    cmpVal2 = rKDownLoadReadDate(jQuery("[id$='endDate']").val(), false);
+
+    cmpVal = jQuery("[id$='startDate']").val();
+    cmpVal2 = jQuery("[id$='endDate']").val();
 
     if (typeof cmpVal == 'undefined' && typeof cmpVal2 == 'undefined') {
+        result = true;
+    } else if ('' == jQuery.trim(cmpVal) || '' == jQuery.trim(cmpVal2)) {
         result = true;
     } else {
         result = (cmpVal <= cmpVal2);
@@ -97,14 +100,14 @@ function rKDownLoadValidateDateRangeFile(val) {
 function rKDownLoadExecuteCustomValidationConstraints(objectType, currentEntityId) {
     jQuery('.validate-upload').each(function () {
         if (!rKDownLoadValidateUploadExtension(jQuery(this).val(), jQuery(this))) {
-            document.getElementById(jQuery(this).attr('id')).setCustomValidity(Translator.__('Please select a valid file extension.'));
+            jQuery(this).get(0).setCustomValidity(Translator.__('Please select a valid file extension.'));
         } else {
-            document.getElementById(jQuery(this).attr('id')).setCustomValidity('');
+            jQuery(this).get(0).setCustomValidity('');
         }
     });
     jQuery('.validate-daterange-file').each(function () {
-        if (typeof jQuery(this).attr('id') != 'undefined') {
-            if (jQuery(this).prop('tagName') == 'DIV') {
+        if ('undefined' != typeof jQuery(this).attr('id')) {
+            if ('DIV' == jQuery(this).prop('tagName')) {
                 if (!rKDownLoadValidateDateRangeFile()) {
                     document.getElementById(jQuery(this).attr('id') + '_date').setCustomValidity(Translator.__('The start must be before the end.'));
                     document.getElementById(jQuery(this).attr('id') + '_time').setCustomValidity(Translator.__('The start must be before the end.'));
@@ -112,13 +115,13 @@ function rKDownLoadExecuteCustomValidationConstraints(objectType, currentEntityI
                     document.getElementById(jQuery(this).attr('id') + '_date').setCustomValidity('');
                     document.getElementById(jQuery(this).attr('id') + '_time').setCustomValidity('');
                 }
-        	} else {
+            } else {
                 if (!rKDownLoadValidateDateRangeFile()) {
-                    document.getElementById(jQuery(this).attr('id')).setCustomValidity(Translator.__('The start must be before the end.'));
+                    jQuery(this).get(0).setCustomValidity(Translator.__('The start must be before the end.'));
                 } else {
-                    document.getElementById(jQuery(this).attr('id')).setCustomValidity('');
+                    jQuery(this).get(0).setCustomValidity('');
                 }
-    		}
+            }
         }
     });
 }

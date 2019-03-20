@@ -1,0 +1,29 @@
+services:
+    # Content types
+    RK\DownLoadModule\ContentType\ItemListType:
+        parent: zikula.content_type.base
+        shared: false
+        calls:
+            - [setControllerHelper, ['@rk_download_module.controller_helper']]
+            - [setModelHelper, ['@rk_download_module.model_helper']]
+            - [setEntityFactory, ['@rk_download_module.entity_factory']]
+            - [setCategoryDependencies, ['@rk_download_module.feature_activation_helper', '@rk_download_module.category_helper']]
+        tags: ['zikula.content_type']
+    RK\DownLoadModule\ContentType\Form\Type\ItemListType:
+        parent: zikula.content_type.form.base
+        arguments:
+            - "@zikula_categories_module.category_repository"
+        tags: ['form.type']
+    RK\DownLoadModule\ContentType\ItemType:
+        parent: zikula.content_type.base
+        shared: false
+        calls:
+            - [setControllerHelper, ['@rk_download_module.controller_helper']]
+            - [setFragmentHandler, ['@fragment.handler']]
+        tags: ['zikula.content_type']
+    RK\DownLoadModule\ContentType\Form\Type\ItemType:
+        parent: zikula.content_type.form.base
+        arguments:
+            - "@rk_download_module.entity_factory"
+            - "@rk_download_module.entity_display_helper"
+        tags: ['form.type']

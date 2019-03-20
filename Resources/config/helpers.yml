@@ -6,8 +6,8 @@ services:
             - "@translator.default"
             - "@request_stack"
             - "@logger"
-            - "@zikula_permissions_module.api.permission"
             - "@rk_download_module.entity_factory"
+            - "@rk_download_module.permission_helper"
             - "@rk_download_module.workflow_helper"
             - "@rk_download_module.hook_helper"
     
@@ -25,8 +25,10 @@ services:
         class: RK\DownLoadModule\Helper\CollectionFilterHelper
         arguments:
             - "@request_stack"
+            - "@rk_download_module.permission_helper"
             - "@zikula_users_module.current_user"
             - "@rk_download_module.category_helper"
+            - "@zikula_extensions_module.api.variable"
             - "@=service('zikula_extensions_module.api.variable').get('RKDownLoadModule', 'showOnlyOwnEntries', false)"
     
     rk_download_module.controller_helper:
@@ -39,6 +41,7 @@ services:
             - "@zikula_extensions_module.api.variable"
             - "@rk_download_module.entity_factory"
             - "@rk_download_module.collection_filter_helper"
+            - "@rk_download_module.permission_helper"
             - "@rk_download_module.model_helper"
             - "@rk_download_module.image_helper"
             - "@rk_download_module.feature_activation_helper"
@@ -75,16 +78,25 @@ services:
         arguments:
             - "@rk_download_module.entity_factory"
     
+    rk_download_module.permission_helper:
+        class: RK\DownLoadModule\Helper\PermissionHelper
+        arguments:
+            - "@service_container"
+            - "@request_stack"
+            - "@zikula_permissions_module.api.permission"
+            - "@zikula_users_module.current_user"
+            - "@zikula_users_module.user_repository"
+    
     rk_download_module.search_helper:
         class: RK\DownLoadModule\Helper\SearchHelper
         arguments:
             - "@translator.default"
-            - "@zikula_permissions_module.api.permission"
             - "@session"
             - "@request_stack"
             - "@rk_download_module.entity_factory"
             - "@rk_download_module.controller_helper"
             - "@rk_download_module.entity_display_helper"
+            - "@rk_download_module.permission_helper"
             - "@rk_download_module.feature_activation_helper"
             - "@rk_download_module.category_helper"
         tags:
@@ -107,10 +119,10 @@ services:
             - "@twig"
             - "@twig.loader"
             - "@request_stack"
-            - "@zikula_permissions_module.api.permission"
             - "@zikula_extensions_module.api.variable"
-            - "@zikula_core.common.theme.pagevars"
+            - "@zikula_core.internal.theme_filter"
             - "@rk_download_module.controller_helper"
+            - "@rk_download_module.permission_helper"
     
     rk_download_module.workflow_helper:
         class: RK\DownLoadModule\Helper\WorkflowHelper
@@ -118,7 +130,7 @@ services:
             - "@translator.default"
             - "@workflow.registry"
             - "@logger"
-            - "@zikula_permissions_module.api.permission"
             - "@zikula_users_module.current_user"
             - "@rk_download_module.entity_factory"
             - "@rk_download_module.listentries_helper"
+            - "@rk_download_module.permission_helper"

@@ -1,0 +1,10 @@
+services:
+    rk_download_module.multihook_needle.file:
+        class: RK\DownLoadModule\Needle\FileNeedle
+        arguments:
+            - '@translator.default'
+            - '@router'
+            - '@rk_download_module.permission_helper'
+            - '@rk_download_module.entity_factory'
+            - '@rk_download_module.entity_display_helper'
+        tags: ['zikula.multihook_needle']

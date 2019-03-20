@@ -24,7 +24,11 @@ function rKDownLoadInitUploadField(fieldName) {
 function rKDownLoadInitDateField(fieldName) {
     jQuery('#' + fieldName + 'ResetVal').click(function (event) {
         event.preventDefault();
-        jQuery('#' + fieldName).val('');
+        if ('DIV' == jQuery('#' + fieldName).prop('tagName')) {
+            jQuery('#' + fieldName + '_date, #' + fieldName + '_time').val('');
+        } else {
+            jQuery('#' + fieldName + ', #' + fieldName + '').val('');
+        }
     }).removeClass('hidden');
 }
 
@@ -44,7 +48,7 @@ function rKDownLoadTriggerFormValidation() {
     }
 }
 
-function rKDownLoadHandleFormSubmit (event) {
+function rKDownLoadHandleFormSubmit(event) {
     if (triggerValidation) {
         rKDownLoadTriggerFormValidation();
         if (!editForm.get(0).checkValidity()) {
